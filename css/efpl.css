@@ -1,367 +1,158 @@
-/* ==========================================================================
-   eFPL Design System — efpl.css
-   Consolidated styles for all custom eFPL pages (embed-friendly for Google Sites)
-   Author: ChatGPT (eFPL project)
-   ========================================================================== */
+/* ========================================================================
+   eFPL Shared Stylesheet
+   Version: 1.0.3 — tuned hero to match original design
+   ======================================================================== */
 
-/* --------------------------------------------------------------------------
-   0) Design Tokens (colors, typography, spacing)
-   -------------------------------------------------------------------------- */
+/* Reset */
+*,*::before,*::after{box-sizing:border-box}
+html:focus-within{scroll-behavior:smooth}
+body,h1,h2,h3,h4,p,figure,blockquote,dl,dd{margin:0}
+img,svg,video,canvas{display:block;max-width:100%;height:auto}
+button,input,select,textarea{font:inherit}
+a{text-decoration:none;color:inherit}
+
+/* Tokens */
 :root{
-  /* Brand */
-  --accent:#f9d71c;
-  --navy-900:#00143b;
-  --navy-800:#001a4d;
-  --navy-700:#002060;
-  --navy-650:#002b80;
-  --navy-600:#05225a;
-
-  /* Text */
-  --text:#ffffff;
+  --navy:#00143b;
+  --yellow:#f9d71c;
+  --white:#fff;
   --muted:#cbd5e1;
-  --btn-text:#0b1b3d;
-
-  /* Surfaces & Lines */
-  --card:var(--navy-900);
-  --card2:var(--navy-600);
-  --line:rgba(249,215,28,.45);
   --border:rgba(249,215,28,.35);
-  --fx-border:rgba(249,215,28,.55);
-
-  /* Tables */
-  --header-bg:var(--accent);
-  --header-text:#00143b;
-  --row1:var(--navy-800);
-  --row2:var(--navy-700);
-  --row-hover:var(--navy-650);
-
-  /* Shadows */
-  --shadow-1:0 2px 6px rgba(0,0,0,.20);
-  --shadow-2:0 8px 24px rgba(0,0,0,.35);
-  --shadow-3:0 16px 42px rgba(0,0,0,.40);
-
-  /* Radius */
-  --r-sm:8px;
-  --r-md:10px;
-  --r-lg:12px;
-  --r-xl:14px;
-  --r-pill:999px;
-
-  /* Type scale */
-  --fs-12:12px;
-  --fs-13:13px;
-  --fs-14:14px;
-  --fs-15:15px;
-  --fs-16:16px;
-  --fs-18:18px;
-  --fs-20:20px;
-  --fs-22:22px;
-  --fs-24:24px;
-  --fs-26:26px;
-  --fs-28:28px;
-  --fs-30:30px;
-  --fs-34:34px;
-  --fs-36:36px;
-
-  /* Spacing */
-  --sp-4:4px;   --sp-6:6px;   --sp-8:8px;   --sp-10:10px;
-  --sp-12:12px; --sp-14:14px; --sp-16:16px; --sp-18:18px;
-  --sp-20:20px; --sp-22:22px; --sp-24:24px; --sp-30:30px;
-  --sp-32:32px; --sp-40:40px; --sp-48:48px;
-
-  /* Breakpoints */
-  --bp-1140:1140px;
-  --bp-1100:1100px;
-  --bp-980:980px;
-  --bp-940:940px;
-  --bp-860:860px;
-  --bp-820:820px;
-  --bp-780:780px;
-  --bp-680:680px;
-  --bp-600:600px;
-  --bp-420:420px;
 }
 
-/* --------------------------------------------------------------------------
-   1) Base / Resets (transparent background to blend in Google Sites iframes)
-   -------------------------------------------------------------------------- */
-html{scroll-behavior:smooth}
-html,body{background:transparent;margin:0;color:var(--text)}
-body{font:16px/1.6 system-ui, Segoe UI, Roboto, Arial, sans-serif}
-a{color:var(--accent);text-decoration:none}
-a:hover{opacity:.9}
-img{max-width:100%;height:auto}
-/* Utility: visually-hidden for accessibility */
-.visually-hidden{position:absolute!important;clip:rect(1px,1px,1px,1px)!important;padding:0!important;border:0!important;height:1px!important;width:1px!important;overflow:hidden}
+/* Base */
+body{
+  background:var(--navy);
+  color:var(--white);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  line-height:1.55;
+}
+:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
 
-/* --------------------------------------------------------------------------
-   2) Layout primitives
-   -------------------------------------------------------------------------- */
-.wrap{max-width:1140px;margin:0 auto;padding:var(--sp-20)}
-.wrap.narrow{max-width:980px}
-.card{background:var(--card);border-radius:var(--r-lg);overflow:hidden;border:1px solid transparent}
-.card.bordered{border-color:var(--border)}
-.section{background:var(--card);border:1px solid var(--border);border-radius:var(--r-xl);padding:var(--sp-20);margin-bottom:var(--sp-16)}
-.hr{height:1px;background:var(--border);margin:var(--sp-12) 0;border-radius:1px}
+/* Headings */
+.h1{font-size:clamp(40px,8vw,88px);font-weight:900;text-align:center;letter-spacing:.2px}
+.h3{font-size:clamp(20px,3.2vw,36px);font-weight:800;opacity:.95;text-align:center}
 
-/* Titles / eyebrows */
-.title{display:flex;flex-wrap:wrap;gap:var(--sp-10);align-items:center;justify-content:space-between;margin-bottom:var(--sp-12)}
-.eyebrow{display:inline-block;background:var(--accent);color:#111;padding:2px 10px;border-radius:var(--r-pill);font-weight:800;font-size:var(--fs-12);letter-spacing:.04em;text-transform:uppercase}
-h1{margin:4px 0 0;font-size:clamp(28px,4.5vw,36px);line-height:1.15}
-h2{margin:0 0 var(--sp-10);font-size:clamp(20px,3.2vw,26px);line-height:1.2}
-.lead{font-size:var(--fs-18);color:var(--muted)}
-.motto{color:var(--muted);font-weight:800;font-size:14px}
+/* Subtext */
+.sub{
+  max-width:800px;
+  margin:0 auto;
+  font-size:clamp(16px,2.4vw,20px);
+  color:var(--muted);
+  text-align:center;
+}
+.sub a{white-space:nowrap}
 
-/* Pills, badges, chips */
-.badge{background:var(--accent);color:#111;padding:2px 8px;border-radius:var(--r-pill);font-weight:800;font-size:var(--fs-12)}
-.pill{background:var(--accent);color:#000;padding:4px 12px;border-radius:var(--r-pill);font-weight:700;font-size:var(--fs-13)}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-.chip{border:1.5px solid var(--border);border-radius:var(--r-pill);padding:10px 14px;font-weight:800;font-size:14px;background:rgba(255,255,255,.06);display:flex;justify-content:center;align-items:center;gap:8px;text-align:center}
-.ic{font-size:16px;line-height:1}
-.em{font-weight:800}
+/* Chips */
+.chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.chip{
+  border:1px solid var(--border);
+  border-radius:999px;
+  padding:12px 16px;
+  font-weight:700;
+  background:rgba(255,255,255,.05);
+}
 
 /* Buttons */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:12px;padding:14px 24px;border-radius:var(--r-pill);font-weight:900;text-decoration:none;border:1px solid transparent;transition:transform .08s ease, box-shadow .08s ease}
-.btn.primary{background:var(--accent);color:var(--btn-text);box-shadow:var(--shadow-3), 0 0 0 3px rgba(249,215,28,.18) inset;font-size:clamp(17px,3vw,21px)}
-.btn.primary:hover{transform:translateY(-1px);box-shadow:0 18px 48px rgba(0,0,0,.48), 0 0 0 3px rgba(249,215,28,.25) inset}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  padding:18px 28px;
+  border-radius:999px;font-weight:800;font-size:clamp(16px,1.8vw,20px);
+  cursor:pointer;text-decoration:none;
+}
+.btn-primary{background:var(--yellow);color:#0b1b3d}
 
-/* Fade-in & skeleton */
-.fade-in{opacity:0;transition:opacity .18s ease}
-.fade-in.ready{opacity:1}
-.skeleton{background:linear-gradient(90deg, rgba(255,255,255,.05), rgba(255,255,255,.12), rgba(255,255,255,.05));background-size:200% 100%;animation:sk 1.1s infinite;border-radius:var(--r-lg)}
-@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+/* Hero */
+.page-hero .hero{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  gap:20px;
+  margin-inline:auto;
+}
+.brand-logo{width:clamp(120px,14vw,220px);margin:0 auto}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.subtle{color:var(--muted);text-align:center;font-weight:600}
 
-/* Responsive helpers */
-@media (max-width: var(--bp-680)){
-  .wrap{padding:12px}
-  .card{border-radius:var(--r-md)}
+
+/* ===== HERO (exact match to original) ===== */
+:root{
+  --hero-text:#fff;
+  --hero-muted:#cbd5e1;
+  --hero-accent:#f9d71c;
+  --hero-btn-text:#0b1b3d;
+  --hero-border:rgba(249,215,28,.35);
 }
 
-/* --------------------------------------------------------------------------
-   3) Hero page components (page-hero)
-   -------------------------------------------------------------------------- */
-.page-hero .hero{max-width:1100px;margin:0 auto;padding:var(--sp-48) var(--sp-16);display:grid;gap:var(--sp-22)}
-.page-hero .headline{font-size:clamp(36px,6vw,72px);line-height:1.05;font-weight:800;margin:0;text-align:center}
-.page-hero .support{font-size:clamp(18px,2.4vw,24px);text-align:center;margin:0;color:#fff;font-weight:800;opacity:.95}
-.page-hero .sub{max-width:760px;margin:0 auto;color:var(--muted);font-size:clamp(16px,2.4vw,20px);text-align:center}
+/* whole hero stack */
+.page-hero .hero{
+  max-width:1100px;
+  margin:0 auto;
+  padding:48px 16px;
+  display:grid;
+  gap:22px;
+  text-align:center;
+  color:var(--hero-text);
+}
+
+/* optional logo at top */
+.page-hero .brand-logo{width:clamp(120px,14vw,220px);margin:0 auto;display:block}
+
+/* headings */
+.page-hero .headline{font-size:clamp(36px,6vw,72px);line-height:1.05;font-weight:800;margin:0}
+.page-hero .support{font-size:clamp(18px,2.4vw,24px);font-weight:800;opacity:.95;margin:0}
+
+/* paragraph under headings */
+.page-hero .sub{
+  max-width:760px;           /* exact width so the wrap matches your original */
+  margin:0 auto;
+  color:var(--hero-muted);
+  font-size:clamp(16px,2.4vw,20px);
+}
+.page-hero .sub a{white-space:nowrap}  /* keep “Learn more →” together */
+
+/* inline Learn more style */
 .page-hero .learn-inline{font-weight:800;text-decoration:none;margin-left:6px}
-.page-hero .learn-inline span{border-bottom:2px solid var(--accent);color:var(--text)}
-.page-hero .features{display:grid;gap:10px;margin:8px auto 0;max-width:950px;grid-template-columns:repeat(2,minmax(0,1fr))}
-@media (min-width: 820px){ .page-hero .features{grid-template-columns:repeat(4,minmax(0,1fr))} }
+.page-hero .learn-inline span{border-bottom:2px solid var(--hero-accent);color:var(--hero-text)}
+.page-hero .learn-inline:hover{opacity:.9}
+
+/* feature chips: 2 cols mobile → 4 cols desktop */
+.page-hero .features{
+  display:grid;gap:10px;margin:8px auto 0;max-width:950px;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+}
+@media (min-width:820px){
+  .page-hero .features{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+.page-hero .chip{
+  border:1px solid var(--hero-border);
+  border-radius:999px;
+  padding:10px 14px;
+  font-weight:800;font-size:14px;
+  background:rgba(255,255,255,.05);
+  display:flex;justify-content:center;align-items:center;gap:8px;
+}
+
+/* CTA */
 .page-hero .ctas{display:grid;place-items:center;margin-top:12px}
-.page-hero .cta-sub{margin:6px 0 0;text-align:center;color:var(--muted);font-weight:700}
-
-/* --------------------------------------------------------------------------
-   4) Rules / About shared components (page-rules, page-rules-draft, page-about)
-   -------------------------------------------------------------------------- */
-.section .rulebox{background:var(--card2);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px;margin-top:10px}
-details{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;padding:10px;margin-top:10px;transition:background .16s ease}
-details[open]{background:rgba(255,255,255,.07)}
-summary{cursor:pointer;font-weight:800;display:flex;align-items:center;gap:8px}
-summary::after{content:"▾";transition:transform .16s ease}
-details[open] summary::after{transform:rotate(-180deg)}
-details .content{margin-top:8px}
-figure{margin:10px 0;background:rgba(255,255,255,.04);border:1px dashed var(--border);border-radius:10px;padding:10px;text-align:center}
-figure img{border-radius:8px;display:block;margin:0 auto}
-figcaption{margin-top:6px;color:var(--muted);font-size:14px}
-.protip{background:rgba(249,215,28,.14);border:1px solid var(--border);border-radius:12px;padding:10px;margin-top:10px;font-weight:700}
-
-/* Sidebar TOC (non-sticky by default for Sites) */
-.toc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px}
-.toc h3{margin:0 0 8px;font-size:15px;opacity:.85}
-.toc a{display:block;padding:10px 12px;border-radius:8px;font-weight:800;border:1px solid transparent}
-.toc a:hover{background:rgba(255,255,255,.06);border-color:var(--border)}
-.toc .hr{height:1px;background:var(--border);margin:10px 0;border-radius:1px}
-
-/* Mobile TOC */
-.mobile-toc{display:none;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:8px;margin-bottom:10px}
-.mobile-toc summary{cursor:pointer;font-weight:900;padding:10px 12px;border-radius:8px}
-.mobile-toc .links{padding:8px 0}
-.mobile-toc a{display:block;padding:10px 12px;border-radius:8px;font-weight:800}
-.mobile-toc a:hover{background:rgba(255,255,255,.06)}
-@media (max-width: var(--bp-980)){
-  .toc{display:none}
-  .mobile-toc{display:block}
+.page-hero .btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:12px;
+  padding:18px 30px;border-radius:999px;font-weight:900;text-decoration:none;
+  transition:transform .08s ease, box-shadow .08s ease;border:1px solid transparent;
 }
-
-/* Grid shell for rules pages */
-.grid{display:grid;gap:16px;grid-template-columns:290px 1fr}
-@media (max-width: var(--bp-980)){ .grid{grid-template-columns:1fr} }
-
-/* Mobile readability polish (taken from rules.html) */
-@media (max-width: 780px){
-  body { font-size: 17.5px; line-height: 1.7 }
-  .title { gap: 14px; margin-bottom: 16px }
-  .motto { font-size: 13.5px }
-  .chips { gap: 10px }
-  .chip { padding: 10px 16px; border-width: 2px; font-size: 15px }
-  .mobile-toc summary { padding: 12px 14px; font-size: 16px }
-  .mobile-toc a { padding: 12px 14px; font-size: 16px }
-  .section { padding: 20px; margin-bottom: 20px; scroll-margin-top: 100px }
-  .section h2 { margin-bottom: 10px; gap: 12px }
-  .ic { font-size: 20px }
-  ul, ol { margin-left: 20px }
-  li { margin: 10px 0 }
-  .section .rulebox { padding: 16px }
-  details { padding: 12px }
-  summary { padding: 2px 0; font-size: 16.5px }
-  details .content { margin-top: 10px }
-  figure { padding: 10px }
-  figcaption { font-size: 14.5px }
-  a, button, summary { min-height: 44px }
+.page-hero .btn.primary{
+  background:var(--hero-accent);color:var(--hero-btn-text);
+  box-shadow:0 16px 42px rgba(0,0,0,.40), 0 0 0 3px rgba(249,215,28,.18) inset;
+  font-size:clamp(17px,3vw,21px);
 }
-@media (max-width: 420px){
-  .chips { flex-direction: column }
-  .chip { width: 100%; text-align: center }
+.page-hero .btn.primary:hover{transform:translateY(-1px);box-shadow:0 18px 48px rgba(0,0,0,.48), 0 0 0 3px rgba(249,215,28,.25) inset}
+.page-hero .btn svg{height:22px;width:22px;fill:var(--hero-btn-text)}
+.page-hero .cta-sub{margin:6px 0 0;color:var(--hero-muted);font-weight:700}
+
+/* small-screen tightening to match original */
+@media (max-width:680px){
+  .page-hero .hero{padding:10px;gap:16px}
+  .page-hero .headline{font-size:28px}
+  .page-hero .support{font-size:16px}
 }
-
-/* --------------------------------------------------------------------------
-   5) Tables: standings / fixtures (desktop + mobile)
-   -------------------------------------------------------------------------- */
-table{width:100%;border-collapse:collapse}
-thead th{
-  background:var(--header-bg);color:var(--header-text);
-  font-size:var(--fs-13);text-transform:uppercase;letter-spacing:.03em;
-  padding:10px;text-align:center
-}
-tbody td{padding:12px;text-align:center;font-weight:500}
-tbody tr:nth-child(odd){background:var(--row1)}
-tbody tr:nth-child(even){background:var(--row2)}
-tbody tr:hover{background:var(--row-hover)}
-td.right{text-align:right}
-td.points{font-weight:800}
-td:first-child{font-weight:800}
-
-/* Standings row highlights */
-tbody tr.pos-1 td{
-  background:linear-gradient(90deg, rgba(249,215,28,.18), rgba(249,215,28,.08)) !important;
-  color:var(--text); font-weight:800; position:relative
-}
-tbody tr.pos-1 td:first-child::before{
-  content:""; position:absolute; left:0; top:0; bottom:0; width:5px;
-  background:var(--accent); border-top-left-radius:10px; border-bottom-left-radius:10px
-}
-tbody tr.pos-1 td:nth-child(2)::before{content:"👑"; margin-right:8px; display:inline-block; transform:translateY(1px)}
-tbody tr.pos-2-5 td{ position:relative; background:var(--row1) !important; color:var(--text) }
-tbody tr.pos-2-5 td:first-child::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--accent) }
-tbody tr.after-top5 td{ border-top:2px dashed var(--fx-border) }
-
-/* Desktop vs mobile table shells */
-.table-desktop{display:block}
-.table-mobile{display:none}
-@media (max-width: var(--bp-680)){
-  .table-desktop{display:none}
-  .table-mobile{display:block}
-  .table-mobile th,.table-mobile td{padding:10px;font-size:14px}
-}
-
-/* Fixtures mobile rows */
-.fx-row{display:flex;justify-content:center;align-items:center;gap:10px;font-weight:700;padding:12px;border-radius:10px;margin-bottom:10px}
-
-/* --------------------------------------------------------------------------
-   6) Champions Cup split bracket (page-champions-cup)
-   -------------------------------------------------------------------------- */
-.page-champions-cup .wrap{background:var(--navy-900);border-radius:var(--r-xl)}
-.stage{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:start}
-.side{display:grid;gap:12px}
-.group{display:grid;gap:10px}
-.group h3{margin:0 0 6px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:center}
-.match{background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:210px;box-shadow:var(--shadow-1)}
-.fixture{display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:800}
-.team{flex:1}
-.team.right{text-align:right}
-.vs{opacity:.85;font-weight:900}
-
-/* stepping toward center */
-.left  .r16{margin-right:70px} .left  .qf{margin-right:35px} .left  .sf{margin-right:0}
-.right .r16{margin-left:70px}  .right .qf{margin-left:35px}  .right .sf{margin-left:0}
-
-/* connector bars */
-.left  .match::after {content:"";display:block;height:0;border-top:2px solid var(--line);margin-left:auto;width:24px;transform:translateY(8px)}
-.left  .qf .match::after{width:34px} .left  .sf .match::after{width:44px}
-.right .match::before{content:"";display:block;height:0;border-top:2px solid var(--line);margin-right:auto;width:24px;transform:translateY(8px)}
-.right .qf .match::before{width:34px} .right .sf .match::before{width:44px}
-
-/* center: trophy + final + champion */
-.center{display:flex;flex-direction:column;align-items:center;gap:14px;padding:8px 0}
-.trophy{width:min(240px,32vw);height:auto;object-fit:contain;filter:drop-shadow(0 10px 28px rgba(0,0,0,.45))}
-.final{background:var(--accent);color:var(--btn-text);font-weight:900;border-radius:12px;padding:12px 16px;text-align:center;min-width:240px;border:2px solid #fff}
-.champion{background:linear-gradient(180deg,var(--accent),#e8c617);color:var(--btn-text);font-weight:900;text-align:center;border-radius:14px;padding:16px 22px;border:2px solid #fff;box-shadow:var(--shadow-2)}
-.champion .cup{font-size:22px;margin-right:6px}
-.note{color:var(--muted);font-size:12px;text-align:center}
-
-@media (max-width: var(--bp-860)){
-  .stage{grid-template-columns:1fr;gap:12px}
-  .center{order:-1}
-  .left .r16,.left .qf,.left .sf,.right .r16,.right .qf,.right .sf{margin:0}
-  .left .match::after,.right .match::before{display:none}
-  .match{min-width:auto}
-  .final{min-width:auto;width:100%}
-  .champion{width:100%}
-}
-
-/* --------------------------------------------------------------------------
-   7) Hall of Fame / Honor Roll (page-hof)
-   -------------------------------------------------------------------------- */
-.page-hof h1{text-align:center;color:var(--accent);margin-bottom:20px}
-.alltime{margin-bottom:30px;background:var(--card2);padding:20px;border-radius:var(--r-lg);border:1px solid var(--border)}
-.alltime h2{margin:0 0 15px;color:var(--accent);text-align:center}
-.leaderboard{list-style:none;padding:0;margin:0}
-.leaderboard li{padding:10px;margin-bottom:6px;background:var(--navy-800);border-radius:8px;display:flex;justify-content:space-between;align-items:center;font-weight:bold}
-.leaderboard li span{color:var(--accent);font-weight:normal}
-.leaderboard .first{background:linear-gradient(90deg,#f9d71c,#bfa100);color:#00143b}
-.leaderboard .second{background:linear-gradient(90deg,#c0c0c0,#999);color:#00143b}
-.leaderboard .third{background:linear-gradient(90deg,#cd7f32,#8b4513);color:#00143b}
-
-.controls{display:flex;justify-content:flex-end;margin-bottom:12px}
-.collapse-btn{background:var(--accent);color:#00143b;border:none;padding:6px 12px;font-size:13px;font-weight:bold;border-radius:6px;cursor:pointer}
-.collapse-btn:hover{background:#e5c41a}
-
-.accordion{background:var(--card2);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden}
-.accordion-header{cursor:pointer;padding:14px;font-size:18px;font-weight:bold;color:var(--accent);display:flex;justify-content:space-between;align-items:center;user-select:none}
-.accordion-header:hover{background:var(--navy-800)}
-.accordion-content{max-height:0;overflow:hidden;transition:max-height .3s ease;background:var(--navy-800)}
-.accordion-content-inner{padding:14px}
-.winners{display:grid;grid-template-columns: repeat(auto-fit,minmax(200px,1fr));gap:12px}
-.winner{background:var(--card2);border:1px solid rgba(249,215,28,.25);border-radius:8px;padding:12px;text-align:center}
-.winner span{display:block;margin-top:6px;color:var(--accent);font-weight:bold}
-@media (max-width: var(--bp-600)){
-  .winners{grid-template-columns:1fr}
-  .controls{justify-content:center}
-}
-
-/* --------------------------------------------------------------------------
-   8) Sponsor League Banner (page-sponsor)
-   -------------------------------------------------------------------------- */
-.league-header{display:flex;justify-content:center;align-items:center;gap:16px;flex-wrap:wrap;text-align:center}
-.sponsor-logo{height:70px;width:auto;object-fit:contain;display:block}
-.league-name{display:flex;align-items:center;gap:12px;margin:0;font-size:clamp(24px,6vw,40px);font-weight:900;flex-wrap:wrap}
-.accent{color:var(--accent);font-weight:900}
-@media (max-width: var(--bp-600)){
-  .sponsor-logo{height:50px}
-  .league-name{font-size:22px}
-}
-
-/* --------------------------------------------------------------------------
-   9) Page namespace helpers (apply to <body class="...">)
-   -------------------------------------------------------------------------- */
-/* Use these classes on <body> to scope tiny page-specific tweaks without extra files */
-.page-hero{}            /* hero landing */
-.page-rules{}           /* full rules */
-.page-rules-draft{}     /* draft rules variant */
-.page-about{}           /* about/format */
-.page-standings{}       /* standings table views */
-.page-fixtures{}        /* fixtures list */
-.page-champions-cup{}   /* split bracket */
-.page-hof{}             /* honor roll page */
-.page-sponsor{}         /* sponsor banner */
-
-/* --------------------------------------------------------------------------
-   10) Mobile polish for all embeds (reduce iframe scroll issues)
-   -------------------------------------------------------------------------- */
-@media (max-width: var(--bp-680)){
-  /* Tighten paddings and hide purely decorative extras when embedded */
-  .eyebrow,.note,.sponsor-footer,.skeleton{display:none !important}
-}
-
-/* End of efpl.css */
