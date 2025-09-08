@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>eFPL Hero</title>
+
+<style>
+  :root{
+    --text:#ffffff;
+    --muted:#cbd5e1;
+    --accent:#f9d71c;
+    --btn-text:#0b1b3d;     /* dark navy text on yellow */
+    --border:rgba(249,215,28,.35);
+  }
+
+  /* Transparent for seamless Sites embed */
+  html,body{background:transparent}
+  body{margin:0;font:16px/1.55 system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--text)}
+
+  .hero{max-width:1100px;margin:0 auto;padding:48px 16px;display:grid;gap:22px}
+
+  .headline{font-size:clamp(36px,6vw,72px);line-height:1.05;font-weight:800;margin:0;text-align:center}
+  .support{font-size:clamp(18px,2.4vw,24px);text-align:center;margin:0;color:#fff;font-weight:800;opacity:.95}
+  .sub{max-width:760px;margin:0 auto;color:var(--muted);font-size:clamp(16px,2.4vw,20px);text-align:center}
+
+  /* Inline Learn more */
+  .learn-inline{font-weight:800;text-decoration:none;margin-left:6px}
+  .learn-inline span{border-bottom:2px solid var(--accent); color:var(--text)}
+  .learn-inline:hover{opacity:.9}
+
+  /* Feature chips with icons */
+  .features{
+    display:grid;gap:10px;margin:8px auto 0;max-width:950px;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  @media (min-width:820px){ .features{grid-template-columns:repeat(4,minmax(0,1fr));} }
+  .chip{
+    border:1px solid var(--border);border-radius:999px;padding:10px 14px;
+    font-weight:800;font-size:14px;background:rgba(255,255,255,.05);
+    display:flex;justify-content:center;align-items:center;gap:8px;text-align:center;
+  }
+  .chip .ic{font-size:16px;line-height:1}
+
+  /* CTA */
+  .ctas{display:grid;place-items:center;margin-top:12px}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:12px;
+    padding:18px 30px;border-radius:999px;font-weight:900;text-decoration:none;
+    transition:transform .08s ease, box-shadow .08s ease; border:1px solid transparent;
+  }
+  .btn.primary{
+    background:var(--accent);color:var(--btn-text);
+    box-shadow:0 16px 42px rgba(0,0,0,.40), 0 0 0 3px rgba(249,215,28,.18) inset;
+    font-size:clamp(17px,3vw,21px);
+  }
+  .btn.primary:hover{transform:translateY(-1px);box-shadow:0 18px 48px rgba(0,0,0,.48), 0 0 0 3px rgba(249,215,28,.25) inset}
+  .btn svg{height:22px;width:22px;fill:var(--btn-text)}
+
+  .cta-sub{margin:6px 0 0;text-align:center;color:var(--muted);font-weight:700}
+
+  /* Subtle fade-in for instant feel */
+  .fade-in{opacity:0;transition:opacity .18s ease}
+  .fade-in.ready{opacity:1}
+  
+ @media (max-width: 680px){
+  html,body{margin:0;padding:0}
+  .wrap{padding:10px !important; max-width:100% !important;}
+  body{font-size:14px !important; line-height:1.35 !important;}
+  h1{font-size:20px !important; margin:6px 0 !important;}
+  h2{font-size:16px !important; margin:6px 0 !important;}
+  .section,.card,.round,.season,.group{padding:12px !important;}
+  /* tables/rows tighter */
+  table th, table td{padding:8px 6px !important;}
+  /* hide decorative extras to save height */
+  .eyebrow,.badge,.note,.hr,.sponsor-footer,.skeleton{display:none !important;}
+  /* standings: force compact table if you have both */
+  .table-desktop{display:none !important;}
+  .table-mobile{display:block !important;}
+}
+
+</style>
+</head>
+<body>
+  <section class="hero fade-in ready" aria-label="eFPL hero">
+    <h1 class="headline">Play Fair. Play Football.</h1>
+    <p class="support">The community-driven eFootball league with fair rules and balanced squads.</p>
+
+    <p class="sub">
+      The eFootball Fair Play League (eFPL) keeps things simple and honest.
+      No exploits, no overpowered cards — just proper PES-style football.
+      <a class="learn-inline" href="https://www.efpl.gg/rules"><span>Learn More →</span></a>
+    </p>
+
+    <!-- Features with icons -->
+    <div class="features">
+      <div class="chip"><span class="ic">⚽</span><span>Balanced gameplay</span></div>
+      <div class="chip"><span class="ic">🤝</span><span>Balanced squads</span></div>
+      <div class="chip"><span class="ic">🚫</span><span>No overpowered cards</span></div>
+      <div class="chip"><span class="ic">🛡️</span><span>Default formations only</span></div>
+      <div class="chip"><span class="ic">🧭</span><span>No glitchy tactics</span></div>
+      <div class="chip"><span class="ic">🏆</span><span>Prizes to win</span></div>
+      <div class="chip"><span class="ic">📏</span><span>Clear fair-play rules</span></div>
+      <div class="chip"><span class="ic">✨</span><span>…and much more</span></div>
+    </div>
+
+    <!-- Big CTA -->
+    <div class="ctas">
+      <a class="btn primary" href="https://discord.gg/YOURINVITE" aria-label="Join the League (Discord)" target="_blank" rel="noopener">
+        <!-- Discord logo inline SVG -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 245 240" aria-hidden="true" focusable="false">
+          <path d="M104.4 104.9c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.2-5 10.2-11.1s-4.5-11.1-10.2-11.1zm36.2 0c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.2-5 10.2-11.1s-4.5-11.1-10.2-11.1z"/>
+          <path d="M189.5 20h-134C24.6 20 10 34.6 10 52.7v134.6C10 205.4 24.6 220 42.7 220h113.7l-5.3-18.5 12.8 11.9 12.1 11.2 21.5 19V52.7c0-18.1-14.6-32.7-32.7-32.7zM162 164.1s-5.3-6.3-9.7-11.9c19.2-5.5 26.5-17.7 26.5-17.7-6 4-11.7 6.9-16.8 8.8-7.3 3.1-14.3 5.1-21.3 6-14.1 2.7-27 2-38.2-.1-8.4-1.6-15.7-3.8-22.3-6-3.5-1.3-7.2-2.7-11-4.4-.4-.2-.8-.3-1.2-.5-.3-.2-.5-.3-.5-.3s7 12 25.5 17.6c-4.4 5.6-9.8 12.2-9.8 12.2-32.2-1-44.5-22.1-44.5-22.1 0-46.9 20.9-84.9 20.9-84.9 20.9-15.7 40.7-15.2 40.7-15.2l1.5 1.8c-26 7.5-38 19-38 19s3.2-1.8 8.6-4.3c15.6-6.8 28-8.6 33.1-9.1.9-.1 1.7-.2 2.6-.2 9.3-1.2 19-1.5 28.9-.3 13.6 1.6 28.2 5.4 42.9 13.3 0 0-11.4-10.8-36.2-18.3l2.1-2.4s19.8-.5 40.9 15.2c0 0 20.9 38 20.9 84.9 0 .1-12.3 21.1-44.5 22.1z"/>
+        </svg>
+        Join the League
+      </a>
+    </div>
+    <div class="cta-sub">Free to join. Open to all players.</div>
+  </section>
+</body>
+</html>

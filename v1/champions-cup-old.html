@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Knockout Cup Bracket</title>
+<style>
+  body {
+    background:#00143b;
+    color:#fff;
+    font-family:"Segoe UI",Arial,sans-serif;
+    margin:0;
+    padding:20px;
+  }
+
+  h1 {
+    text-align:center;
+    color:#f9d71c;
+  }
+
+  /* --- DESKTOP TREE --- */
+  .desktop-bracket {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:20px;
+  }
+  .bracket {
+    display:flex;
+    justify-content:center;
+    gap:40px;
+    overflow-x:auto;
+    padding:20px 0;
+  }
+  .round {
+    display:flex;
+    flex-direction:column;
+    justify-content:space-around;
+    gap:20px;
+  }
+  .match {
+    background:#05225a;
+    border:1px solid rgba(249,215,28,.35);
+    border-radius:10px;
+    padding:10px;
+    text-align:center;
+    min-width:140px;
+    font-size:14px;
+    line-height:1.4;
+  }
+  .final { background:#f9d71c; color:#00143b; font-weight:bold; }
+  .champion-box {
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    margin-left:40px;
+  }
+  .champion {
+    background:#f9d71c;
+    color:#00143b;
+    font-weight:bold;
+    border-radius:12px;
+    padding:20px 30px;
+    text-align:center;
+    font-size:18px;
+    border:2px solid #fff;
+  }
+  .trophy { font-size:30px; margin-bottom:8px; }
+
+  /* --- MOBILE STACKED --- */
+  .mobile-stacked { display:none; }
+  @media (max-width:768px) {
+    .desktop-bracket { display:none; }
+    .mobile-stacked { display:block; }
+    .round-stacked { margin-bottom:20px; }
+    .round-stacked h2 {
+      font-size:18px;
+      color:#f9d71c;
+      margin:10px 0;
+      text-align:center;
+    }
+    .match { min-width:auto; font-size:14px; }
+    .champion { font-size:16px; padding:12px 16px; }
+  }
+</style>
+</head>
+<body>
+  <h1>eFPL Knockout Cup</h1>
+
+  <!-- DESKTOP BRACKET -->
+  <div class="desktop-bracket">
+    <div class="bracket">
+      <div class="round">
+        <div class="match">Team 1<br>vs<br>Team 2</div>
+        <div class="match">Team 3<br>vs<br>Team 4</div>
+        <div class="match">Team 5<br>vs<br>Team 6</div>
+        <div class="match">Team 7<br>vs<br>Team 8</div>
+        <div class="match">Team 9<br>vs<br>Team 10</div>
+        <div class="match">Team 11<br>vs<br>Team 12</div>
+        <div class="match">Team 13<br>vs<br>Team 14</div>
+        <div class="match">Team 15<br>vs<br>Team 16</div>
+      </div>
+      <div class="round">
+        <div class="match">Winner A<br>vs<br>Winner B</div>
+        <div class="match">Winner C<br>vs<br>Winner D</div>
+        <div class="match">Winner E<br>vs<br>Winner F</div>
+        <div class="match">Winner G<br>vs<br>Winner H</div>
+      </div>
+      <div class="round">
+        <div class="match">Winner Q1<br>vs<br>Winner Q2</div>
+        <div class="match">Winner Q3<br>vs<br>Winner Q4</div>
+      </div>
+      <div class="round">
+        <div class="match final">Winner S1<br>vs<br>Winner S2</div>
+      </div>
+    </div>
+    <div class="champion-box">
+      <div class="trophy">🏆</div>
+      <div class="champion">Champion<br>Goes Here</div>
+    </div>
+  </div>
+
+  <!-- MOBILE STACKED VIEW -->
+  <div class="mobile-stacked">
+    <div class="round-stacked">
+      <h2>Round of 16</h2>
+      <div class="match">Team 1 vs Team 2</div>
+      <div class="match">Team 3 vs Team 4</div>
+      <div class="match">Team 5 vs Team 6</div>
+      <div class="match">Team 7 vs Team 8</div>
+      <div class="match">Team 9 vs Team 10</div>
+      <div class="match">Team 11 vs Team 12</div>
+      <div class="match">Team 13 vs Team 14</div>
+      <div class="match">Team 15 vs Team 16</div>
+    </div>
+
+    <div class="round-stacked">
+      <h2>Quarterfinals</h2>
+      <div class="match">Winner A vs Winner B</div>
+      <div class="match">Winner C vs Winner D</div>
+      <div class="match">Winner E vs Winner F</div>
+      <div class="match">Winner G vs Winner H</div>
+    </div>
+
+    <div class="round-stacked">
+      <h2>Semifinals</h2>
+      <div class="match">Winner Q1 vs Winner Q2</div>
+      <div class="match">Winner Q3 vs Winner Q4</div>
+    </div>
+
+    <div class="round-stacked">
+      <h2>Final</h2>
+      <div class="match final">Winner S1 vs Winner S2</div>
+    </div>
+
+    <div class="round-stacked" style="text-align:center;">
+      <div class="trophy">🏆</div>
+      <div class="champion">Champion<br>Goes Here</div>
+    </div>
+  </div>
+</body>
+</html>

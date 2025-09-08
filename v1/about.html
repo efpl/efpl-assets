@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>About eFPL — Rules & Format</title>
+<style>
+  :root{
+    --text:#ffffff; --muted:#cbd5e1; --accent:#f9d71c;
+    --card:#00143b; --card2:#05225a; --border:rgba(249,215,28,.35);
+  }
+  html,body{background:transparent}
+  body{margin:0;font:16px/1.6 system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--text)}
+  .wrap{max-width:980px;margin:24px auto;padding:16px}
+  .section{background:var(--card);border-radius:14px;padding:20px;margin-bottom:16px;border:1px solid var(--border)}
+  .section h2{margin:0 0 10px;font-size:26px;line-height:1.2}
+  .eyebrow{display:inline-block;background:var(--accent);color:#111;padding:2px 10px;border-radius:999px;font-weight:800;font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+  p{margin:8px 0}
+  .lead{font-size:18px;color:var(--muted)}
+  .rule{background:var(--card2);border-radius:12px;padding:14px;border:1px solid var(--border);margin-top:12px}
+  .rule h3{margin:0 0 8px;font-size:20px}
+  .hr{height:1px;background:var(--border);margin:12px 0;border-radius:1px}
+  .badge{background:var(--accent);color:#111;padding:2px 8px;border-radius:999px;font-weight:800;font-size:12px}
+  .em{font-weight:700}
+  ul,ol{margin:8px 0 8px 24px}
+  li{margin:6px 0}
+  .callouts{display:grid;gap:10px}
+  @media (min-width:680px){ .callouts{grid-template-columns:1fr 1fr} }
+  .okay,.nope{border-radius:10px;padding:12px;border:1px solid var(--border)}
+  .okay{background:rgba(67,160,71,.12)}
+  .nope{background:rgba(229,57,53,.12)}
+  .okay h4,.nope h4{margin:0 0 6px;font-size:16px}
+  .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace}
+  /* Fade-in */
+  .fade-in{opacity:0;transition:opacity .18s ease}
+  .fade-in.ready{opacity:1}
+</style>
+</head>
+<body>
+  <div class="wrap fade-in ready">
+
+    <!-- About -->
+    <section class="section">
+      <span class="eyebrow">What is eFPL?</span>
+      <h2>eFootball Fair Play League</h2>
+      <p class="lead">
+        The eFootball Fair Play League is about playing eFootball the way it’s meant to be played:
+        fair rules, balanced squads, and authentic PES-style gameplay.
+      </p>
+      <p>No exploits. No overpowered special cards. Just proper football where everyone’s on the same page.</p>
+    </section>
+
+    <!-- Rules -->
+    <section class="section">
+      <span class="eyebrow">⚖️ The Rules</span>
+
+      <div class="rule">
+        <h3>1) Formations <span class="badge">Very important</span></h3>
+        <div class="hr"></div>
+        <p><span class="em">Use only default formations</span> from the in-game list.</p>
+        <ul>
+          <li><span class="em">No custom formations.</span></li>
+          <li><span class="em">No dragging/moving players</span> on the formation screen — players must stay in their default slot.</li>
+          <li>You <span class="em">may change a player’s role</span> with Triangle/Y (role only; their position on the gameplan stays the same).</li>
+        </ul>
+        <div class="callouts">
+          <div class="okay">
+            <h4>✅ Allowed role swaps example</h4>
+            <ul class="mono">
+              <li>CF ↔ SS</li>
+              <li>AMF ↔ CMF,DMF ↔ CMF</li>
+            </ul>
+          </div>
+          <div class="nope">
+            <h4>⛔ Not allowed</h4>
+            <ul>
+              <li>Dragging players to create new shapes (e.g., turning 4-3-3 into 3-2-5).</li>
+              <li>Moving a midfielder into the striker line (or vice-versa).</li>
+            </ul>
+          </div>
+        </div>
+        <p><span class="em">Bottom line:</span> on-pitch positions must match a default formation exactly. Only the <em>role</em> in that fixed slot can change.</p>
+      </div>
+
+      <div class="rule">
+        <h3>2) Squads</h3>
+        <div class="hr"></div>
+        <ul>
+          <li><span class="em">No Big Time, Epics, or Showtime</span> players.<span class="badge">Very important</span></li>
+          <li>No <span class="em">Double Booster Managers</span> are allowed.</li>
+          <li>Only <span class="em">Standard, Featured, Highlight, Trending</span> players are allowed.</li>
+          <li><span class="em">Sub Tactic must be disabled.</span></li>
+        </ul>
+      </div>
+
+      <div class="rule">
+        <h3>3) Matches</h3>
+        <div class="hr"></div>
+        <ul>
+          <li>Match length: <span class="em">10 minutes</span>.</li>
+          <li>Conditions: <span class="em">Random</span>.</li>
+          <li>Quitting mid-game = <span class="em">automatic loss</span>.</li>
+          <li>If the connection is poor, pause early and agree to restart.</li>
+          <li>If possible, <span class="em">record or stream your games</span>.</li>
+        </ul>
+      </div>
+
+      <div class="rule">
+        <h3>4) Fair Play</h3>
+        <div class="hr"></div>
+        <ul>
+          <li><span class="em">No Smart-Assist <span class="badge">Very important</span></span></li>
+          <li>Respect opponents.</li>
+          <li>No time-wasting or toxic behaviour.</li>
+          <li>Pause etiquette: only at stoppages or with mutual consent.</li>
+          <li>No exploiting disconnects/lag; restart by agreement if needed.</li>
+          <li>Aim for competitive and enjoyable matches.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- League format -->
+    <section class="section">
+      <span class="eyebrow">🏆 League Format</span>
+      <h2>How the Season Works</h2>
+      <ul>
+        <li>Each player plays every opponent twice (home & away style).</li>
+        <li><span class="em">Mid-season deadline:</span> by this checkpoint, everyone must have played at least one match vs every opponent.</li>
+        <li>Points: Win = 3, Draw = 1, Loss = 0.</li>
+        <li>Top of the final table = <span class="em">eFPL Champion</span> (no playoffs).</li>
+      </ul>
+    </section>
+
+    <!-- Why join -->
+    <section class="section">
+      <span class="eyebrow">⭐ Why Join eFPL?</span>
+      <h2>Football without the nonsense</h2>
+      <p>Because it’s eFootball without the gimmicks. No broken formations — just fair, balanced matches and that classic PES feel. ⚽️</p>
+    </section>
+
+    <!-- Contact -->
+    <section class="section">
+      <span class="eyebrow">📩 Contact Us</span>
+      <h2>We’d love to hear from you</h2>
+      <p>
+        For general enquiries, community questions, or league support, please reach out via our 
+        <span class="em">Discord server</span> or through our official social media channels.
+      </p>
+      <p>
+        For sponsorship or partnership enquiries, please contact us at:<br>
+        <a href="mailto:partnerships@efpl.gg" style="color:var(--accent);font-weight:700;text-decoration:none">partnerships@efpl.gg</a>
+      </p>
+    </section>
+
+  </div>
+</body>
+</html>

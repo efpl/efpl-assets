@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>eFPL Knockout Cup — Split Bracket</title>
+<style>
+  :root{
+    --bg:#00143b; --card:#05225a; --ink:#fff; --muted:#cbd5e1;
+    --accent:#f9d71c; --line:rgba(249,215,28,.45);
+  }
+  html,body{background:transparent}
+  body{margin:0;font:16px/1.5 system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink)}
+  .wrap{max-width:1160px;margin:24px auto;padding:16px;background:var(--bg);border-radius:14px}
+
+  /* Title */
+  .title{display:flex;justify-content:center;align-items:center;gap:10px;margin:0 0 16px}
+  .title h1{margin:0;font-size:clamp(22px,4.5vw,30px);font-weight:900}
+  .eyebrow{background:var(--accent);color:#0b1b3d;padding:2px 10px;border-radius:999px;font-weight:900;font-size:12px}
+
+  /* 3 columns: left / center / right */
+  .stage{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:start}
+
+  /* Sides with stepped rounds */
+  .side{display:grid;gap:12px}
+  .group{display:grid;gap:10px}
+  .group h3{margin:0 0 6px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:center}
+
+  /* Match cards */
+  .match{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:210px;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+  .fixture{display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:800}
+  .team{flex:1}
+  .team.right{text-align:right}
+  .vs{opacity:.85;font-weight:900}
+
+  /* Stepping toward center */
+  .left  .r16{margin-right:70px} .left  .qf{margin-right:35px} .left  .sf{margin-right:0}
+  .right .r16{margin-left:70px} .right .qf{margin-left:35px} .right .sf{margin-left:0}
+
+  /* Connector bars pointing inward */
+  .left  .match::after {content:"";display:block;height:0;border-top:2px solid var(--line);margin-left:auto;width:24px;transform:translateY(8px)}
+  .left  .qf .match::after{width:34px} .left  .sf .match::after{width:44px}
+  .right .match::before{content:"";display:block;height:0;border-top:2px solid var(--line);margin-right:auto;width:24px;transform:translateY(8px)}
+  .right .qf .match::before{width:34px} .right .sf .match::before{width:44px}
+
+  /* Center column (trophy + final + champion) */
+  .center{display:flex;flex-direction:column;align-items:center;gap:14px;padding:8px 0}
+  .trophy{width:min(240px,32vw);height:auto;object-fit:contain;filter:drop-shadow(0 10px 28px rgba(0,0,0,.45))}
+  .final{background:var(--accent);color:#0b1b3d;font-weight:900;border-radius:12px;padding:12px 16px;text-align:center;min-width:240px;border:2px solid #fff}
+  .champion{background:linear-gradient(180deg,var(--accent),#e8c617);color:#0b1b3d;font-weight:900;text-align:center;border-radius:14px;padding:16px 22px;border:2px solid #fff;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+  .champion .cup{font-size:22px;margin-right:6px}
+  .note{color:var(--muted);font-size:12px;text-align:center}
+
+  /* Mobile: stack rounds, trophy first */
+  @media (max-width:860px){
+    .wrap{padding:12px}
+    .stage{grid-template-columns:1fr;gap:12px}
+    .center{order:-1}
+    .left .r16,.left .qf,.left .sf,.right .r16,.right .qf,.right .sf{margin:0}
+    .left .match::after,.right .match::before{display:none}
+    .match{min-width:auto}
+    .final{min-width:auto;width:100%}
+    .champion{width:100%}
+    .stack h2{text-align:center;color:var(--accent);margin:12px 0 6px}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="title">
+      <span class="eyebrow">Knockout Cup</span>
+      <h1>Road to the Final</h1>
+    </div>
+
+    <div class="stage">
+      <!-- LEFT: 4 x R16 -> 2 x QF -> 1 x SF -->
+      <div class="side left">
+        <div class="group r16">
+          <h3>Round of 16</h3>
+          <div class="match"><div class="fixture"><span class="team">Team 1</span><span class="vs">vs</span><span class="team right">Team 2</span></div></div>
+          <div class="match"><div class="fixture"><span class="team">Team 3</span><span class="vs">vs</span><span class="team right">Team 4</span></div></div>
+          <div class="match"><div class="fixture"><span class="team">Team 5</span><span class="vs">vs</span><span class="team right">Team 6</span></div></div>
+          <div class="match"><div class="fixture"><span class="team">Team 7</span><span class="vs">vs</span><span class="team right">Team 8</span></div></div>
+        </div>
+        <div class="group qf">
+          <h3>Quarter Final</h3>
+          <div class="match"><div class="fixture"><span class="team">Winner A</span><span class="vs">vs</span><span class="team right">Winner B</span></div></div>
+          <div class="match"><div class="fixture"><span class="team">Winner C</span><span class="vs">vs</span><span class="team right">Winner D</span></div></div>
+        </div>
+        <div class="group sf">
+          <h3>Semi Final</h3>
+          <div class="match"><div class="fixture"><span class="team">Winner Q1</span><span class="vs">vs</span><span class="team right">Winner Q2</span></div></div>
+        </div>
+      </div>
+
+      <!-- CENTER -->
+      <div class="center">
+        <!-- Swap with your preferred transparent PNG/SVG trophy -->
+        <img class="trophy" alt="Trophy"
+             src="https://i.imgur.com/0sct2LO.png" />
+        <div class="final">Final: Winner S1 vs Winner S2</div>
+        <div class="champion"><span class="cup">🏆</span> Champion: TBD</div>
+        <div class="note">Edit names/scores as the cup progresses</div>
+      </div>
+
+      <!-- RIGHT: 4 x R16 -> 2 x QF -> 1 x SF -->
+      <div class="side right">
+        <div class="group r16">
+          <h3>Round of 16</h3>
+          <div class="match"><div class="fixture"><span class="team">Team 9</span><span class="vs">vs</span><span class="team right">Team 10</span></div></div>
+          <div class="match"><div class="fixture"><span class="team">Team 11</span><span class="vs">vs</span><span class="team right">Team 12</span></div></div>
+          <div class="match"><div class="fixture"><span class="team">Team 13</span><span class="vs">vs</span><span class="team right">Team 14</span></div></div>
+          <div class="match"><div class="fixture"><span class="team">Team 15</span><span class="vs">vs</span><span class="team right">Team 16</span></div></div>
+        </div>
+        <div class="group qf">
+          <h3>Quarter Final</h3>
+          <div class="match"><div class="fixture"><span class="team">Winner E</span><span class="vs">vs</span><span class="team right">Winner F</span></div></div>
+          <div class="match"><div class="fixture"><span class="team">Winner G</span><span class="vs">vs</span><span class="team right">Winner H</span></div></div>
+        </div>
+        <div class="group sf">
+          <h3>Semi Final</h3>
+          <div class="match"><div class="fixture"><span class="team">Winner Q3</span><span class="vs">vs</span><span class="team right">Winner Q4</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Optional mobile-only stacked summary (appears automatically via media query if you want to add later) -->
+  </div>
+</body>
+</html>

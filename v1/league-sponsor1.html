@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Sponsor Diamond League</title>
+<style>
+  :root{
+    --text:#ffffff;
+    --accent:#f9d71c;
+  }
+  html,body{background:transparent;margin:0}
+  body{font:20px/1.4 "Segoe UI", Arial, sans-serif; color:var(--text);}
+
+  .wrap{
+    max-width:1000px;
+    margin:24px auto;
+    padding:12px 16px;
+    text-align:center;
+  }
+
+  .league-header{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+
+  .sponsor-logo{
+    height:70px;   /* bigger for sponsor visibility */
+    width:auto;
+    object-fit:contain;
+    display:block;
+  }
+
+  .league-name{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin:0;
+    font-size:clamp(24px,6vw,40px);
+    font-weight:900;
+    flex-wrap:wrap;
+  }
+
+  .accent{
+    color:var(--accent);
+    font-weight:900;
+  }
+
+  @media (max-width:600px) {
+    .sponsor-logo { height:50px; }
+    .league-name { font-size:22px; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="league-header">
+      <h1 class="league-name">
+        The
+        <img
+          src="https://lh3.googleusercontent.com/eOjbPhVmMtCzGb3OXqyUxflsxNqrIFP2hCI6qqQxleNgTrGt7Nd7NyyBH0fmwEXahcL5VPx2lmLnfnuS9Qdzs3C66tVm8VGEo72ROV-Ttfmk_w3SyjSrCZ6OjLRtH8DVJ9_VwP_vnrTKQ5gIuwx4LDI2MvtKCPY6_pbNC9wCzYSVaQam8ZFq8Q=w1280"
+          alt="Sponsor Logo Placeholder"
+          class="sponsor-logo"
+          loading="eager"
+          decoding="async">
+        <span class="accent">Diamond League</span>
+      </h1>
+    </div>
+  </div>
+</body>
+</html>
