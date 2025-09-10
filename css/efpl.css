@@ -261,3 +261,34 @@ p { margin: 0 0 var(--gap-4); }
   .btn { padding: 9px 16px; }
   .chip { padding: 5px 10px; }
 }
+
+/* --- Hero: ensure logo always constrained --- */
+.hero-logo img, .hero-logo, .hero__logo {
+  width: clamp(80px, 12vw, 120px);
+  margin-bottom: var(--gap-4, 20px);
+  display: block;
+}
+
+/* --- Chips: if .features/.chip were used before, map them to .chips/.chip --- */
+.features { display: grid; gap: 10px; margin: 8px auto 0; max-width: 950px;
+  grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 820px) {
+  .features { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+.features .chip { /* allow old markup to style chips correctly */
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 14px; border-radius: 999px; font-weight: 800; font-size: 14px;
+  background: #121a33; border: 1px solid #223055; text-align: center; color: #dfe6f3;
+}
+
+/* --- CTA button: support old 'primary' class name --- */
+.btn.primary { /* alias -> same look as .btn-primary */
+  background: var(--efpl-yellow, #f9d71c);
+  color: #1d2230; border: 1px solid transparent;
+}
+
+/* --- Hero background variants: ensure images exist and load --- */
+.hero--standings .hero__bg { background-image: url("https://efpl-assets.pages.dev/img/banner-standings.jpg"); }
+.hero--fixtures  .hero__bg { background-image: url("https://efpl-assets.pages.dev/img/banner-fixtures.jpg"); }
+.hero--about     .hero__bg { background-image: url("https://efpl-assets.pages.dev/img/banner-about.jpg"); }
+.hero__bg { position:absolute; inset:0; z-index:-1; opacity:.22; background-position:center; background-size:cover; }
