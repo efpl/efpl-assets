@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>eFPL — Full Rules</title>
+<style>
+  :root{
+    --text:#ffffff; --muted:#cbd5e1; --accent:#f9d71c;
+    --card:#00143b; --card2:#05225a; --border:rgba(249,215,28,.35);
+    --link:#f9d71c;
+  }
+
+  /* Base */
+  html{scroll-behavior:smooth}
+  html,body{background:transparent;margin:0;color:var(--text)}
+  body{font:16px/1.6 system-ui,Segoe UI,Roboto,Arial,sans-serif}
+  a{color:var(--link);text-decoration:none} a:hover{opacity:.9}
+
+  /* Shell */
+  .wrap{max-width:1140px;margin:0 auto;padding:20px}
+  .title{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .left{display:flex;align-items:center;gap:12px}
+  .crest{width:36px;height:36px;border-radius:50%;overflow:hidden;border:2px solid var(--border);display:grid;place-items:center;background:#00143b}
+  .crest img{width:30px;height:30px;display:block}
+  .eyebrow{display:inline-block;background:var(--accent);color:#111;padding:4px 10px;border-radius:999px;font-weight:800;font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+  h1{margin:4px 0 0;font-size:clamp(28px,4.5vw,36px);line-height:1.15}
+  .motto{color:var(--muted);font-weight:800;font-size:14px}
+
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .chip{
+    border:2px solid var(--accent);
+    border-radius:999px;
+    padding:10px 14px;
+    font-weight:800;
+    background:rgba(255,255,255,.06);
+    font-size:14px;
+  }
+  .updated{
+    background:var(--accent); color:#000;
+    padding:4px 12px; border-radius:999px;
+    font-weight:700; font-size:13px;
+  }
+
+  /* Layout: sidebar + content (non-sticky for Google Sites) */
+  .grid{display:grid;gap:16px;grid-template-columns:290px 1fr}
+  @media (max-width:980px){ .grid{grid-template-columns:1fr} }
+
+  /* Sidebar TOC - visual only (not sticky) */
+  .toc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px}
+  .toc h3{margin:0 0 8px;font-size:15px;opacity:.85}
+  .toc a{display:block;padding:10px 12px;border-radius:8px;font-weight:800;border:1px solid transparent}
+  .toc a:hover{background:rgba(255,255,255,.06);border-color:var(--border)}
+  .toc .hr{height:1px;background:var(--border);margin:10px 0;border-radius:1px}
+
+  /* Mobile TOC (dropdown) */
+  .mobile-toc{display:none;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:8px;margin-bottom:10px}
+  .mobile-toc summary{cursor:pointer;font-weight:900;padding:10px 12px;border-radius:8px}
+  .mobile-toc .links{padding:8px 0}
+  .mobile-toc a{display:block;padding:10px 12px;border-radius:8px;font-weight:800}
+  .mobile-toc a:hover{background:rgba(255,255,255,.06)}
+  @media (max-width:980px){
+    .toc{display:none}
+    .mobile-toc{display:block}
+  }
+
+  /* Sections */
+  .section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;scroll-margin-top:90px;margin-bottom:16px}
+  .section h2{margin:0 0 6px;font-size:clamp(20px,3.2vw,22px);display:flex;align-items:center;gap:10px}
+  .ic{font-size:18px;line-height:1}
+  .lead{color:var(--muted);margin:6px 0 12px}
+  .badge{background:var(--accent);color:#111;padding:2px 8px;border-radius:999px;font-weight:800;font-size:12px}
+  .em{font-weight:800}
+  ul,ol{margin:8px 0 8px 22px}
+  li{margin:8px 0}
+  .rulebox{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px;margin-top:10px}
+
+  /* Callouts */
+  .protip{background:rgba(249,215,28,.14);border:1px solid var(--border);border-radius:12px;padding:10px;margin-top:10px;font-weight:700}
+
+  /* Collapsibles */
+  details{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;padding:10px;margin-top:10px;transition:background .16s ease}
+  details[open]{background:rgba(255,255,255,.07)}
+  summary{cursor:pointer;font-weight:800;display:flex;align-items:center;gap:8px}
+  summary::after{content:"▾";transition:transform .16s ease}
+  details[open] summary::after{transform:rotate(-180deg)}
+  details .content{margin-top:8px}
+
+  /* Figures */
+  figure{margin:10px 0;background:rgba(255,255,255,.04);border:1px dashed var(--border);border-radius:10px;padding:10px;text-align:center}
+  figure img{max-width:100%;height:auto;border-radius:8px;display:block;margin:0 auto}
+  figcaption{margin-top:6px;color:var(--muted);font-size:14px}
+/* ---------- Mobile readability polish ---------- */
+@media (max-width: 780px) {
+  /* Bigger base text + more line height */
+  body { font-size: 17.5px; line-height: 1.7; }
+
+  /* Roomier title block */
+  .title { gap: 14px; margin-bottom: 16px; }
+  .crest { width: 30px; height: 30px; }
+  .crest img { width: 24px; height: 24px; }
+  .motto { font-size: 13.5px; }
+
+  /* Make highlight chips easier to read/tap */
+  .chips { gap: 10px; }
+  .chip { padding: 10px 16px; border-width: 2px; font-size: 15px; }
+
+  /* Turn sidebar off (we already hide it ≤980px), keep the mobile TOC roomy */
+  .mobile-toc summary { padding: 12px 14px; font-size: 16px; }
+  .mobile-toc a { padding: 12px 14px; font-size: 16px; }
+
+  /* Sections: more padding and separation */
+  .section { padding: 20px; margin-bottom: 20px; scroll-margin-top: 100px; }
+  .section h2 { margin-bottom: 10px; gap: 12px; }
+  .ic { font-size: 20px; }
+
+  /* Lists: increase spacing for scan-ability */
+  ul, ol { margin-left: 20px; }
+  li { margin: 10px 0; }
+
+  /* Rule cards: a bit softer and roomier */
+  .rulebox { padding: 16px; }
+
+  /* Collapsibles: bigger tap area, clearer spacing */
+  details { padding: 12px; }
+  summary { padding: 2px 0; font-size: 16.5px; }
+  details .content { margin-top: 10px; }
+
+  /* Figures: reduce visual density, keep captions legible */
+  figure { padding: 10px; }
+  figcaption { font-size: 14.5px; }
+
+  /* Touch target comfort */
+  a, button, summary { min-height: 44px; }
+}
+
+/* Very small screens: stack highlight chips vertically for clarity */
+@media (max-width: 420px) {
+  .chips { flex-direction: column; }
+  .chip { width: 100%; text-align: center; }
+}
+
+
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="title">
+      <div class="left">
+        <div class="crest"><img src="images/e-logo.png" alt="eFPL crest"></div>
+        <div>
+          <span class="eyebrow">eFPL</span>
+          <h1>Full Rules & Match Settings</h1>
+          <div class="motto">Play Fair. Play Football.</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <div class="updated">Rules v1.0 - Updated: 4 Sep 2025</div>
+        <div class="chips" aria-label="highlights">
+          <div class="chip">Default formations only</div>
+          <div class="chip">No Big Time/Epics/Showtime</div>
+          <div class="chip">No Double Booster managers</div>
+          <div class="chip">No Smart-Assist</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile dropdown TOC -->
+    <details class="mobile-toc">
+      <summary>☰ Navigate this page</summary>
+      <div class="links">
+        <a href="#squads">1) Squads & Players</a>
+        <a href="#managers">2) Managers</a>
+        <a href="#formations">3) Formations</a>
+        <a href="#fairplay">4) Fair Play</a>
+        <a href="#match">5) Match Settings</a>
+        <a href="#disputes">6) Disputes & Proof</a>
+        <a href="#penalties">7) Penalties</a>
+        <a href="#faq">FAQ</a>
+      </div>
+    </details>
+
+    <div class="grid">
+      <!-- Visual sidebar (non-sticky so it works in Google Sites) -->
+      <nav class="toc" aria-label="Table of contents">
+        <h3>On this page</h3>
+        <a href="#squads">1) Squads & Players</a>
+        <a href="#managers">2) Managers</a>
+        <a href="#formations">3) Formations</a>
+        <a href="#fairplay">4) Fair Play</a>
+        <a href="#match">5) Match Settings</a>
+        <a href="#disputes">6) Disputes & Proof</a>
+        <a href="#penalties">7) Penalties</a>
+        <a href="#faq">FAQ</a>
+        <div class="hr" style="height:1px;background:var(--border);margin:10px 0;border-radius:1px"></div>
+        <a href="#">Back to top</a>
+      </nav>
+
+      <!-- MAIN -->
+      <main>
+
+        <!-- 1) Squads & Players -->
+        <section id="squads" class="section">
+          <h2><span class="ic">👥</span>1) Squads & Players</h2>
+          <div class="rulebox">
+            <ul>
+              <li><span class="em">No Big Time, Epics, or Showtime</span> players.</li>
+              <li>Only <span class="em">Highlight, Featured, Trending, Standard</span> players are allowed.</li>
+            </ul>
+          </div>
+
+          <details>
+            <summary>📸 Player Selection - example screenshot</summary>
+            <div class="content">
+              <figure>
+                <img src="images/player-selection.png" alt="Player selection screenshot" loading="lazy">
+                <figcaption>Show allowed categories only (no Epics, Big Time, Showtime).</figcaption>
+              </figure>
+            </div>
+          </details>
+        </section>
+
+        <!-- 2) Managers -->
+        <section id="managers" class="section">
+          <h2><span class="ic">🎛️</span>2) Managers</h2>
+          <div class="rulebox">
+            <ul>
+              <li><span class="em">No Double Booster managers.</span></li>
+              <li>If you only have Double Booster managers, use a <span class="em">GP manager</span> or purchase a <span class="em">single-booster manager</span>.</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- 3) Formations -->
+        <section id="formations" class="section">
+          <h2><span class="ic">🧭</span>3) Formations <span class="badge">Very important</span></h2>
+          <p class="lead">Use only default formations from the in-game list. The shape must remain untouched.</p>
+          <div class="rulebox">
+            <ul>
+              <li><span class="em">No custom formations.</span> You can only select from the <span class="em">default list</span>.</li>
+              <li><span class="em">No editing the formation</span> (no dragging or moving players).</li>
+              <li>You <span class="em">are allowed</span> to change player roles using <span class="em">Y or Triangle</span> (for example CMF to DMF, CF to SS).</li>
+            </ul>
+          </div>
+
+          <details>
+            <summary>📸 Default Formation list - screenshot</summary>
+            <div class="content">
+              <figure>
+                <img src="images/formation-list.png" alt="Default formation list" loading="lazy">
+                <figcaption>Select from the default list only.</figcaption>
+              </figure>
+            </div>
+          </details>
+
+          <div class="protip">💡 Pro tip: Save an <span class="em">eFPL tactic</span> with these settings so it is one click to load every match.</div>
+
+          <details>
+            <summary>📸 Saved Tactic for eFPL - screenshot</summary>
+            <div class="content">
+              <figure>
+                <img src="images/saved-tactic.png" alt="Saved tactic example" loading="lazy">
+                <figcaption>Save once, then load before each match.</figcaption>
+              </figure>
+            </div>
+          </details>
+        </section>
+
+        <!-- 4) Fair Play -->
+        <section id="fairplay" class="section">
+          <h2><span class="ic">🛡️</span>4) Fair Play</h2>
+          <div class="rulebox">
+            <ul>
+              <li><span class="em">No Smart-Assist.</span></li>
+              <li>Respect opponents - no time wasting or toxicity.</li>
+              <li>If connection is poor, agree to restart.</li>
+              <li>Record or stream games if possible.</li>
+              <li>Screenshots of <span class="em">post-match stats</span> are welcome when posting results.</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- 5) Match Settings -->
+        <section id="match" class="section">
+          <h2><span class="ic">⚙️</span>5) Match Settings</h2>
+          <div class="rulebox">
+            <ul>
+              <li>Match Length: <span class="em">10 minutes</span></li>
+              <li>Player Conditions: <span class="em">Random</span></li>
+              <li>Injuries: <span class="em">On</span></li>
+              <li>Substitutions: <span class="em">5</span></li>
+            </ul>
+          </div>
+
+          <details>
+            <summary>📸 Lobby / Match Settings - screenshot</summary>
+            <div class="content">
+              <figure>
+                <img src="images/match-settings.png" alt="Match settings example" loading="lazy">
+                <figcaption>Confirm 10 min, Condition Random, Injuries On, 5 Subs.</figcaption>
+              </figure>
+            </div>
+          </details>
+        </section>
+
+        <!-- 6) Disputes & Proof -->
+        <section id="disputes" class="section">
+          <h2><span class="ic">📎</span>6) Disputes & Proof</h2>
+          <p class="lead">Document as much as possible so any issue can be resolved quickly.</p>
+          <div class="rulebox">
+            <ul>
+              <li>Take <span class="em">screenshots</span> and short <span class="em">video clips or stream VODs</span> where relevant.</li>
+              <li>If you catch a rule break, record or screenshot and report to staff on Discord.</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- 7) Penalties -->
+        <section id="penalties" class="section">
+          <h2><span class="ic">❗</span>7) Penalties</h2>
+          <ul>
+            <li><span class="em">First offence:</span> Warning</li>
+            <li><span class="em">Second offence:</span> Removal from the league</li>
+          </ul>
+        </section>
+
+        <!-- FAQ -->
+        <section id="faq" class="section">
+          <h2><span class="ic">❓</span>FAQ</h2>
+
+          <details>
+            <summary>Can I use free-to-play players?</summary>
+            <div class="content">
+              Yes, as long as they are not <span class="em">Epic, Big Time, or Showtime</span>.
+            </div>
+          </details>
+
+          <details>
+            <summary>I only have Double Booster managers. What now?</summary>
+            <div class="content">
+              Use a <span class="em">GP manager</span> or purchase a <span class="em">single-booster manager</span>.
+            </div>
+          </details>
+
+          <details>
+            <summary>Can I move any players slightly on the gameplan?</summary>
+            <div class="content">
+              No. For fairness everyone must use the <span class="em">exact default formation</span> with no dragging.
+            </div>
+          </details>
+
+          <details>
+            <summary>Why can’t I use Sub Tactics if I like changing mid-game?</summary>
+            <div class="content">
+              Sub Tactics can be used to hide illegal formations. You can still change tactics by pausing and choosing another from the default list.
+            </div>
+          </details>
+
+          <details>
+            <summary>What do I do if I catch someone breaking the rules?</summary>
+            <div class="content">
+              Record or screenshot anything you see as a rule break and report it to staff on Discord.
+            </div>
+          </details>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+<script>
+/* Smooth scroll for all in-page links - works inside Google Sites */
+document.addEventListener('click', function(e){
+  const a = e.target.closest('a[href^="#"]');
+  if(!a) return;
+  const id = a.getAttribute('href').slice(1);
+  const el = document.getElementById(id);
+  if(!el) return;
+  e.preventDefault();
+  el.scrollIntoView({behavior:'smooth', block:'start'});
+});
+</script>
+</body>
+</html>
