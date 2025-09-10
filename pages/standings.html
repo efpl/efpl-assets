@@ -25,15 +25,18 @@
   /* Title row */
   .title{display:flex;justify-content:space-between;align-items:center;margin:0 0 12px;padding:12px}
   .title h1{font-size:20px;margin:0;color:var(--text)}
-  .badge{background:var(--accent);color:#000;padding:4px 12px;border-radius:999px;font-weight:700}
+  .badge{
+    background:var(--accent);color:#000;padding:4px 12px;border-radius:999px;font-weight:700;
+    line-height:1; white-space:nowrap;
+  }
 
-  /* NEW: page H1 with sponsor image + yellow accent text */
+  /* Page H1 with sponsor image + yellow accent text */
   .page-h1{
     margin:0;
-    font-size:20px; /* matches your previous h1 size */
-    line-height:1.15;
     font-weight:900;
+    line-height:1.15;
     display:flex; align-items:center; flex-wrap:wrap; gap:8px;
+    font-size: clamp(22px, 4.2vw, 34px); /* larger, responsive */
   }
   .page-h1 .sponsor{
     display:inline-flex; align-items:center;
@@ -42,9 +45,7 @@
     background:rgba(255,255,255,.06);
     margin:0 6px;
   }
-  .page-h1 .sponsor img{
-    height:18px; width:auto; display:block;
-  }
+  .page-h1 .sponsor img{ height:24px; width:auto; display:block; } /* slightly bigger by default */
   .page-h1 .accent{ color:var(--accent); }
 
   /* Table */
@@ -89,6 +90,10 @@
   @media (max-width:680px){
     .wrap{padding:12px}
     .card{border-radius:10px}
+
+    .title{padding:10px 12px}
+    .title .badge{font-size:12px; padding:4px 8px} /* smaller pill on phones */
+
     .table-desktop{display:none;}
     .table-mobile{display:block;}
     .table-mobile th,.table-mobile td{padding:10px;font-size:14px}
@@ -192,6 +197,20 @@ function saveHTML(key, html){ try{ localStorage.setItem(key, html); }catch(e){} 
 paintInstant('t', 'efpl:standings:full', 'sk-standings');
 paintInstant('t-compact', 'efpl:standings:mob', 'sk-standings');
 
+function shortStamp(d){
+  // Short UK-style timestamp: "Upd 10 Sep 09:34" (24h)
+  try{
+    return 'Upd ' + new Intl.DateTimeFormat('en-GB', {
+      day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit',
+      hour12:false, timeZone:'Europe/London'
+    }).format(d).replace(',', '');
+  }catch(e){
+    // Fallback
+    const pad = n => String(n).padStart(2,'0');
+    return `Upd ${pad(d.getDate())}/${pad(d.getMonth()+1)} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+}
+
 async function loadStandings(){
   const statusEl = document.getElementById('updated');
   try{
@@ -233,11 +252,11 @@ async function loadStandings(){
 
     document.querySelectorAll('.fade-in').forEach(n => n.classList.add('ready'));
     document.getElementById('sk-standings').style.display='none';
-    statusEl.textContent = 'Updated ' + new Date().toLocaleString();
+    statusEl.textContent = shortStamp(new Date());
   }catch(err){
     document.getElementById('t').innerHTML = '';
     document.getElementById('t-compact').innerHTML = '';
-    statusEl.textContent = 'Error - ' + err.message; // replaced em-dash
+    statusEl.textContent = 'Error - ' + err.message; // no em-dash
     console.error(err);
   }
 }
