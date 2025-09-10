@@ -1,367 +1,263 @@
 /* ==========================================================================
-   eFPL Design System — efpl.css
-   Consolidated styles for all custom eFPL pages (embed-friendly for Google Sites)
-   Author: ChatGPT (eFPL project)
+   eFPL Global Stylesheet (efpl.css)
+   URL: https://efpl-assets.pages.dev/css/efpl.css
+   Purpose: One stylesheet for all embedded eFPL pages on Google Sites
+   Notes:
+   - Keep design 1:1 with existing pages (sizes, spacing, proportions).
+   - Avoids sticky/position hacks that can break in iframes.
+   - Uses utility classes so legacy HTML rarely needs changing.
    ========================================================================== */
 
-/* --------------------------------------------------------------------------
-   0) Design Tokens (colors, typography, spacing)
-   -------------------------------------------------------------------------- */
+/* ------------------------------ Reset / Base ------------------------------ */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+  color: #e9eef8;
+  background: #0b1226; /* near-navy background for dark UI */
+  line-height: 1.5;
+  text-rendering: optimizeLegibility;
+}
+
+img { max-width: 100%; display: block; }
+a { color: #f9d71c; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
 :root{
   /* Brand */
-  --accent:#f9d71c;
-  --navy-900:#00143b;
-  --navy-800:#001a4d;
-  --navy-700:#002060;
-  --navy-650:#002b80;
-  --navy-600:#05225a;
+  --efpl-navy: #00143b;
+  --efpl-navy-900: #0b1226;
+  --efpl-navy-800: #0e1a34;
+  --efpl-navy-700: #112245;
+  --efpl-yellow: #f9d71c;
+  --efpl-yellow-900: #b89f12;
+  --efpl-white: #ffffff;
 
-  /* Text */
-  --text:#ffffff;
-  --muted:#cbd5e1;
-  --btn-text:#0b1b3d;
+  /* UI */
+  --radius: 12px;
+  --shadow-1: 0 4px 18px rgba(0,0,0,0.25);
+  --shadow-2: 0 10px 30px rgba(0,0,0,0.35);
 
-  /* Surfaces & Lines */
-  --card:var(--navy-900);
-  --card2:var(--navy-600);
-  --line:rgba(249,215,28,.45);
-  --border:rgba(249,215,28,.35);
-  --fx-border:rgba(249,215,28,.55);
-
-  /* Tables */
-  --header-bg:var(--accent);
-  --header-text:#00143b;
-  --row1:var(--navy-800);
-  --row2:var(--navy-700);
-  --row-hover:var(--navy-650);
-
-  /* Shadows */
-  --shadow-1:0 2px 6px rgba(0,0,0,.20);
-  --shadow-2:0 8px 24px rgba(0,0,0,.35);
-  --shadow-3:0 16px 42px rgba(0,0,0,.40);
-
-  /* Radius */
-  --r-sm:8px;
-  --r-md:10px;
-  --r-lg:12px;
-  --r-xl:14px;
-  --r-pill:999px;
-
-  /* Type scale */
-  --fs-12:12px;
-  --fs-13:13px;
-  --fs-14:14px;
-  --fs-15:15px;
-  --fs-16:16px;
-  --fs-18:18px;
-  --fs-20:20px;
-  --fs-22:22px;
-  --fs-24:24px;
-  --fs-26:26px;
-  --fs-28:28px;
-  --fs-30:30px;
-  --fs-34:34px;
-  --fs-36:36px;
-
-  /* Spacing */
-  --sp-4:4px;   --sp-6:6px;   --sp-8:8px;   --sp-10:10px;
-  --sp-12:12px; --sp-14:14px; --sp-16:16px; --sp-18:18px;
-  --sp-20:20px; --sp-22:22px; --sp-24:24px; --sp-30:30px;
-  --sp-32:32px; --sp-40:40px; --sp-48:48px;
-
-  /* Breakpoints */
-  --bp-1140:1140px;
-  --bp-1100:1100px;
-  --bp-980:980px;
-  --bp-940:940px;
-  --bp-860:860px;
-  --bp-820:820px;
-  --bp-780:780px;
-  --bp-680:680px;
-  --bp-600:600px;
-  --bp-420:420px;
+  /* Layout */
+  --container: 1100px;
+  --gap-1: 6px;
+  --gap-2: 10px;
+  --gap-3: 14px;
+  --gap-4: 20px;
+  --gap-5: 28px;
+  --gap-6: 40px;
 }
 
-/* --------------------------------------------------------------------------
-   1) Base / Resets (transparent background to blend in Google Sites iframes)
-   -------------------------------------------------------------------------- */
-html{scroll-behavior:smooth}
-html,body{background:transparent;margin:0;color:var(--text)}
-body{font:16px/1.6 system-ui, Segoe UI, Roboto, Arial, sans-serif}
-a{color:var(--accent);text-decoration:none}
-a:hover{opacity:.9}
-img{max-width:100%;height:auto}
-/* Utility: visually-hidden for accessibility */
-.visually-hidden{position:absolute!important;clip:rect(1px,1px,1px,1px)!important;padding:0!important;border:0!important;height:1px!important;width:1px!important;overflow:hidden}
-
-/* --------------------------------------------------------------------------
-   2) Layout primitives
-   -------------------------------------------------------------------------- */
-.wrap{max-width:1140px;margin:0 auto;padding:var(--sp-20)}
-.wrap.narrow{max-width:980px}
-.card{background:var(--card);border-radius:var(--r-lg);overflow:hidden;border:1px solid transparent}
-.card.bordered{border-color:var(--border)}
-.section{background:var(--card);border:1px solid var(--border);border-radius:var(--r-xl);padding:var(--sp-20);margin-bottom:var(--sp-16)}
-.hr{height:1px;background:var(--border);margin:var(--sp-12) 0;border-radius:1px}
-
-/* Titles / eyebrows */
-.title{display:flex;flex-wrap:wrap;gap:var(--sp-10);align-items:center;justify-content:space-between;margin-bottom:var(--sp-12)}
-.eyebrow{display:inline-block;background:var(--accent);color:#111;padding:2px 10px;border-radius:var(--r-pill);font-weight:800;font-size:var(--fs-12);letter-spacing:.04em;text-transform:uppercase}
-h1{margin:4px 0 0;font-size:clamp(28px,4.5vw,36px);line-height:1.15}
-h2{margin:0 0 var(--sp-10);font-size:clamp(20px,3.2vw,26px);line-height:1.2}
-.lead{font-size:var(--fs-18);color:var(--muted)}
-.motto{color:var(--muted);font-weight:800;font-size:14px}
-
-/* Pills, badges, chips */
-.badge{background:var(--accent);color:#111;padding:2px 8px;border-radius:var(--r-pill);font-weight:800;font-size:var(--fs-12)}
-.pill{background:var(--accent);color:#000;padding:4px 12px;border-radius:var(--r-pill);font-weight:700;font-size:var(--fs-13)}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-.chip{border:1.5px solid var(--border);border-radius:var(--r-pill);padding:10px 14px;font-weight:800;font-size:14px;background:rgba(255,255,255,.06);display:flex;justify-content:center;align-items:center;gap:8px;text-align:center}
-.ic{font-size:16px;line-height:1}
-.em{font-weight:800}
-
-/* Buttons */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:12px;padding:14px 24px;border-radius:var(--r-pill);font-weight:900;text-decoration:none;border:1px solid transparent;transition:transform .08s ease, box-shadow .08s ease}
-.btn.primary{background:var(--accent);color:var(--btn-text);box-shadow:var(--shadow-3), 0 0 0 3px rgba(249,215,28,.18) inset;font-size:clamp(17px,3vw,21px)}
-.btn.primary:hover{transform:translateY(-1px);box-shadow:0 18px 48px rgba(0,0,0,.48), 0 0 0 3px rgba(249,215,28,.25) inset}
-
-/* Fade-in & skeleton */
-.fade-in{opacity:0;transition:opacity .18s ease}
-.fade-in.ready{opacity:1}
-.skeleton{background:linear-gradient(90deg, rgba(255,255,255,.05), rgba(255,255,255,.12), rgba(255,255,255,.05));background-size:200% 100%;animation:sk 1.1s infinite;border-radius:var(--r-lg)}
-@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
-
-/* Responsive helpers */
-@media (max-width: var(--bp-680)){
-  .wrap{padding:12px}
-  .card{border-radius:var(--r-md)}
+/* ------------------------------ Layout ------------------------------ */
+.wrap {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--gap-4);
 }
 
-/* --------------------------------------------------------------------------
-   3) Hero page components (page-hero)
-   -------------------------------------------------------------------------- */
-.page-hero .hero{max-width:1100px;margin:0 auto;padding:var(--sp-48) var(--sp-16);display:grid;gap:var(--sp-22)}
-.page-hero .headline{font-size:clamp(36px,6vw,72px);line-height:1.05;font-weight:800;margin:0;text-align:center}
-.page-hero .support{font-size:clamp(18px,2.4vw,24px);text-align:center;margin:0;color:#fff;font-weight:800;opacity:.95}
-.page-hero .sub{max-width:760px;margin:0 auto;color:var(--muted);font-size:clamp(16px,2.4vw,20px);text-align:center}
-.page-hero .learn-inline{font-weight:800;text-decoration:none;margin-left:6px}
-.page-hero .learn-inline span{border-bottom:2px solid var(--accent);color:var(--text)}
-.page-hero .features{display:grid;gap:10px;margin:8px auto 0;max-width:950px;grid-template-columns:repeat(2,minmax(0,1fr))}
-@media (min-width: 820px){ .page-hero .features{grid-template-columns:repeat(4,minmax(0,1fr))} }
-.page-hero .ctas{display:grid;place-items:center;margin-top:12px}
-.page-hero .cta-sub{margin:6px 0 0;text-align:center;color:var(--muted);font-weight:700}
+.section { padding: var(--gap-6) 0; }
+.muted { color: #b9c4d6; }
+.center { text-align: center; }
+.right { text-align: right; }
 
-/* --------------------------------------------------------------------------
-   4) Rules / About shared components (page-rules, page-rules-draft, page-about)
-   -------------------------------------------------------------------------- */
-.section .rulebox{background:var(--card2);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px;margin-top:10px}
-details{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;padding:10px;margin-top:10px;transition:background .16s ease}
-details[open]{background:rgba(255,255,255,.07)}
-summary{cursor:pointer;font-weight:800;display:flex;align-items:center;gap:8px}
-summary::after{content:"▾";transition:transform .16s ease}
-details[open] summary::after{transform:rotate(-180deg)}
-details .content{margin-top:8px}
-figure{margin:10px 0;background:rgba(255,255,255,.04);border:1px dashed var(--border);border-radius:10px;padding:10px;text-align:center}
-figure img{border-radius:8px;display:block;margin:0 auto}
-figcaption{margin-top:6px;color:var(--muted);font-size:14px}
-.protip{background:rgba(249,215,28,.14);border:1px solid var(--border);border-radius:12px;padding:10px;margin-top:10px;font-weight:700}
+/* ------------------------------ Typography ------------------------------ */
+h1,h2,h3,h4 { margin: 0 0 var(--gap-3); line-height: 1.2; }
+h1 { font-size: clamp(28px, 3.2vw, 44px); }
+h2 { font-size: clamp(22px, 2.2vw, 32px); }
+h3 { font-size: clamp(18px, 1.8vw, 24px); }
+p { margin: 0 0 var(--gap-4); }
 
-/* Sidebar TOC (non-sticky by default for Sites) */
-.toc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px}
-.toc h3{margin:0 0 8px;font-size:15px;opacity:.85}
-.toc a{display:block;padding:10px 12px;border-radius:8px;font-weight:800;border:1px solid transparent}
-.toc a:hover{background:rgba(255,255,255,.06);border-color:var(--border)}
-.toc .hr{height:1px;background:var(--border);margin:10px 0;border-radius:1px}
+/* ------------------------------ Buttons & Chips ------------------------------ */
+.btn {
+  display:inline-block; border:1px solid transparent; border-radius: 999px;
+  padding: 10px 18px; font-weight: 600; transition: transform .05s ease, opacity .2s ease;
+}
+.btn:active { transform: translateY(1px); }
 
-/* Mobile TOC */
-.mobile-toc{display:none;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:8px;margin-bottom:10px}
-.mobile-toc summary{cursor:pointer;font-weight:900;padding:10px 12px;border-radius:8px}
-.mobile-toc .links{padding:8px 0}
-.mobile-toc a{display:block;padding:10px 12px;border-radius:8px;font-weight:800}
-.mobile-toc a:hover{background:rgba(255,255,255,.06)}
-@media (max-width: var(--bp-980)){
-  .toc{display:none}
-  .mobile-toc{display:block}
+.btn-primary {
+  background: var(--efpl-yellow);
+  color: #1d2230;
+}
+.btn-primary:hover { opacity: .95; }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--efpl-white);
+  border-color: #2b3550;
+}
+.btn-ghost:hover { border-color:#3a476a; }
+
+.chips { display:flex; flex-wrap:wrap; gap: var(--gap-2); }
+.chip {
+  display:inline-flex; align-items:center; gap:8px;
+  padding: 6px 12px; border-radius: 999px;
+  background: #121a33; border:1px solid #223055; font-weight:600;
+  font-size: 14px; color:#dfe6f3;
+}
+.chip--yellow { background: rgba(249,215,28,0.12); border-color: rgba(249,215,28,0.45); color: var(--efpl-yellow); }
+
+.pill {
+  display:inline-block; padding: 4px 10px; border-radius: 999px;
+  background: #121a33; border:1px solid #223055; font-weight:700; font-size: 13px;
 }
 
-/* Grid shell for rules pages */
-.grid{display:grid;gap:16px;grid-template-columns:290px 1fr}
-@media (max-width: var(--bp-980)){ .grid{grid-template-columns:1fr} }
-
-/* Mobile readability polish (taken from rules.html) */
-@media (max-width: 780px){
-  body { font-size: 17.5px; line-height: 1.7 }
-  .title { gap: 14px; margin-bottom: 16px }
-  .motto { font-size: 13.5px }
-  .chips { gap: 10px }
-  .chip { padding: 10px 16px; border-width: 2px; font-size: 15px }
-  .mobile-toc summary { padding: 12px 14px; font-size: 16px }
-  .mobile-toc a { padding: 12px 14px; font-size: 16px }
-  .section { padding: 20px; margin-bottom: 20px; scroll-margin-top: 100px }
-  .section h2 { margin-bottom: 10px; gap: 12px }
-  .ic { font-size: 20px }
-  ul, ol { margin-left: 20px }
-  li { margin: 10px 0 }
-  .section .rulebox { padding: 16px }
-  details { padding: 12px }
-  summary { padding: 2px 0; font-size: 16.5px }
-  details .content { margin-top: 10px }
-  figure { padding: 10px }
-  figcaption { font-size: 14.5px }
-  a, button, summary { min-height: 44px }
+/* ------------------------------ Cards ------------------------------ */
+.card {
+  background: linear-gradient(180deg, #0f1830, #0b1226);
+  border: 1px solid #1f2a49;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-1);
+  padding: var(--gap-5);
 }
+.card + .card { margin-top: var(--gap-4); }
+
+.card-row {
+  display:grid; gap: var(--gap-4);
+  grid-template-columns: repeat(12, 1fr);
+  align-items: center;
+}
+
+/* ------------------------------ Hero Headers ------------------------------ */
+.hero {
+  position: relative; isolation: isolate;
+  background: #0b1226;
+  min-height: 320px;
+  display:flex; align-items:center;
+  overflow: hidden;
+}
+.hero::before{
+  content:"";
+  position:absolute; inset:0; z-index:0;
+  background: radial-gradient(1200px 500px at 20% 0%, rgba(249,215,28,0.08), transparent 60%),
+              linear-gradient(180deg, rgba(0,0,0,0.4), rgba(0,0,0,0.15));
+}
+.hero__bg{
+  position:absolute; inset:0; z-index:-1; opacity:.22;
+  background-position:center; background-size:cover;
+  filter: saturate(1.05) contrast(1.05) brightness(1.05);
+}
+.hero__content{ position:relative; z-index:1; width:100%; }
+.hero__logo{
+  width: clamp(80px, 12vw, 120px);
+  margin-bottom: var(--gap-4);
+}
+.hero__title{ font-size: clamp(28px, 4vw, 54px); font-weight: 900; letter-spacing:.2px; }
+.hero__subtitle{ margin-top: var(--gap-2); color:#c9d3e8; font-size: clamp(14px, 1.6vw, 18px); }
+.hero__actions{ margin-top: var(--gap-4); display:flex; gap: var(--gap-3); flex-wrap:wrap; }
+
+/* Hero variants (point these URLs at your /img/ folder) */
+.hero--standings .hero__bg { background-image: url("https://efpl-assets.pages.dev/img/banner-standings.jpg"); }
+.hero--fixtures  .hero__bg { background-image: url("https://efpl-assets.pages.dev/img/banner-fixtures.jpg"); }
+.hero--about     .hero__bg { background-image: url("https://efpl-assets.pages.dev/img/banner-about.jpg"); }
+
+/* ------------------------------ Tables (Standings) ------------------------------ */
+.table {
+  width:100%; border-collapse: separate; border-spacing:0;
+  background: #0e1731; border:1px solid #1f2a49; border-radius: var(--radius); overflow:hidden;
+}
+.table th, .table td {
+  padding: 12px 14px; text-align:left; font-size: 14px;
+}
+.table thead th {
+  background:#101a37; color:#dfe6f3; font-weight:700; border-bottom:1px solid #1f2a49;
+}
+.table tbody tr:nth-child(odd){ background:#0f1832; }
+.table tbody tr:nth-child(even){ background:#0d162e; }
+.table tbody tr:hover { background:#122048; }
+
+.table .pts-pill{
+  display:inline-block; min-width: 38px; text-align:center;
+  padding: 4px 10px; border-radius:999px; background: var(--efpl-yellow); color:#111526; font-weight:900;
+}
+
+/* Compact mode */
+.table--compact th, .table--compact td { padding: 10px 12px; }
+
+/* ------------------------------ Fixtures & Results ------------------------------ */
+.fixtures { display:grid; gap: var(--gap-3); }
+.fixture {
+  display:grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items:center;
+  background:#0e1731; border:1px solid #1f2a49; border-radius: var(--radius);
+  padding: 12px 14px;
+}
+.fixture__home, .fixture__away { font-weight:700; }
+.fixture__vs { opacity:.75; font-weight:600; }
+.fixture__meta { font-size:13px; color:#b9c4d6; }
+.result-badge{
+  display:inline-block; padding:4px 10px; border-radius: 8px;
+  background:#121a33; border:1px solid #223055; font-weight:700;
+}
+
+/* ------------------------------ Rules Page ------------------------------ */
+.rules h2 { margin-top: var(--gap-5); }
+.rules .callout{
+  background: rgba(249,215,28,0.08);
+  border:1px solid rgba(249,215,28,0.35);
+  padding: var(--gap-4);
+  border-radius: var(--radius);
+}
+.rules ul, .rules ol { margin: 0 0 var(--gap-4) 1.2em; }
+.rules li { margin-bottom: 8px; }
+
+/* ------------------------------ Hall of Fame ------------------------------ */
+.hof-grid{
+  display:grid; gap: var(--gap-4);
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+.hof-card{
+  background: #0e1731; border:1px solid #1f2a49; border-radius: var(--radius);
+  padding: var(--gap-4); text-align:center;
+}
+
+/* ------------------------------ Champions Cup Bracket ------------------------------ */
+.bracket{
+  display:grid; gap: var(--gap-4);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+.bracket .round{
+  background: #0e1731; border:1px solid #1f2a49; border-radius: var(--radius);
+  padding: var(--gap-4);
+}
+.bracket .match{
+  display:flex; justify-content:space-between; align-items:center;
+  padding: 10px 12px; border-radius: 10px;
+  background:#101a37; border:1px solid #223055; margin-bottom: 10px;
+}
+
+/* ------------------------------ Sponsor Blocks ------------------------------ */
+.sponsor {
+  display:flex; align-items:center; gap: var(--gap-4);
+  background: #0e1731; border:1px solid #1f2a49; border-radius: var(--radius);
+  padding: var(--gap-4);
+}
+.sponsor img { width: 72px; height: 72px; object-fit:contain; }
+
+/* ------------------------------ Utilities ------------------------------ */
+.row { display:flex; flex-wrap:wrap; gap: var(--gap-4); }
+.col { flex: 1 1 0; min-width: 240px; }
+.hr { height:1px; background:#1f2a49; margin: var(--gap-5) 0; }
+.badge {
+  display:inline-block; padding: 4px 10px; border-radius: 8px;
+  background:#121a33; border:1px solid #223055; font-weight:700; font-size: 12px;
+}
+
+/* Visibility helpers for embeds */
+.only-mobile { display:none; }
+@media (max-width: 720px){
+  .only-mobile { display:initial; }
+  .hide-mobile { display:none !important; }
+  .hero { min-height: 260px; }
+  .card-row { grid-template-columns: 1fr; }
+  .fixture { grid-template-columns: 1fr; text-align:center; }
+}
+
+/* Slightly tighter spacing on very small screens */
 @media (max-width: 420px){
-  .chips { flex-direction: column }
-  .chip { width: 100%; text-align: center }
+  .wrap { padding: 0 14px; }
+  .btn { padding: 9px 16px; }
+  .chip { padding: 5px 10px; }
 }
-
-/* --------------------------------------------------------------------------
-   5) Tables: standings / fixtures (desktop + mobile)
-   -------------------------------------------------------------------------- */
-table{width:100%;border-collapse:collapse}
-thead th{
-  background:var(--header-bg);color:var(--header-text);
-  font-size:var(--fs-13);text-transform:uppercase;letter-spacing:.03em;
-  padding:10px;text-align:center
-}
-tbody td{padding:12px;text-align:center;font-weight:500}
-tbody tr:nth-child(odd){background:var(--row1)}
-tbody tr:nth-child(even){background:var(--row2)}
-tbody tr:hover{background:var(--row-hover)}
-td.right{text-align:right}
-td.points{font-weight:800}
-td:first-child{font-weight:800}
-
-/* Standings row highlights */
-tbody tr.pos-1 td{
-  background:linear-gradient(90deg, rgba(249,215,28,.18), rgba(249,215,28,.08)) !important;
-  color:var(--text); font-weight:800; position:relative
-}
-tbody tr.pos-1 td:first-child::before{
-  content:""; position:absolute; left:0; top:0; bottom:0; width:5px;
-  background:var(--accent); border-top-left-radius:10px; border-bottom-left-radius:10px
-}
-tbody tr.pos-1 td:nth-child(2)::before{content:"👑"; margin-right:8px; display:inline-block; transform:translateY(1px)}
-tbody tr.pos-2-5 td{ position:relative; background:var(--row1) !important; color:var(--text) }
-tbody tr.pos-2-5 td:first-child::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--accent) }
-tbody tr.after-top5 td{ border-top:2px dashed var(--fx-border) }
-
-/* Desktop vs mobile table shells */
-.table-desktop{display:block}
-.table-mobile{display:none}
-@media (max-width: var(--bp-680)){
-  .table-desktop{display:none}
-  .table-mobile{display:block}
-  .table-mobile th,.table-mobile td{padding:10px;font-size:14px}
-}
-
-/* Fixtures mobile rows */
-.fx-row{display:flex;justify-content:center;align-items:center;gap:10px;font-weight:700;padding:12px;border-radius:10px;margin-bottom:10px}
-
-/* --------------------------------------------------------------------------
-   6) Champions Cup split bracket (page-champions-cup)
-   -------------------------------------------------------------------------- */
-.page-champions-cup .wrap{background:var(--navy-900);border-radius:var(--r-xl)}
-.stage{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:start}
-.side{display:grid;gap:12px}
-.group{display:grid;gap:10px}
-.group h3{margin:0 0 6px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:center}
-.match{background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:210px;box-shadow:var(--shadow-1)}
-.fixture{display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:800}
-.team{flex:1}
-.team.right{text-align:right}
-.vs{opacity:.85;font-weight:900}
-
-/* stepping toward center */
-.left  .r16{margin-right:70px} .left  .qf{margin-right:35px} .left  .sf{margin-right:0}
-.right .r16{margin-left:70px}  .right .qf{margin-left:35px}  .right .sf{margin-left:0}
-
-/* connector bars */
-.left  .match::after {content:"";display:block;height:0;border-top:2px solid var(--line);margin-left:auto;width:24px;transform:translateY(8px)}
-.left  .qf .match::after{width:34px} .left  .sf .match::after{width:44px}
-.right .match::before{content:"";display:block;height:0;border-top:2px solid var(--line);margin-right:auto;width:24px;transform:translateY(8px)}
-.right .qf .match::before{width:34px} .right .sf .match::before{width:44px}
-
-/* center: trophy + final + champion */
-.center{display:flex;flex-direction:column;align-items:center;gap:14px;padding:8px 0}
-.trophy{width:min(240px,32vw);height:auto;object-fit:contain;filter:drop-shadow(0 10px 28px rgba(0,0,0,.45))}
-.final{background:var(--accent);color:var(--btn-text);font-weight:900;border-radius:12px;padding:12px 16px;text-align:center;min-width:240px;border:2px solid #fff}
-.champion{background:linear-gradient(180deg,var(--accent),#e8c617);color:var(--btn-text);font-weight:900;text-align:center;border-radius:14px;padding:16px 22px;border:2px solid #fff;box-shadow:var(--shadow-2)}
-.champion .cup{font-size:22px;margin-right:6px}
-.note{color:var(--muted);font-size:12px;text-align:center}
-
-@media (max-width: var(--bp-860)){
-  .stage{grid-template-columns:1fr;gap:12px}
-  .center{order:-1}
-  .left .r16,.left .qf,.left .sf,.right .r16,.right .qf,.right .sf{margin:0}
-  .left .match::after,.right .match::before{display:none}
-  .match{min-width:auto}
-  .final{min-width:auto;width:100%}
-  .champion{width:100%}
-}
-
-/* --------------------------------------------------------------------------
-   7) Hall of Fame / Honor Roll (page-hof)
-   -------------------------------------------------------------------------- */
-.page-hof h1{text-align:center;color:var(--accent);margin-bottom:20px}
-.alltime{margin-bottom:30px;background:var(--card2);padding:20px;border-radius:var(--r-lg);border:1px solid var(--border)}
-.alltime h2{margin:0 0 15px;color:var(--accent);text-align:center}
-.leaderboard{list-style:none;padding:0;margin:0}
-.leaderboard li{padding:10px;margin-bottom:6px;background:var(--navy-800);border-radius:8px;display:flex;justify-content:space-between;align-items:center;font-weight:bold}
-.leaderboard li span{color:var(--accent);font-weight:normal}
-.leaderboard .first{background:linear-gradient(90deg,#f9d71c,#bfa100);color:#00143b}
-.leaderboard .second{background:linear-gradient(90deg,#c0c0c0,#999);color:#00143b}
-.leaderboard .third{background:linear-gradient(90deg,#cd7f32,#8b4513);color:#00143b}
-
-.controls{display:flex;justify-content:flex-end;margin-bottom:12px}
-.collapse-btn{background:var(--accent);color:#00143b;border:none;padding:6px 12px;font-size:13px;font-weight:bold;border-radius:6px;cursor:pointer}
-.collapse-btn:hover{background:#e5c41a}
-
-.accordion{background:var(--card2);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden}
-.accordion-header{cursor:pointer;padding:14px;font-size:18px;font-weight:bold;color:var(--accent);display:flex;justify-content:space-between;align-items:center;user-select:none}
-.accordion-header:hover{background:var(--navy-800)}
-.accordion-content{max-height:0;overflow:hidden;transition:max-height .3s ease;background:var(--navy-800)}
-.accordion-content-inner{padding:14px}
-.winners{display:grid;grid-template-columns: repeat(auto-fit,minmax(200px,1fr));gap:12px}
-.winner{background:var(--card2);border:1px solid rgba(249,215,28,.25);border-radius:8px;padding:12px;text-align:center}
-.winner span{display:block;margin-top:6px;color:var(--accent);font-weight:bold}
-@media (max-width: var(--bp-600)){
-  .winners{grid-template-columns:1fr}
-  .controls{justify-content:center}
-}
-
-/* --------------------------------------------------------------------------
-   8) Sponsor League Banner (page-sponsor)
-   -------------------------------------------------------------------------- */
-.league-header{display:flex;justify-content:center;align-items:center;gap:16px;flex-wrap:wrap;text-align:center}
-.sponsor-logo{height:70px;width:auto;object-fit:contain;display:block}
-.league-name{display:flex;align-items:center;gap:12px;margin:0;font-size:clamp(24px,6vw,40px);font-weight:900;flex-wrap:wrap}
-.accent{color:var(--accent);font-weight:900}
-@media (max-width: var(--bp-600)){
-  .sponsor-logo{height:50px}
-  .league-name{font-size:22px}
-}
-
-/* --------------------------------------------------------------------------
-   9) Page namespace helpers (apply to <body class="...">)
-   -------------------------------------------------------------------------- */
-/* Use these classes on <body> to scope tiny page-specific tweaks without extra files */
-.page-hero{}            /* hero landing */
-.page-rules{}           /* full rules */
-.page-rules-draft{}     /* draft rules variant */
-.page-about{}           /* about/format */
-.page-standings{}       /* standings table views */
-.page-fixtures{}        /* fixtures list */
-.page-champions-cup{}   /* split bracket */
-.page-hof{}             /* honor roll page */
-.page-sponsor{}         /* sponsor banner */
-
-/* --------------------------------------------------------------------------
-   10) Mobile polish for all embeds (reduce iframe scroll issues)
-   -------------------------------------------------------------------------- */
-@media (max-width: var(--bp-680)){
-  /* Tighten paddings and hide purely decorative extras when embedded */
-  .eyebrow,.note,.sponsor-footer,.skeleton{display:none !important}
-}
-
-/* End of efpl.css */
