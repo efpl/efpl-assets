@@ -7,49 +7,47 @@
   <link rel="stylesheet" href="https://efpl-assets.pages.dev/css/efpl.css">
 </head>
 <body>
-  <section class="hero fade-in ready" aria-label="eFPL hero">
-    <!-- Logo at top -->
-    <div class="hero-logo">
-      <img src="https://efpl-assets.pages.dev/img/logo.png" alt="eFPL Logo">
+  <!-- Use the hero header classes that exist in efpl.css -->
+  <header class="hero hero--about" aria-label="eFPL hero">
+    <div class="hero__bg"></div>
+
+    <div class="wrap hero__content">
+      <!-- Use the small mark, sized by .hero__logo -->
+      <img class="hero__logo" src="https://efpl-assets.pages.dev/img/e-logo.png" alt="eFPL Logo">
+
+      <h1 class="hero__title">Play Fair. Play Football.</h1>
+      <p class="hero__subtitle">The community-driven eFootball league with fair rules and balanced squads.</p>
+
+      <p>
+        The eFootball Fair Play League (eFPL) keeps things simple and honest.
+        No exploits, no overpowered cards — just proper PES-style football.
+        <a href="https://www.efpl.gg/rules">Learn more →</a>
+      </p>
+
+      <div class="chips">
+        <span class="chip"><span class="ic">⚽</span>Balanced gameplay</span>
+        <span class="chip"><span class="ic">🤝</span>Balanced squads</span>
+        <span class="chip"><span class="ic">🚫</span>No overpowered cards</span>
+        <span class="chip"><span class="ic">🛡️</span>Default formations only</span>
+        <span class="chip"><span class="ic">🧭</span>No glitchy tactics</span>
+        <span class="chip"><span class="ic">🏆</span>Prizes to win</span>
+        <span class="chip"><span class="ic">📏</span>Clear fair-play rules</span>
+        <span class="chip"><span class="ic">✨</span>…and much more</span>
+      </div>
+
+      <div class="hero__actions">
+        <a class="btn btn-primary" href="https://discord.gg/kycssSJ8Ub" target="_blank" rel="noopener">
+          <!-- Inline SVG keeps it crisp + no extra request -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 245 240" aria-hidden="true" focusable="false" style="height:22px;width:22px">
+            <path d="M104.4 104.9c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.2-5 10.2-11.1s-4.5-11.1-10.2-11.1zm36.2 0c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.2-5 10.2-11.1s-4.5-11.1-10.2-11.1z"/>
+            <path d="M189.5 20h-134C24.6 20 10 34.6 10 52.7v134.6C10 205.4 24.6 220 42.7 220h113.7l-5.3-18.5 12.8 11.9 12.1 11.2 21.5 19V52.7c0-18.1-14.6-32.7-32.7-32.7zM162 164.1s-5.3-6.3-9.7-11.9c19.2-5.5 26.5-17.7 26.5-17.7-6 4-11.7 6.9-16.8 8.8-7.3 3.1-14.3 5.1-21.3 6-14.1 2.7-27 2-38.2-.1-8.4-1.6-15.7-3.8-22.3-6-3.5-1.3-7.2-2.7-11-4.4-.4-.2-.8-.3-1.2-.5-.3-.2-.5-.3-.5-.3s7 12 25.5 17.6c-4.4 5.6-9.8 12.2-9.8 12.2-32.2-1-44.5-22.1-44.5-22.1 0-46.9 20.9-84.9 20.9-84.9 20.9-15.7 40.7-15.2 40.7-15.2l1.5 1.8c-26 7.5-38 19-38 19s3.2-1.8 8.6-4.3c15.6-6.8 28-8.6 33.1-9.1.9-.1 1.7-.2 2.6-.2 9.3-1.2 19-1.5 28.9-.3 13.6 1.6 28.2 5.4 42.9 13.3 0 0-11.4-10.8-36.2-18.3l2.1-2.4s19.8-.5 40.9 15.2c0 0 20.9 38 20.9 84.9 0 .1-12.3 21.1-44.5 22.1z"/>
+          </svg>
+          Join the League
+        </a>
+      </div>
+
+      <p class="muted center" style="margin-top:8px">Free to join. Open to all players.</p>
     </div>
-
-    <!-- Main headline -->
-    <h1 class="headline">Play Fair. Play Football.</h1>
-    <p class="support">
-      The community-driven eFootball league with fair rules and balanced squads.
-    </p>
-
-    <!-- Subtext with Learn More -->
-    <p class="sub">
-      The eFootball Fair Play League (eFPL) keeps things simple and honest.
-      No exploits, no overpowered cards, just proper PES-style football.
-      <a class="learn-inline" href="https://www.efpl.gg/rules"><span>Learn More →</span></a>
-    </p>
-
-    <!-- Feature chips -->
-    <div class="features">
-      <div class="chip"><span class="ic">⚽</span><span>Balanced gameplay</span></div>
-      <div class="chip"><span class="ic">🤝</span><span>Balanced squads</span></div>
-      <div class="chip"><span class="ic">🚫</span><span>No overpowered cards</span></div>
-      <div class="chip"><span class="ic">🛡️</span><span>Default formations only</span></div>
-      <div class="chip"><span class="ic">🧭</span><span>No glitchy tactics</span></div>
-      <div class="chip"><span class="ic">🏆</span><span>Prizes to win</span></div>
-      <div class="chip"><span class="ic">📏</span><span>Clear fair-play rules</span></div>
-      <div class="chip"><span class="ic">✨</span><span>…and much more</span></div>
-    </div>
-
-    <!-- CTA -->
-    <div class="ctas">
-      <a class="btn primary" href="https://discord.gg/kycssSJ8Ub" aria-label="Join the League (Discord)" target="_blank" rel="noopener">
-        <!-- Discord logo inline SVG -->
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 245 240" aria-hidden="true" focusable="false">
-          <path d="M104.4 104.9c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.2-5 10.2-11.1s-4.5-11.1-10.2-11.1zm36.2 0c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.2-5 10.2-11.1s-4.5-11.1-10.2-11.1z"/>
-          <path d="M189.5 20h-134C24.6 20 10 34.6 10 52.7v134.6C10 205.4 24.6 220 42.7 220h113.7l-5.3-18.5 12.8 11.9 12.1 11.2 21.5 19V52.7c0-18.1-14.6-32.7-32.7-32.7zM162 164.1s-5.3-6.3-9.7-11.9c19.2-5.5 26.5-17.7 26.5-17.7-6 4-11.7 6.9-16.8 8.8-7.3 3.1-14.3 5.1-21.3 6-14.1 2.7-27 2-38.2-.1-8.4-1.6-15.7-3.8-22.3-6-3.5-1.3-7.2-2.7-11-4.4-.4-.2-.8-.3-1.2-.5-.3-.2-.5-.3-.5-.3s7 12 25.5 17.6c-4.4 5.6-9.8 12.2-9.8 12.2-32.2-1-44.5-22.1-44.5-22.1 0-46.9 20.9-84.9 20.9-84.9 20.9-15.7 40.7-15.2 40.7-15.2l1.5 1.8c-26 7.5-38 19-38 19s3.2-1.8 8.6-4.3c15.6-6.8 28-8.6 33.1-9.1.9-.1 1.7-.2 2.6-.2 9.3-1.2 19-1.5 28.9-.3 13.6 1.6 28.2 5.4 42.9 13.3 0 0-11.4-10.8-36.2-18.3l2.1-2.4s19.8-.5 40.9 15.2c0 0 20.9 38 20.9 84.9 0 .1-12.3 21.1-44.5 22.1z"/>
-        </svg>
-        Join the League
-      </a>
-    </div>
-    <div class="cta-sub">Free to join. Open to all players.</div>
-  </section>
+  </header>
 </body>
 </html>
