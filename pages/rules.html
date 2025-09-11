@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>eFPL — Full Rules</title>
+<title>eFPL - Full Rules</title>
+<meta name="description" content="Official eFPL rules and match settings: allowed card types, default formations, fair-play guidelines, and required lobby settings." />
 <style>
   :root{
     --text:#ffffff; --muted:#cbd5e1; --accent:#f9d71c;
@@ -90,64 +91,43 @@
   figure{margin:10px 0;background:rgba(255,255,255,.04);border:1px dashed var(--border);border-radius:10px;padding:10px;text-align:center}
   figure img{max-width:100%;height:auto;border-radius:8px;display:block;margin:0 auto}
   figcaption{margin-top:6px;color:var(--muted);font-size:14px}
-/* ---------- Mobile readability polish ---------- */
-@media (max-width: 780px) {
-  /* Bigger base text + more line height */
-  body { font-size: 17.5px; line-height: 1.7; }
 
-  /* Roomier title block */
-  .title { gap: 14px; margin-bottom: 16px; }
-  .crest { width: 30px; height: 30px; }
-  .crest img { width: 24px; height: 24px; }
-  .motto { font-size: 13.5px; }
+  /* ---------- Mobile readability polish ---------- */
+  @media (max-width: 780px) {
+    body { font-size: 17.5px; line-height: 1.7; }
+    .title { gap: 14px; margin-bottom: 16px; }
+    .crest { width: 30px; height: 30px; }
+    .crest img { width: 24px; height: 24px; }
+    .motto { font-size: 13.5px; }
+    .chips { gap: 10px; }
+    .chip { padding: 10px 16px; border-width: 2px; font-size: 15px; }
+    .mobile-toc summary { padding: 12px 14px; font-size: 16px; }
+    .mobile-toc a { padding: 12px 14px; font-size: 16px; }
+    .section { padding: 20px; margin-bottom: 20px; scroll-margin-top: 100px; }
+    .section h2 { margin-bottom: 10px; gap: 12px; }
+    .ic { font-size: 20px; }
+    ul, ol { margin-left: 20px; }
+    li { margin: 10px 0; }
+    .rulebox { padding: 16px; }
+    details { padding: 12px; }
+    summary { padding: 2px 0; font-size: 16.5px; }
+    details .content { margin-top: 10px; }
+    figure { padding: 10px; }
+    figcaption { font-size: 14.5px; }
+    a, button, summary { min-height: 44px; }
+  }
 
-  /* Make highlight chips easier to read/tap */
-  .chips { gap: 10px; }
-  .chip { padding: 10px 16px; border-width: 2px; font-size: 15px; }
-
-  /* Turn sidebar off (we already hide it ≤980px), keep the mobile TOC roomy */
-  .mobile-toc summary { padding: 12px 14px; font-size: 16px; }
-  .mobile-toc a { padding: 12px 14px; font-size: 16px; }
-
-  /* Sections: more padding and separation */
-  .section { padding: 20px; margin-bottom: 20px; scroll-margin-top: 100px; }
-  .section h2 { margin-bottom: 10px; gap: 12px; }
-  .ic { font-size: 20px; }
-
-  /* Lists: increase spacing for scan-ability */
-  ul, ol { margin-left: 20px; }
-  li { margin: 10px 0; }
-
-  /* Rule cards: a bit softer and roomier */
-  .rulebox { padding: 16px; }
-
-  /* Collapsibles: bigger tap area, clearer spacing */
-  details { padding: 12px; }
-  summary { padding: 2px 0; font-size: 16.5px; }
-  details .content { margin-top: 10px; }
-
-  /* Figures: reduce visual density, keep captions legible */
-  figure { padding: 10px; }
-  figcaption { font-size: 14.5px; }
-
-  /* Touch target comfort */
-  a, button, summary { min-height: 44px; }
-}
-
-/* Very small screens: stack highlight chips vertically for clarity */
-@media (max-width: 420px) {
-  .chips { flex-direction: column; }
-  .chip { width: 100%; text-align: center; }
-}
-
-
+  @media (max-width: 420px) {
+    .chips { flex-direction: column; }
+    .chip { width: 100%; text-align: center; }
+  }
 </style>
 </head>
 <body>
   <div class="wrap">
     <div class="title">
       <div class="left">
-        <div class="crest"><img src="images/e-logo.png" alt="eFPL crest"></div>
+        <div class="crest"><img src="https://efpl-assets.pages.dev/img/e-logo.png" alt="eFPL crest"></div>
         <div>
           <span class="eyebrow">eFPL</span>
           <h1>Full Rules & Match Settings</h1>
@@ -213,8 +193,8 @@
             <summary>📸 Player Selection - example screenshot</summary>
             <div class="content">
               <figure>
-                <img src="images/player-selection.png" alt="Player selection screenshot" loading="lazy">
-                <figcaption>Show allowed categories only (no Epics, Big Time, Showtime).</figcaption>
+                <img src="https://efpl-assets.pages.dev/img/rules/card-types.jpg" alt="Allowed card types view in eFootball" loading="lazy">
+                <figcaption>Show allowed categories only: Standard, Featured, Highlight, Trending. No Epics, Big Time, or Showtime.</figcaption>
               </figure>
             </div>
           </details>
@@ -240,15 +220,17 @@
               <li><span class="em">No custom formations.</span> You can only select from the <span class="em">default list</span>.</li>
               <li><span class="em">No editing the formation</span> (no dragging or moving players).</li>
               <li>You <span class="em">are allowed</span> to change player roles using <span class="em">Y or Triangle</span> (for example CMF to DMF, CF to SS).</li>
+			  <li>Sub Tactics <span class="em">Must </span> be disbaled.</li>
+
             </ul>
           </div>
 
           <details>
-            <summary>📸 Default Formation list - screenshot</summary>
+            <summary>📸 Default formation list - screenshot</summary>
             <div class="content">
               <figure>
-                <img src="images/formation-list.png" alt="Default formation list" loading="lazy">
-                <figcaption>Select from the default list only.</figcaption>
+                <img src="https://efpl-assets.pages.dev/img/rules/formations.jpg" alt="Default formation list screen in eFootball" loading="lazy">
+                <figcaption>Select from the default list only. Do not drag players to create new shapes.</figcaption>
               </figure>
             </div>
           </details>
@@ -256,10 +238,10 @@
           <div class="protip">💡 Pro tip: Save an <span class="em">eFPL tactic</span> with these settings so it is one click to load every match.</div>
 
           <details>
-            <summary>📸 Saved Tactic for eFPL - screenshot</summary>
+            <summary>📸 Saved gameplan - screenshot</summary>
             <div class="content">
               <figure>
-                <img src="images/saved-tactic.png" alt="Saved tactic example" loading="lazy">
+                <img src="https://efpl-assets.pages.dev/img/rules/saved-gameplan.jpg" alt="Saved eFPL gameplan with default formation" loading="lazy">
                 <figcaption>Save once, then load before each match.</figcaption>
               </figure>
             </div>
@@ -272,6 +254,7 @@
           <div class="rulebox">
             <ul>
               <li><span class="em">No Smart-Assist.</span></li>
+			  <li>Before joining a league, each player is required to have 1 connection test match.</li>
               <li>Respect opponents - no time wasting or toxicity.</li>
               <li>If connection is poor, agree to restart.</li>
               <li>Record or stream games if possible.</li>
@@ -293,11 +276,11 @@
           </div>
 
           <details>
-            <summary>📸 Lobby / Match Settings - screenshot</summary>
+            <summary>📸 Lobby / match settings - screenshot</summary>
             <div class="content">
               <figure>
-                <img src="images/match-settings.png" alt="Match settings example" loading="lazy">
-                <figcaption>Confirm 10 min, Condition Random, Injuries On, 5 Subs.</figcaption>
+                <img src="https://efpl-assets.pages.dev/img/rules/match-settings.jpg" alt="Lobby match settings showing 10 min, Random conditions, Injuries On, 5 subs" loading="lazy">
+                <figcaption>Confirm 10 minutes, Condition Random, Injuries On, 5 Subs.</figcaption>
               </figure>
             </div>
           </details>

@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>eFPL Standings</title>
+<meta name="description" content="Live eFPL standings for the Diamond League. Tables, points, and positions updated from the official Google Sheet." />
 
 <!-- Speed: preconnect to Sheets -->
 <link rel="preconnect" href="https://docs.google.com" crossorigin>
@@ -24,7 +25,28 @@
   /* Title row */
   .title{display:flex;justify-content:space-between;align-items:center;margin:0 0 12px;padding:12px}
   .title h1{font-size:20px;margin:0;color:var(--text)}
-  .badge{background:var(--accent);color:#000;padding:4px 12px;border-radius:999px;font-weight:700}
+  .badge{
+    background:var(--accent);color:#000;padding:4px 12px;border-radius:999px;font-weight:700;
+    line-height:1; white-space:nowrap;
+  }
+
+  /* Page H1 with sponsor image + yellow accent text */
+  .page-h1{
+    margin:0;
+    font-weight:900;
+    line-height:1.15;
+    display:flex; align-items:center; flex-wrap:wrap; gap:8px;
+    font-size: clamp(22px, 4.2vw, 34px); /* larger, responsive */
+  }
+  .page-h1 .sponsor{
+    display:inline-flex; align-items:center;
+    padding:2px 8px; border-radius:999px;
+    border:1px solid rgba(249,215,28,.35);
+    background:rgba(255,255,255,.06);
+    margin:0 6px;
+  }
+  .page-h1 .sponsor img{ height:24px; width:auto; display:block; } /* slightly bigger by default */
+  .page-h1 .accent{ color:var(--accent); }
 
   /* Table */
   table{width:100%;border-collapse:collapse}
@@ -68,6 +90,10 @@
   @media (max-width:680px){
     .wrap{padding:12px}
     .card{border-radius:10px}
+
+    .title{padding:10px 12px}
+    .title .badge{font-size:12px; padding:4px 8px} /* smaller pill on phones */
+
     .table-desktop{display:none;}
     .table-mobile{display:block;}
     .table-mobile th,.table-mobile td{padding:10px;font-size:14px}
@@ -105,7 +131,13 @@
 
       <!-- Title / Updated -->
       <div class="title">
-        <h1>Season 1 Standings</h1>
+        <h1 class="page-h1">
+          The
+          <span class="sponsor">
+            <img src="https://efpl-assets.pages.dev/img/sponsor-placeholder.png" alt="League sponsor">
+          </span>
+          <span class="accent">Diamond League</span>
+        </h1>
         <span class="badge" id="updated">Loading…</span>
       </div>
 
@@ -125,8 +157,8 @@
       <!-- Sponsor footer -->
       <div class="sponsor-footer">
         This league is sponsored by
-        <img src="https://lh3.googleusercontent.com/eOjbPhVmMtCzGb3OXqyUxflsxNqrIFP2hCI6qqQxleNgTrGt7Nd7NyyBH0fmwEXahcL5VPx2lmLnfnuS9Qdzs3C66tVm8VGEo72ROV-Ttfmk_w3SyjSrCZ6OjLRtH8DVJ9_VwP_vnrTKQ5gIuwx4LDI2MvtKCPY6_pbNC9wCzYSVaQam8ZFq8Q=w1280"
-             alt="Sponsor Logo" class="footer-logo">
+        <img src="https://efpl-assets.pages.dev/img/sponsor-placeholder.png"
+             alt="Sponsor logo" class="footer-logo">
       </div>
     </div>
   </div>
@@ -165,6 +197,20 @@ function saveHTML(key, html){ try{ localStorage.setItem(key, html); }catch(e){} 
 paintInstant('t', 'efpl:standings:full', 'sk-standings');
 paintInstant('t-compact', 'efpl:standings:mob', 'sk-standings');
 
+function shortStamp(d){
+  // Short UK-style timestamp: "Upd 10 Sep 09:34" (24h)
+  try{
+    return 'Upd ' + new Intl.DateTimeFormat('en-GB', {
+      day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit',
+      hour12:false, timeZone:'Europe/London'
+    }).format(d).replace(',', '');
+  }catch(e){
+    // Fallback
+    const pad = n => String(n).padStart(2,'0');
+    return `Upd ${pad(d.getDate())}/${pad(d.getMonth()+1)} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+}
+
 async function loadStandings(){
   const statusEl = document.getElementById('updated');
   try{
@@ -173,7 +219,7 @@ async function loadStandings(){
       + `&range=${encodeURIComponent(RANGE)}&cachebust=${CB}`;
     const res = await fetch(url);
     const text = await res.text();
-    if(!res.ok) throw new Error('HTTP '+res.status+' — '+text.slice(0,200));
+    if(!res.ok) throw new Error('HTTP '+res.status+' - '+text.slice(0,200));
     const json = parseGviz(text);
     const headers = json.table.cols.map(c => c.label || '');
     const rows = (json.table.rows || []).map(r => (r.c || []).map(c => c ? c.v : ''));
@@ -206,11 +252,11 @@ async function loadStandings(){
 
     document.querySelectorAll('.fade-in').forEach(n => n.classList.add('ready'));
     document.getElementById('sk-standings').style.display='none';
-    statusEl.textContent = 'Updated ' + new Date().toLocaleString();
+    statusEl.textContent = shortStamp(new Date());
   }catch(err){
     document.getElementById('t').innerHTML = '';
     document.getElementById('t-compact').innerHTML = '';
-    statusEl.textContent = 'Error — ' + err.message;
+    statusEl.textContent = 'Error - ' + err.message; // no em-dash
     console.error(err);
   }
 }

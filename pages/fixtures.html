@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Fixtures</title>
+<meta name="description" content="eFPL fixtures and results for the Diamond League. Home vs away listings updated live from the official Google Sheet." />
 
 <!-- Speed optimizations -->
 <link rel="preconnect" href="https://docs.google.com" crossorigin>
@@ -22,7 +23,10 @@
 
   .title{display:flex;justify-content:space-between;align-items:center;margin:0 0 12px;padding:0 4px}
   .title h1{font-size:20px;margin:0;color:var(--text)}
-  .pill{background:var(--accent);color:#000;padding:4px 12px;border-radius:999px;font-weight:700}
+  .pill{
+    background:var(--accent);color:#000;padding:4px 12px;border-radius:999px;font-weight:700;
+    line-height:1; white-space:nowrap;
+  }
 
   /* Desktop table */
   table{width:100%;border-collapse:collapse}
@@ -41,6 +45,8 @@
   @media (max-width:680px){
     .wrap{padding:12px}
     .card{border-radius:10px}
+    .title{padding:0 2px}
+    .title .pill{font-size:12px; padding:4px 8px} /* smaller pill on phones */
     .table-desktop{display:none;}
     .table-mobile{display:block;}
     .fx-row{
@@ -112,6 +118,19 @@ function paintInstant(elId, key, skId){
 }
 function saveHTML(key, html){ try{ localStorage.setItem(key, html); }catch(e){} }
 
+// Short UK-style timestamp: "Upd 10 Sep 09:34" (24h)
+function shortStamp(d){
+  try{
+    return 'Upd ' + new Intl.DateTimeFormat('en-GB', {
+      day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit',
+      hour12:false, timeZone:'Europe/London'
+    }).format(d).replace(',', '');
+  }catch(e){
+    const pad = n => String(n).padStart(2,'0');
+    return `Upd ${pad(d.getDate())}/${pad(d.getMonth()+1)} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+}
+
 // Paint instantly if cached
 paintInstant('fixtures', 'efpl:fixtures:desk', 'sk-fixtures');
 paintInstant('fixtures-mobile', 'efpl:fixtures:mob', 'sk-fixtures');
@@ -161,11 +180,11 @@ async function loadFixtures(){
     document.querySelectorAll('.fade-in').forEach(n => n.classList.add('ready'));
     const sk=document.getElementById('sk-fixtures'); if(sk) sk.style.display='none';
 
-    badge.textContent='Updated '+new Date().toLocaleString();
+    badge.textContent = shortStamp(new Date());
   }catch(err){
     document.getElementById('fixtures').innerHTML='';
     document.getElementById('fixtures-mobile').innerHTML='';
-    badge.textContent='Error — '+err.message;
+    badge.textContent='Error - '+err.message; // no em-dash
     console.error(err);
   }
 }
