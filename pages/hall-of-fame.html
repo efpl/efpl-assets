@@ -4,27 +4,33 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>eFPL Honor Roll</title>
+<meta name="description" content="eFPL Hall of Fame and all-time honor roll: champions by season and total titles across Diamond, Ruby, Sapphire, and Cup competitions." />
 <style>
+  :root{
+    --bg:#00143b; --card:#05225a; --ink:#fff; --muted:#cbd5e1;
+    --accent:#f9d71c; --line:rgba(249,215,28,.35);
+    --row:#001a4d;
+  }
   body {
-    background:#00143b;
-    color:#fff;
+    background:var(--bg);
+    color:var(--ink);
     font-family:"Segoe UI",Arial,sans-serif;
     margin:0;
     padding:20px;
   }
-  h1 { text-align:center; color:#f9d71c; margin-bottom:20px; }
+  h1 { text-align:center; color:var(--accent); margin:0 0 20px; }
 
   /* --- All-Time Winners Leaderboard --- */
   .alltime {
     margin-bottom:30px;
-    background:#05225a;
+    background:var(--card);
     padding:20px;
     border-radius:12px;
-    border:1px solid rgba(249,215,28,.35);
+    border:1px solid var(--line);
   }
   .alltime h2 {
     margin:0 0 15px;
-    color:#f9d71c;
+    color:var(--accent);
     text-align:center;
   }
   .leaderboard {
@@ -35,17 +41,17 @@
   .leaderboard li {
     padding:10px;
     margin-bottom:6px;
-    background:#001a4d;
+    background:var(--row);
     border-radius:8px;
     display:flex;
     justify-content:space-between;
     align-items:center;
     font-weight:bold;
   }
-  .leaderboard li span { color:#f9d71c; font-weight:normal; }
-  .leaderboard .first { background:linear-gradient(90deg,#f9d71c,#bfa100); color:#00143b; }
-  .leaderboard .second { background:linear-gradient(90deg,#c0c0c0,#999); color:#00143b; }
-  .leaderboard .third { background:linear-gradient(90deg,#cd7f32,#8b4513); color:#00143b; }
+  .leaderboard li span { color:var(--accent); font-weight:normal; }
+  .leaderboard .first  { background:linear-gradient(90deg,#f9d71c,#bfa100); color:#00143b; }
+  .leaderboard .second { background:linear-gradient(90deg,#c0c0c0,#999);   color:#00143b; }
+  .leaderboard .third  { background:linear-gradient(90deg,#cd7f32,#8b4513); color:#00143b; }
 
   /* --- Controls --- */
   .controls {
@@ -54,7 +60,7 @@
     margin-bottom:12px;
   }
   .collapse-btn {
-    background:#f9d71c;
+    background:var(--accent);
     color:#00143b;
     border:none;
     padding:6px 12px;
@@ -67,8 +73,8 @@
 
   /* --- Accordion --- */
   .accordion {
-    background:#05225a;
-    border:1px solid rgba(249,215,28,.35);
+    background:var(--card);
+    border:1px solid var(--line);
     border-radius:12px;
     margin-bottom:10px;
     overflow:hidden;
@@ -78,18 +84,20 @@
     padding:14px;
     font-size:18px;
     font-weight:bold;
-    color:#f9d71c;
+    color:var(--accent);
     display:flex;
     justify-content:space-between;
     align-items:center;
     user-select:none;
+    outline:none;
   }
-  .accordion-header:hover { background:#001a4d; }
+  .accordion-header:hover { background:var(--row); }
+  .accordion-header .icon { margin-left:12px; color:#fff; }
   .accordion-content {
     max-height:0;
     overflow:hidden;
     transition:max-height 0.3s ease;
-    background:#001a4d;
+    background:var(--row);
   }
   .accordion-content-inner { padding:14px; }
   .winners {
@@ -98,13 +106,13 @@
     gap:12px;
   }
   .winner {
-    background:#05225a;
+    background:var(--card);
     border:1px solid rgba(249,215,28,.25);
     border-radius:8px;
     padding:12px;
     text-align:center;
   }
-  .winner span { display:block; margin-top:6px; color:#f9d71c; font-weight:bold; }
+  .winner span { display:block; margin-top:6px; color:var(--accent); font-weight:bold; }
   @media (max-width:600px) {
     .winners { grid-template-columns:1fr; }
     .controls { justify-content:center; }
@@ -112,7 +120,7 @@
 </style>
 </head>
 <body>
-<h1>eFPL Honor Roll</h1>
+<h1>eFPL Hall Of Fame</h1>
 
 <!-- All-Time Winners -->
 <section class="alltime">
@@ -133,13 +141,15 @@
 
 <!-- Controls for Accordion -->
 <div class="controls">
-  <button class="collapse-btn" id="collapseAll">Collapse All</button>
+  <button class="collapse-btn" id="collapseAll" type="button">Collapse All</button>
 </div>
 
 <!-- Accordion Seasons -->
 <div class="accordion">
-  <div class="accordion-header">Season 1 (2025) <span>+</span></div>
-  <div class="accordion-content">
+  <div class="accordion-header" role="button" tabindex="0" aria-expanded="false" aria-controls="s1">
+    <span>Season 1 (2025)</span><span class="icon" aria-hidden="true">+</span>
+  </div>
+  <div class="accordion-content" id="s1">
     <div class="accordion-content-inner">
       <div class="winners">
         <div class="winner">Diamond League <span>Team A</span></div>
@@ -152,8 +162,10 @@
 </div>
 
 <div class="accordion">
-  <div class="accordion-header">Season 2 (2026) <span>+</span></div>
-  <div class="accordion-content">
+  <div class="accordion-header" role="button" tabindex="0" aria-expanded="false" aria-controls="s2">
+    <span>Season 2 (2026)</span><span class="icon" aria-hidden="true">+</span>
+  </div>
+  <div class="accordion-content" id="s2">
     <div class="accordion-content-inner">
       <div class="winners">
         <div class="winner">Diamond League <span>Team E</span></div>
@@ -166,18 +178,32 @@
 </div>
 
 <script>
-  // Accordion toggle
-  document.querySelectorAll('.accordion-header').forEach(header => {
-    header.addEventListener('click', () => {
-      const content = header.nextElementSibling;
-      const icon = header.querySelector('span');
+  // Helper: toggle one accordion section
+  function toggleAccordion(header){
+    const content = header.nextElementSibling;
+    const icon = header.querySelector('.icon');
+    const isOpen = !!content.style.maxHeight;
 
-      if (content.style.maxHeight) {
-        content.style.maxHeight = null;
-        icon.textContent = '+';
-      } else {
-        content.style.maxHeight = content.scrollHeight + "px";
-        icon.textContent = '–';
+    if (isOpen) {
+      content.style.maxHeight = null;
+      icon.textContent = '-'; // set first so screen readers don't lag
+      icon.textContent = '+'; // final state closed
+      header.setAttribute('aria-expanded', 'false');
+    } else {
+      content.style.maxHeight = content.scrollHeight + 'px';
+      icon.textContent = '+'; // set first so transition reads
+      icon.textContent = '-'; // final state open
+      header.setAttribute('aria-expanded', 'true');
+    }
+  }
+
+  // Click support
+  document.querySelectorAll('.accordion-header').forEach(header => {
+    header.addEventListener('click', () => toggleAccordion(header));
+    header.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleAccordion(header);
       }
     });
   });
@@ -187,8 +213,10 @@
     document.querySelectorAll('.accordion-content').forEach(content => {
       content.style.maxHeight = null;
     });
-    document.querySelectorAll('.accordion-header span').forEach(icon => {
-      icon.textContent = '+';
+    document.querySelectorAll('.accordion-header').forEach(h => {
+      h.setAttribute('aria-expanded', 'false');
+      const icon = h.querySelector('.icon');
+      if (icon) icon.textContent = '+';
     });
   });
 </script>

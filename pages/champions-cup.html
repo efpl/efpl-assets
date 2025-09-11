@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>eFPL Knockout Cup — Split Bracket</title>
+<title>eFPL — Champions Cup</title>
 <style>
   :root{
     --bg:#00143b; --card:#05225a; --ink:#fff; --muted:#cbd5e1;
@@ -28,8 +28,14 @@
 
   /* Match cards */
   .match{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:210px;box-shadow:0 2px 6px rgba(0,0,0,.2)}
-  .fixture{display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:800}
-  .team{flex:1}
+  .fixture{
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    align-items:center;
+    gap:8px;
+    font-weight:800;
+  }
+  .team{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .team.right{text-align:right}
   .vs{opacity:.85;font-weight:900}
 
@@ -68,12 +74,12 @@
 <body>
   <div class="wrap">
     <div class="title">
-      <span class="eyebrow">Knockout Cup</span>
+      <span class="eyebrow">Champions Cup</span>
       <h1>Road to the Final</h1>
     </div>
 
     <div class="stage">
-      <!-- LEFT: 4 x R16 -> 2 x QF -> 1 x SF -->
+      <!-- LEFT -->
       <div class="side left">
         <div class="group r16">
           <h3>Round of 16</h3>
@@ -95,15 +101,12 @@
 
       <!-- CENTER -->
       <div class="center">
-        <!-- Swap with your preferred transparent PNG/SVG trophy -->
-        <img class="trophy" alt="Trophy"
-             src="https://i.imgur.com/0sct2LO.png" />
+        <img class="trophy" alt="Champions Cup Trophy" src="https://efpl-assets.pages.dev/img/champions-cup.png" />
         <div class="final">Final: Winner S1 vs Winner S2</div>
         <div class="champion"><span class="cup">🏆</span> Champion: TBD</div>
-        <div class="note">Edit names/scores as the cup progresses</div>
       </div>
 
-      <!-- RIGHT: 4 x R16 -> 2 x QF -> 1 x SF -->
+      <!-- RIGHT -->
       <div class="side right">
         <div class="group r16">
           <h3>Round of 16</h3>
@@ -123,8 +126,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Optional mobile-only stacked summary (appears automatically via media query if you want to add later) -->
   </div>
 </body>
 </html>
