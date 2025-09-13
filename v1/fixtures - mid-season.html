@@ -5,50 +5,40 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>eFPL Fixtures</title>
 <meta name="color-scheme" content="dark">
-<!-- small perf wins -->
 <link rel="preconnect" href="https://docs.google.com" crossorigin>
 <link rel="preconnect" href="https://www.google.com" crossorigin>
 
 <style>
   :root{
-    --bg:#00143b;         /* navy */
-    --card:#05225a;       /* darker navy */
-    --ink:#ffffff;        /* text */
-    --accent:#f9d71c;     /* yellow */
+    --bg:#00143b;
+    --card:#05225a;
+    --ink:#ffffff;
+    --accent:#f9d71c;
     --line:rgba(249,215,28,.35);
-    --muted:#cbd5e1;
   }
-
-  /* make it blend into Google Sites */
   html,body{background:transparent}
   body{margin:0;font:16px/1.45 system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink)}
   .wrap{max-width:900px;margin:18px auto;padding:12px;background:var(--bg);border-radius:14px;border:1px solid var(--line)}
 
-  .title{display:flex;justify-content:center;align-items:center;gap:10px;margin:0 0 10px}
-  .title h1{margin:0;font-size:clamp(20px,4.5vw,26px);font-weight:900}
-  .eyebrow{background:var(--accent);color:#0b1b3d;padding:2px 10px;border-radius:999px;font-weight:900;font-size:12px}
+  /* header old style */
+  .title{text-align:center;margin:0 0 14px}
+  .eyebrow{background:var(--accent);color:#00143b;padding:4px 14px;border-radius:999px;font-weight:900;font-size:13px;text-transform:uppercase}
+  .title h1{margin:8px 0 0;font-size:22px;font-weight:900}
 
   table{width:100%;border-collapse:separate;border-spacing:0 8px}
-  thead th{
-    font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
-    text-align:center;padding:6px 8px;
-  }
   tbody td{
-    background:var(--card);
     border:1px solid var(--line);
     padding:10px 12px;
     font-weight:700;
   }
   tbody tr td:first-child{border-radius:10px 0 0 10px}
   tbody tr td:last-child{border-radius:0 10px 10px 0}
-  td[colspan]{text-align:center}
 
-  /* columns: Home | mid (V/score) | Away */
-  .home{text-align:right}
-  .mid{width:80px;text-align:center;opacity:.95}
-  .away{text-align:left}
+  .home{background:var(--accent);color:#00143b;text-align:right}
+  .mid{background:var(--card);text-align:center;width:80px;color:#fff}
+  .away{background:var(--accent);color:#00143b;text-align:left}
 
-  /* Mid-season divider row */
+  /* Mid-season divider */
   .milestone-row td{
     background:#05225a;
     color:#f9d71c;
@@ -58,6 +48,7 @@
     padding:10px 12px;
     border-radius:10px !important;
   }
+
   .milestone-chip{
     display:inline-block;
     padding:3px 12px;
@@ -68,17 +59,13 @@
     letter-spacing:.03em;
   }
 
-  /* small helper for empty state / errors */
-  .status{color:var(--muted);text-align:center;margin:10px 0 0;font-size:14px}
+  .status{color:#cbd5e1;text-align:center;margin:10px 0 0;font-size:14px}
 
-  /* Mobile trim for Google Sites iframes */
   @media (max-width:680px){
     .wrap{padding:10px}
     body{font-size:14px;line-height:1.35}
-    .title h1{font-size:20px}
-    thead{display:none}             /* save vertical space */
-    table{border-spacing:0 6px}
-    tbody td{padding:10px 8px}
+    .title h1{font-size:18px}
+    tbody td{padding:8px}
     .mid{width:64px}
   }
 </style>
@@ -91,13 +78,6 @@
     </div>
 
     <table id="fixturesTable" aria-describedby="status">
-      <thead>
-        <tr>
-          <th>Home</th>
-          <th>&nbsp;</th>
-          <th>Away</th>
-        </tr>
-      </thead>
       <tbody></tbody>
     </table>
 
@@ -106,19 +86,16 @@
 
 <script>
 (function(){
-  // ====== CONFIG ======
-  const SHEET_ID = '1pPQbrjEivgy88KtyVe5ABsKjQSDutZwEO51TgKIPF5E'; // your Google Sheet ID
-  const SHEET_NAME = 'Fixtures (Embed)';                              // tab name
-  const RANGE = 'A1:C241';                                            // cells
-  const MID_AFTER = 46;  // Insert mid-season divider after 46 fixtures (i.e., between 46 & 47)
-  // =====================
+  const SHEET_ID = '1pPQbrjEivgy88KtyVe5ABsKjQSDutZwEO51TgKIPF5E';
+  const SHEET_NAME = 'Fixtures (Embed)';
+  const RANGE = 'A1:C241';
+  const MID_AFTER = 45; // ✅ divider after 45 fixtures
 
   const statusEl = document.getElementById('status');
   const tbody = document.querySelector('#fixturesTable tbody');
 
   const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}&range=${encodeURIComponent(RANGE)}`;
 
-  // Safe GViz JSON parser
   function parseGViz(text){
     const start = text.indexOf('{');
     const end   = text.lastIndexOf('}');
@@ -131,7 +108,7 @@
     tr.className = 'milestone-row';
     const td = document.createElement('td');
     td.colSpan = 3;
-    td.innerHTML = '<span class="milestone-chip">MID-SEASON</span>';
+    td.innerHTML = '<span class="milestone-chip">MID-SEASON CHECKPOINT</span>';
     tr.appendChild(td);
     tbody.appendChild(tr);
   }
@@ -140,42 +117,23 @@
     tbody.innerHTML = '';
     let rendered = 0;
 
-    // Detect header row if present (A1:C1). If headers, skip them.
-    // We treat a header as when the middle cell equals 'V' literally and either side looks like a word like "Home"/"Away".
-    const looksHeader = rows.length && rows[0] &&
-      (String(rows[0][0]||'').toLowerCase().includes('home') ||
-       String(rows[0][2]||'').toLowerCase().includes('away'));
-
-    const startIndex = looksHeader ? 1 : 0;
-
-    for(let i = startIndex; i < rows.length; i++){
+    for(let i = 0; i < rows.length; i++){
       const r = rows[i] || [];
       const home = (r[0]||'').toString().trim();
-      const mid  = (r[1]||'').toString().trim();  // "V" or "2–1"
+      const mid  = (r[1]||'').toString().trim();
       const away = (r[2]||'').toString().trim();
-
-      // skip totally empty lines
       if(!home && !mid && !away) continue;
 
-      // If you ever put a sheet marker like "#MID" in column A, honor it:
       if(home === '#MID'){ insertMilestoneRow(); continue; }
-
-      // Insert mid-season divider after 46 actual fixtures rendered
-      if(rendered === MID_AFTER){
-        insertMilestoneRow();
-      }
+      if(rendered === MID_AFTER){ insertMilestoneRow(); }
 
       const tr = document.createElement('tr');
-
       const tdHome = document.createElement('td'); tdHome.className='home'; tdHome.textContent = home;
       const tdMid  = document.createElement('td');  tdMid.className='mid';  tdMid.textContent = mid;
       const tdAway = document.createElement('td'); tdAway.className='away'; tdAway.textContent = away;
-
-      tr.appendChild(tdHome);
-      tr.appendChild(tdMid);
-      tr.appendChild(tdAway);
-
+      tr.appendChild(tdHome); tr.appendChild(tdMid); tr.appendChild(tdAway);
       tbody.appendChild(tr);
+
       rendered++;
     }
 
@@ -186,16 +144,10 @@
     .then(r => r.text())
     .then(txt => {
       const data = parseGViz(txt);
-      const table = data.table;
-      const rows = (table.rows || []).map(row =>
-        (row.c || []).map(cell => (cell ? cell.v : ''))
-      );
+      const rows = (data.table.rows||[]).map(row => (row.c||[]).map(cell => (cell ? cell.v : '')));
       build(rows);
     })
-    .catch(err => {
-      console.error(err);
-      statusEl.textContent = 'Error loading fixtures.';
-    });
+    .catch(err => { console.error(err); statusEl.textContent = 'Error loading fixtures.'; });
 })();
 </script>
 </body>
