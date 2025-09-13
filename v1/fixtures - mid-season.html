@@ -7,147 +7,179 @@
 <meta name="color-scheme" content="dark">
 <link rel="preconnect" href="https://docs.google.com" crossorigin>
 <link rel="preconnect" href="https://www.google.com" crossorigin>
-
 <style>
   :root{
-    --bg:#00143b;
-    --card:#05225a;
+    --bg:#00143b;        /* page/navy */
+    --row:#031e4a;       /* row base */
+    --row2:#07265a;      /* row alt */
     --ink:#ffffff;
-    --accent:#f9d71c;
-    --line:rgba(249,215,28,.35);
+    --accent:#f9d71c;    /* gold */
+    --line:rgba(249,215,28,.25);
+    --muted:#cbd5e1;
   }
   html,body{background:transparent}
   body{margin:0;font:16px/1.45 system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink)}
-  .wrap{max-width:900px;margin:18px auto;padding:12px;background:var(--bg);border-radius:14px;border:1px solid var(--line)}
+  .wrap{max-width:1100px;margin:20px auto;padding:16px;background:var(--bg);border-radius:14px}
 
-  /* header old style */
-  .title{text-align:center;margin:0 0 14px}
-  .eyebrow{background:var(--accent);color:#00143b;padding:4px 14px;border-radius:999px;font-weight:900;font-size:13px;text-transform:uppercase}
-  .title h1{margin:8px 0 0;font-size:22px;font-weight:900}
-
-  table{width:100%;border-collapse:separate;border-spacing:0 8px}
-  tbody td{
-    border:1px solid var(--line);
-    padding:10px 12px;
-    font-weight:700;
+  /* Header row (title left, updated pill right) */
+  .bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .bar h1{margin:0;font-weight:900;font-size:26px}
+  .stamp{
+    background:var(--accent); color:#00143b; font-weight:900;
+    padding:10px 16px; border-radius:999px; white-space:nowrap;
+    box-shadow:0 2px 8px rgba(0,0,0,.25); font-size:15px;
   }
-  tbody tr td:first-child{border-radius:10px 0 0 10px}
-  tbody tr td:last-child{border-radius:0 10px 10px 0}
 
-  .home{background:var(--accent);color:#00143b;text-align:right}
-  .mid{background:var(--card);text-align:center;width:80px;color:#fff}
-  .away{background:var(--accent);color:#00143b;text-align:left}
+  /* Table */
+  table{width:100%;border-collapse:separate;border-spacing:0}
+  thead th{
+    background:var(--accent); color:#00143b; font-weight:900;
+    text-transform:uppercase; letter-spacing:.06em; font-size:13px;
+    padding:14px 10px; text-align:center; border-top:1px solid #0003;
+  }
+  thead th:first-child{border-radius:8px 0 0 0}
+  thead th:last-child{border-radius:0 8px 0 0}
 
-  /* Mid-season divider */
+  tbody tr td{
+    padding:16px 14px; border-bottom:1px solid rgba(255,255,255,.04);
+  }
+  tbody tr:nth-child(odd)  td{ background:var(--row) }
+  tbody tr:nth-child(even) td{ background:var(--row2) }
+
+  /* cells */
+  .home{text-align:right}
+  .mid {text-align:center; width:90px; color:var(--muted); font-weight:800; letter-spacing:.02em}
+  .away{text-align:left}
+
+  /* Mid-season divider row */
   .milestone-row td{
-    background:#05225a;
-    color:#f9d71c;
-    text-align:center;
-    font-weight:900;
-    border:1px solid var(--line);
-    padding:10px 12px;
-    border-radius:10px !important;
+    background:#05225a !important;
+    text-align:center; border-top:1px dashed var(--accent); border-bottom:1px dashed var(--accent);
+    padding:14px 10px;
+  }
+  .chip{
+    display:inline-block; background:var(--accent); color:#00143b; font-weight:900;
+    padding:4px 12px; border-radius:999px; letter-spacing:.03em;
   }
 
-  .milestone-chip{
-    display:inline-block;
-    padding:3px 12px;
-    border-radius:999px;
-    background:#f9d71c;
-    color:#00143b;
-    font-weight:900;
-    letter-spacing:.03em;
-  }
+  /* Footer radius */
+  tbody tr:last-child td:first-child { border-radius:0 0 0 8px }
+  tbody tr:last-child td:last-child  { border-radius:0 0 8px 0 }
 
-  .status{color:#cbd5e1;text-align:center;margin:10px 0 0;font-size:14px}
-
+  /* Mobile trims */
   @media (max-width:680px){
-    .wrap{padding:10px}
-    body{font-size:14px;line-height:1.35}
-    .title h1{font-size:18px}
-    tbody td{padding:8px}
+    .wrap{padding:12px}
+    .bar h1{font-size:22px}
+    .stamp{font-size:13px;padding:8px 12px}
+    thead th{padding:12px 8px;font-size:12px}
+    tbody tr td{padding:12px 10px}
     .mid{width:64px}
   }
 </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="title">
-      <span class="eyebrow">Fixtures</span>
-      <h1>Current Season</h1>
+    <div class="bar">
+      <h1>Fixtures</h1>
+      <div id="stamp" class="stamp">Updated …</div>
     </div>
 
     <table id="fixturesTable" aria-describedby="status">
+      <thead>
+        <tr>
+          <th>Home</th>
+          <th>&nbsp;</th>
+          <th>Away</th>
+        </tr>
+      </thead>
       <tbody></tbody>
     </table>
 
-    <div id="status" class="status">Loading…</div>
+    <div id="status" style="text-align:center;color:var(--muted);margin-top:10px;font-size:14px">Loading…</div>
   </div>
 
 <script>
 (function(){
-  const SHEET_ID = '1pPQbrjEivgy88KtyVe5ABsKjQSDutZwEO51TgKIPF5E';
+  // === CONFIG ===
+  const SHEET_ID   = '1pPQbrjEivgy88KtyVe5ABsKjQSDutZwEO51TgKIPF5E';
   const SHEET_NAME = 'Fixtures (Embed)';
-  const RANGE = 'A1:C241';
-  const MID_AFTER = 45; // ✅ divider after 45 fixtures
+  const RANGE      = 'A1:C241';
+  const MID_AFTER  = 45;   // insert divider AFTER 45 fixtures (i.e., before #46)
+  // ==============
 
-  const statusEl = document.getElementById('status');
   const tbody = document.querySelector('#fixturesTable tbody');
+  const statusEl = document.getElementById('status');
+  const stampEl  = document.getElementById('stamp');
+
+  // Updated pill timestamp (local)
+  (function setStamp(){
+    const d = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    const text = `Updated ${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}, ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    stampEl.textContent = text;
+  })();
 
   const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}&range=${encodeURIComponent(RANGE)}`;
 
   function parseGViz(text){
-    const start = text.indexOf('{');
-    const end   = text.lastIndexOf('}');
-    if(start === -1 || end === -1) throw new Error('Bad GViz response');
-    return JSON.parse(text.slice(start, end+1));
+    const s = text.indexOf('{'), e = text.lastIndexOf('}');
+    if(s===-1||e===-1) throw new Error('Bad GViz response');
+    return JSON.parse(text.slice(s,e+1));
   }
 
-  function insertMilestoneRow(){
+  function insertMidRow(){
     const tr = document.createElement('tr');
     tr.className = 'milestone-row';
     const td = document.createElement('td');
     td.colSpan = 3;
-    td.innerHTML = '<span class="milestone-chip">MID-SEASON CHECKPOINT</span>';
+    td.innerHTML = '<span class="chip">MID-SEASON CHECKPOINT</span>';
     tr.appendChild(td);
     tbody.appendChild(tr);
   }
 
   function build(rows){
     tbody.innerHTML = '';
-    let rendered = 0;
+    let count = 0;
 
-    for(let i = 0; i < rows.length; i++){
+    // If first row looks like a header, skip it.
+    const looksHeader = rows.length && (
+      String(rows[0][0]||'').toLowerCase().includes('home') ||
+      String(rows[0][2]||'').toLowerCase().includes('away')
+    );
+    const start = looksHeader ? 1 : 0;
+
+    for(let i=start;i<rows.length;i++){
       const r = rows[i] || [];
       const home = (r[0]||'').toString().trim();
       const mid  = (r[1]||'').toString().trim();
       const away = (r[2]||'').toString().trim();
       if(!home && !mid && !away) continue;
 
-      if(home === '#MID'){ insertMilestoneRow(); continue; }
-      if(rendered === MID_AFTER){ insertMilestoneRow(); }
+      // If you ever put "#MID" in sheet col A, honor it:
+      if(home === '#MID'){ insertMidRow(); continue; }
+
+      if(count === MID_AFTER){ insertMidRow(); }
 
       const tr = document.createElement('tr');
-      const tdHome = document.createElement('td'); tdHome.className='home'; tdHome.textContent = home;
-      const tdMid  = document.createElement('td');  tdMid.className='mid';  tdMid.textContent = mid;
-      const tdAway = document.createElement('td'); tdAway.className='away'; tdAway.textContent = away;
-      tr.appendChild(tdHome); tr.appendChild(tdMid); tr.appendChild(tdAway);
+      const tdH = document.createElement('td'); tdH.className='home'; tdH.textContent = home;
+      const tdM = document.createElement('td'); tdM.className='mid';  tdM.textContent = mid;
+      const tdA = document.createElement('td'); tdA.className='away'; tdA.textContent = away;
+      tr.appendChild(tdH); tr.appendChild(tdM); tr.appendChild(tdA);
       tbody.appendChild(tr);
 
-      rendered++;
+      count++;
     }
 
-    statusEl.textContent = rendered ? '' : 'No fixtures found.';
+    statusEl.textContent = count ? '' : 'No fixtures found.';
   }
 
   fetch(url)
-    .then(r => r.text())
-    .then(txt => {
-      const data = parseGViz(txt);
-      const rows = (data.table.rows||[]).map(row => (row.c||[]).map(cell => (cell ? cell.v : '')));
+    .then(r=>r.text())
+    .then(t=>{ const data = parseGViz(t);
+      const rows = (data.table.rows||[]).map(row => (row.c||[]).map(c => c ? c.v : ''));
       build(rows);
     })
-    .catch(err => { console.error(err); statusEl.textContent = 'Error loading fixtures.'; });
+    .catch(err=>{ console.error(err); statusEl.textContent='Error loading fixtures.'; });
 })();
 </script>
 </body>
