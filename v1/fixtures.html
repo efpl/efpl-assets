@@ -1,175 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Fixtures</title>
-
-<!-- Speed optimizations -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>eFPL Fixtures</title>
+<meta name="color-scheme" content="dark">
 <link rel="preconnect" href="https://docs.google.com" crossorigin>
 <link rel="preconnect" href="https://www.google.com" crossorigin>
 <style>
   :root{
-    --card:#00143b; --text:#ffffff;
-    --header-bg:#f9d71c; --header-text:#00143b;
-    --row1:#001a4d; --row2:#002060; --hover:#002b80;
-    --accent:#f9d71c;
+    --bg:#00143b;        /* page/navy */
+    --row:#031e4a;       /* row base */
+    --row2:#07265a;      /* row alt */
+    --ink:#ffffff;
+    --accent:#f9d71c;    /* gold */
+    --line:rgba(249,215,28,.25);
+    --muted:#cbd5e1;
   }
   html,body{background:transparent}
-  body{margin:0;font:15px/1.5 "Segoe UI",Arial,sans-serif;color:var(--text);}
-  .wrap{max-width:1000px;margin:24px auto;padding:16px;}
-  .card{background:var(--card);border-radius:12px;overflow:hidden;}
+  body{margin:0;font:16px/1.45 system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink)}
+  .wrap{max-width:1100px;margin:20px auto;padding:16px;background:var(--bg);border-radius:14px}
 
-  .title{display:flex;justify-content:space-between;align-items:center;margin:0 0 12px;padding:0 4px}
-  .title h1{font-size:20px;margin:0;color:var(--text)}
-  .pill{background:var(--accent);color:#000;padding:4px 12px;border-radius:999px;font-weight:700}
-
-  /* Desktop table */
-  table{width:100%;border-collapse:collapse}
-  thead th{
-    background:var(--header-bg);color:var(--header-text);
-    font-size:13px;text-transform:uppercase;letter-spacing:.03em;
-    padding:10px;text-align:center;
+  /* Header row (title left, updated pill right) */
+  .bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .bar h1{margin:0;font-weight:900;font-size:26px}
+  .stamp{
+    background:var(--accent); color:#00143b; font-weight:900;
+    padding:10px 16px; border-radius:999px; white-space:nowrap;
+    box-shadow:0 2px 8px rgba(0,0,0,.25); font-size:15px;
   }
-  tbody td{padding:12px;text-align:center;font-weight:500}
-  tbody tr:nth-child(odd){background:var(--row1)}
-  tbody tr:nth-child(even){background:var(--row2)}
-  tbody tr:hover{background:var(--hover)}
 
-  /* Mobile stacked */
-  .table-mobile{display:none;}
+  /* Table */
+  table{width:100%;border-collapse:separate;border-spacing:0}
+  thead th{
+    background:var(--accent); color:#00143b; font-weight:900;
+    text-transform:uppercase; letter-spacing:.06em; font-size:13px;
+    padding:14px 10px; text-align:center; border-top:1px solid #0003;
+  }
+  thead th:first-child{border-radius:8px 0 0 0}
+  thead th:last-child{border-radius:0 8px 0 0}
+
+  tbody tr td{
+    padding:16px 14px; border-bottom:1px solid rgba(255,255,255,.04);
+  }
+  tbody tr:nth-child(odd)  td{ background:var(--row) }
+  tbody tr:nth-child(even) td{ background:var(--row2) }
+
+  /* cells */
+  .home{text-align:right}
+  .mid {text-align:center; width:90px; color:var(--muted); font-weight:800; letter-spacing:.02em}
+  .away{text-align:left}
+
+  /* Mid-season divider row */
+  .milestone-row td{
+    background:#05225a !important;
+    text-align:center; border-top:1px dashed var(--accent); border-bottom:1px dashed var(--accent);
+    padding:14px 10px;
+  }
+  .chip{
+    display:inline-block; background:var(--accent); color:#00143b; font-weight:900;
+    padding:4px 12px; border-radius:999px; letter-spacing:.03em;
+  }
+
+  /* Footer radius */
+  tbody tr:last-child td:first-child { border-radius:0 0 0 8px }
+  tbody tr:last-child td:last-child  { border-radius:0 0 8px 0 }
+
+  /* Mobile trims */
   @media (max-width:680px){
     .wrap{padding:12px}
-    .card{border-radius:10px}
-    .table-desktop{display:none;}
-    .table-mobile{display:block;}
-    .fx-row{
-      display:flex;justify-content:center;align-items:center;
-      gap:10px;font-weight:700;
-      padding:12px;border-radius:10px;margin-bottom:10px;
-    }
+    .bar h1{font-size:22px}
+    .stamp{font-size:13px;padding:8px 12px}
+    thead th{padding:12px 8px;font-size:12px}
+    tbody tr td{padding:12px 10px}
+    .mid{width:64px}
   }
-
-  /* Skeleton + fade-in */
-  .skeleton {
-    background: linear-gradient(90deg, rgba(255,255,255,.05), rgba(255,255,255,.12), rgba(255,255,255,.05));
-    background-size: 200% 100%;
-    animation: sk 1.1s infinite;
-    border-radius: 12px;
-    min-height: 160px;
-    margin-bottom:16px;
-  }
-  @keyframes sk { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-  .fade-in { opacity:0; transition:opacity .18s ease }
-  .fade-in.ready { opacity:1 }
 </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="card">
-      <div class="title">
-        <h1>Fixtures</h1>
-        <span class="pill" id="fx-updated">Loading…</span>
-      </div>
-
-      <!-- Skeleton -->
-      <div id="sk-fixtures" class="skeleton"></div>
-
-      <!-- Desktop -->
-      <div class="table-desktop fade-in">
-        <table id="fixtures"></table>
-      </div>
-
-      <!-- Mobile -->
-      <div class="table-mobile fade-in">
-        <div id="fixtures-mobile"></div>
-      </div>
+    <div class="bar">
+      <h1>Fixtures</h1>
+      <div id="stamp" class="stamp">Updated …</div>
     </div>
+
+    <table id="fixturesTable" aria-describedby="status">
+      <thead>
+        <tr>
+          <th>Home</th>
+          <th>&nbsp;</th>
+          <th>Away</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div id="status" style="text-align:center;color:var(--muted);margin-top:10px;font-size:14px">Loading…</div>
   </div>
 
 <script>
-const SHEET_ID = '1pPQbrjEivgy88KtyVe5ABsKjQSDutZwEO51TgKIPF5E';
-const FIX_TAB  = 'Fixtures (Embed)';
-const FIX_RANGE= 'A1:C241';          // A=Home, B=v/score, C=Away
+(function(){
+  // === CONFIG ===
+  const SHEET_ID   = '1pPQbrjEivgy88KtyVe5ABsKjQSDutZwEO51TgKIPF5E';
+  const SHEET_NAME = 'Fixtures (Embed)';
+  const RANGE      = 'A1:C241';
+  const MID_AFTER  = 45;   // insert divider AFTER 45 fixtures (i.e., before #46)
+  // ==============
 
-const BUCKET_MS = 5 * 60 * 1000; // 5 min cache bucket
-const CB = Math.floor(Date.now() / BUCKET_MS);
+  const tbody = document.querySelector('#fixturesTable tbody');
+  const statusEl = document.getElementById('status');
+  const stampEl  = document.getElementById('stamp');
 
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
-function parseGviz(txt){const a=txt.indexOf('{'),b=txt.lastIndexOf('}');if(a===-1||b===-1)throw new Error('Bad GViz');return JSON.parse(txt.slice(a,b+1))}
+  // Updated pill timestamp (local)
+  (function setStamp(){
+    const d = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    const text = `Updated ${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}, ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    stampEl.textContent = text;
+  })();
 
-// LocalStorage helpers
-function paintInstant(elId, key, skId){
-  try{
-    const cached = localStorage.getItem(key);
-    if(cached){
-      document.getElementById(elId).innerHTML = cached;
-      document.querySelectorAll('.fade-in').forEach(n => n.classList.add('ready'));
-      const sk = skId && document.getElementById(skId);
-      if(sk) sk.style.display = 'none';
-    }
-  }catch(e){}
-}
-function saveHTML(key, html){ try{ localStorage.setItem(key, html); }catch(e){} }
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}&range=${encodeURIComponent(RANGE)}`;
 
-// Paint instantly if cached
-paintInstant('fixtures', 'efpl:fixtures:desk', 'sk-fixtures');
-paintInstant('fixtures-mobile', 'efpl:fixtures:mob', 'sk-fixtures');
-
-async function loadFixtures(){
-  const badge=document.getElementById('fx-updated');
-  try{
-    const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq`
-      +`?tqx=out:json&sheet=${encodeURIComponent(FIX_TAB)}&range=${encodeURIComponent(FIX_RANGE)}&cachebust=${CB}`;
-    const res=await fetch(url); const txt=await res.text();
-    if(!res.ok) throw new Error(res.status+' '+txt.slice(0,200));
-    const json=parseGviz(txt);
-    const rows=(json.table.rows||[]).map(r=>(r.c||[]).map(c=>c?c.v:''))
-                .filter(r=>r && !r.every(x=>String(x).trim()===''));
-
-    // A=Home, B=Mid (v or score), C=Away
-    const items=[];
-    for(const r of rows){
-      const home=r[0]??'', mid=r[1]??'', away=r[2]??'';
-      if(!home && !away) continue;
-      items.push({home,mid,away});
-    }
-
-    /* Desktop */
-    let h='<thead><tr><th>Home</th><th></th><th>Away</th></tr></thead><tbody>';
-    items.forEach(it=>{
-      h+=`<tr><td>${esc(it.home)}</td><td>${esc(it.mid)}</td><td>${esc(it.away)}</td></tr>`;
-    });
-    h+='</tbody>';
-    document.getElementById('fixtures').innerHTML=h;
-    saveHTML('efpl:fixtures:desk', h);
-
-    /* Mobile */
-    let m='';
-    items.forEach((it,idx)=>{
-      const bg=(idx%2===0)?'var(--row1)':'var(--row2)';
-      m+=`<div class="fx-row" style="background:${bg}">
-        <span>${esc(it.home)}</span>
-        <span>${esc(it.mid)}</span>
-        <span>${esc(it.away)}</span>
-      </div>`;
-    });
-    document.getElementById('fixtures-mobile').innerHTML=m;
-    saveHTML('efpl:fixtures:mob', m);
-
-    // Reveal
-    document.querySelectorAll('.fade-in').forEach(n => n.classList.add('ready'));
-    const sk=document.getElementById('sk-fixtures'); if(sk) sk.style.display='none';
-
-    badge.textContent='Updated '+new Date().toLocaleString();
-  }catch(err){
-    document.getElementById('fixtures').innerHTML='';
-    document.getElementById('fixtures-mobile').innerHTML='';
-    badge.textContent='Error — '+err.message;
-    console.error(err);
+  function parseGViz(text){
+    const s = text.indexOf('{'), e = text.lastIndexOf('}');
+    if(s===-1||e===-1) throw new Error('Bad GViz response');
+    return JSON.parse(text.slice(s,e+1));
   }
-}
-loadFixtures();
+
+  function insertMidRow(){
+    const tr = document.createElement('tr');
+    tr.className = 'milestone-row';
+    const td = document.createElement('td');
+    td.colSpan = 3;
+    td.innerHTML = '<span class="chip">MID-SEASON CHECKPOINT</span>';
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+  }
+
+  function build(rows){
+    tbody.innerHTML = '';
+    let count = 0;
+
+    // If first row looks like a header, skip it.
+    const looksHeader = rows.length && (
+      String(rows[0][0]||'').toLowerCase().includes('home') ||
+      String(rows[0][2]||'').toLowerCase().includes('away')
+    );
+    const start = looksHeader ? 1 : 0;
+
+    for(let i=start;i<rows.length;i++){
+      const r = rows[i] || [];
+      const home = (r[0]||'').toString().trim();
+      const mid  = (r[1]||'').toString().trim();
+      const away = (r[2]||'').toString().trim();
+      if(!home && !mid && !away) continue;
+
+      // If you ever put "#MID" in sheet col A, honor it:
+      if(home === '#MID'){ insertMidRow(); continue; }
+
+      if(count === MID_AFTER){ insertMidRow(); }
+
+      const tr = document.createElement('tr');
+      const tdH = document.createElement('td'); tdH.className='home'; tdH.textContent = home;
+      const tdM = document.createElement('td'); tdM.className='mid';  tdM.textContent = mid;
+      const tdA = document.createElement('td'); tdA.className='away'; tdA.textContent = away;
+      tr.appendChild(tdH); tr.appendChild(tdM); tr.appendChild(tdA);
+      tbody.appendChild(tr);
+
+      count++;
+    }
+
+    statusEl.textContent = count ? '' : 'No fixtures found.';
+  }
+
+  fetch(url)
+    .then(r=>r.text())
+    .then(t=>{ const data = parseGViz(t);
+      const rows = (data.table.rows||[]).map(row => (row.c||[]).map(c => c ? c.v : ''));
+      build(rows);
+    })
+    .catch(err=>{ console.error(err); statusEl.textContent='Error loading fixtures.'; });
+})();
 </script>
 </body>
 </html>

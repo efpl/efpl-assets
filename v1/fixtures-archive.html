@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fixtures</title>
+
+<!-- Speed optimizations -->
+<link rel="preconnect" href="https://docs.google.com" crossorigin>
+<link rel="preconnect" href="https://www.google.com" crossorigin>
+<style>
+  :root{
+    --card:#00143b; --text:#ffffff;
+    --header-bg:#f9d71c; --header-text:#00143b;
+    --row1:#001a4d; --row2:#002060; --hover:#002b80;
+    --accent:#f9d71c;
+  }
+  html,body{background:transparent}
+  body{margin:0;font:15px/1.5 "Segoe UI",Arial,sans-serif;color:var(--text);}
+  .wrap{max-width:1000px;margin:24px auto;padding:16px;}
+  .card{background:var(--card);border-radius:12px;overflow:hidden;}
+
+  .title{display:flex;justify-content:space-between;align-items:center;margin:0 0 12px;padding:0 4px}
+  .title h1{font-size:20px;margin:0;color:var(--text)}
+  .pill{background:var(--accent);color:#000;padding:4px 12px;border-radius:999px;font-weight:700}
+
+  /* Desktop table */
+  table{width:100%;border-collapse:collapse}
+  thead th{
+    background:var(--header-bg);color:var(--header-text);
+    font-size:13px;text-transform:uppercase;letter-spacing:.03em;
+    padding:10px;text-align:center;
+  }
+  tbody td{padding:12px;text-align:center;font-weight:500}
+  tbody tr:nth-child(odd){background:var(--row1)}
+  tbody tr:nth-child(even){background:var(--row2)}
+  tbody tr:hover{background:var(--hover)}
+
+  /* Mobile stacked */
+  .table-mobile{display:none;}
+  @media (max-width:680px){
+    .wrap{padding:12px}
+    .card{border-radius:10px}
+    .table-desktop{display:none;}
+    .table-mobile{display:block;}
+    .fx-row{
+      display:flex;justify-content:center;align-items:center;
+      gap:10px;font-weight:700;
+      padding:12px;border-radius:10px;margin-bottom:10px;
+    }
+  }
+
+  /* Skeleton + fade-in */
+  .skeleton {
+    background: linear-gradient(90deg, rgba(255,255,255,.05), rgba(255,255,255,.12), rgba(255,255,255,.05));
+    background-size: 200% 100%;
+    animation: sk 1.1s infinite;
+    border-radius: 12px;
+    min-height: 160px;
+    margin-bottom:16px;
+  }
+  @keyframes sk { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+  .fade-in { opacity:0; transition:opacity .18s ease }
+  .fade-in.ready { opacity:1 }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="title">
+        <h1>Fixtures</h1>
+        <span class="pill" id="fx-updated">Loading…</span>
+      </div>
+
+      <!-- Skeleton -->
+      <div id="sk-fixtures" class="skeleton"></div>
+
+      <!-- Desktop -->
+      <div class="table-desktop fade-in">
+        <table id="fixtures"></table>
+      </div>
+
+      <!-- Mobile -->
+      <div class="table-mobile fade-in">
+        <div id="fixtures-mobile"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const SHEET_ID = '1pPQbrjEivgy88KtyVe5ABsKjQSDutZwEO51TgKIPF5E';
+const FIX_TAB  = 'Fixtures (Embed)';
+const FIX_RANGE= 'A1:C241';          // A=Home, B=v/score, C=Away
+
+const BUCKET_MS = 5 * 60 * 1000; // 5 min cache bucket
+const CB = Math.floor(Date.now() / BUCKET_MS);
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+function parseGviz(txt){const a=txt.indexOf('{'),b=txt.lastIndexOf('}');if(a===-1||b===-1)throw new Error('Bad GViz');return JSON.parse(txt.slice(a,b+1))}
+
+// LocalStorage helpers
+function paintInstant(elId, key, skId){
+  try{
+    const cached = localStorage.getItem(key);
+    if(cached){
+      document.getElementById(elId).innerHTML = cached;
+      document.querySelectorAll('.fade-in').forEach(n => n.classList.add('ready'));
+      const sk = skId && document.getElementById(skId);
+      if(sk) sk.style.display = 'none';
+    }
+  }catch(e){}
+}
+function saveHTML(key, html){ try{ localStorage.setItem(key, html); }catch(e){} }
+
+// Paint instantly if cached
+paintInstant('fixtures', 'efpl:fixtures:desk', 'sk-fixtures');
+paintInstant('fixtures-mobile', 'efpl:fixtures:mob', 'sk-fixtures');
+
+async function loadFixtures(){
+  const badge=document.getElementById('fx-updated');
+  try{
+    const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq`
+      +`?tqx=out:json&sheet=${encodeURIComponent(FIX_TAB)}&range=${encodeURIComponent(FIX_RANGE)}&cachebust=${CB}`;
+    const res=await fetch(url); const txt=await res.text();
+    if(!res.ok) throw new Error(res.status+' '+txt.slice(0,200));
+    const json=parseGviz(txt);
+    const rows=(json.table.rows||[]).map(r=>(r.c||[]).map(c=>c?c.v:''))
+                .filter(r=>r && !r.every(x=>String(x).trim()===''));
+
+    // A=Home, B=Mid (v or score), C=Away
+    const items=[];
+    for(const r of rows){
+      const home=r[0]??'', mid=r[1]??'', away=r[2]??'';
+      if(!home && !away) continue;
+      items.push({home,mid,away});
+    }
+
+    /* Desktop */
+    let h='<thead><tr><th>Home</th><th></th><th>Away</th></tr></thead><tbody>';
+    items.forEach(it=>{
+      h+=`<tr><td>${esc(it.home)}</td><td>${esc(it.mid)}</td><td>${esc(it.away)}</td></tr>`;
+    });
+    h+='</tbody>';
+    document.getElementById('fixtures').innerHTML=h;
+    saveHTML('efpl:fixtures:desk', h);
+
+    /* Mobile */
+    let m='';
+    items.forEach((it,idx)=>{
+      const bg=(idx%2===0)?'var(--row1)':'var(--row2)';
+      m+=`<div class="fx-row" style="background:${bg}">
+        <span>${esc(it.home)}</span>
+        <span>${esc(it.mid)}</span>
+        <span>${esc(it.away)}</span>
+      </div>`;
+    });
+    document.getElementById('fixtures-mobile').innerHTML=m;
+    saveHTML('efpl:fixtures:mob', m);
+
+    // Reveal
+    document.querySelectorAll('.fade-in').forEach(n => n.classList.add('ready'));
+    const sk=document.getElementById('sk-fixtures'); if(sk) sk.style.display='none';
+
+    badge.textContent='Updated '+new Date().toLocaleString();
+  }catch(err){
+    document.getElementById('fixtures').innerHTML='';
+    document.getElementById('fixtures-mobile').innerHTML='';
+    badge.textContent='Error — '+err.message;
+    console.error(err);
+  }
+}
+loadFixtures();
+</script>
+</body>
+</html>
