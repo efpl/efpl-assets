@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>eFPL Standings</title>
+
+<!-- Speed: preconnect to Sheets -->
+<link rel="preconnect" href="https://docs.google.com" crossorigin>
+<link rel="preconnect" href="https://www.google.com" crossorigin>
+
+<style>
+  :root{
+    --card:#00143b; --text:#ffffff;
+    --header-bg:#f9d71c; --header-text:#00143b;
+    --row1:#001a4d; --row2:#002060; --hover:#002b80;
+    --accent:#f9d71c; --fx-border:rgba(249,215,28,.55);
+  }
+  html,body{background:transparent}
+  body{margin:0;font:15px/1.5 "Segoe UI",Arial,sans-serif;color:var(--text);}
+  .wrap{max-width:1000px;margin:24px auto;padding:16px;}
+  .card{background:var(--card);border-radius:12px;overflow:hidden;}
+
+  /* Title row */
+  .title{display:flex;justify-content:space-between;align-items:center;margin:0 0 12px;padding:12px}
+  .title h1{font-size:20px;margin:0;color:var(--text)}
+  .badge{background:var(--accent);color:#000;padding:4px 12px;border-radius:999px;font-weight:700}
+
+  /* Table */
+  table{width:100%;border-collapse:collapse}
+  thead th{
+    background:var(--header-bg);color:var(--header-text);
+    font-size:13px;text-transform:uppercase;letter-spacing:.03em;
+    padding:10px;text-align:center;
+  }
+  tbody td{padding:12px;text-align:center;font-weight:500}
+  tbody tr:nth-child(odd){background:var(--row1)}
+  tbody tr:nth-child(even){background:var(--row2)}
+  tbody tr:hover{background:var(--hover)}
+  td.right{text-align:right}
+  td.points{font-weight:800}
+  td:first-child{font-weight:800}
+
+  /* #1 full-row highlight + crown */
+  tbody tr.pos-1 td{
+    background:linear-gradient(90deg, rgba(249,215,28,.18), rgba(249,215,28,.08)) !important;
+    color:var(--text); font-weight:800; position:relative;
+  }
+  tbody tr.pos-1 td:first-child::before{
+    content:""; position:absolute; left:0; top:0; bottom:0; width:5px;
+    background:var(--accent); border-top-left-radius:10px; border-bottom-left-radius:10px;
+  }
+  tbody tr.pos-1 td:nth-child(2)::before{
+    content:"👑"; margin-right:8px; display:inline-block; transform:translateY(1px);
+  }
+
+  /* #2–#5 subtle bar */
+  tbody tr.pos-2-5 td{ position:relative; background:var(--row1) !important; color:var(--text); }
+  tbody tr.pos-2-5 td:first-child::before{
+    content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--accent);
+  }
+
+  /* dashed divider above 6th */
+  tbody tr.after-top5 td{ border-top:2px dashed var(--fx-border); }
+
+  /* Mobile compact table */
+  .table-mobile{display:none;}
+  @media (max-width:680px){
+    .wrap{padding:12px}
+    .card{border-radius:10px}
+    .table-desktop{display:none;}
+    .table-mobile{display:block;}
+    .table-mobile th,.table-mobile td{padding:10px;font-size:14px}
+  }
+
+  /* Skeleton + fade-in */
+  .skeleton{
+    background:linear-gradient(90deg, rgba(255,255,255,.05), rgba(255,255,255,.12), rgba(255,255,255,.05));
+    background-size:200% 100%; animation:sk 1.1s infinite;
+    border-radius:12px; min-height:200px; margin:0 12px 16px;
+  }
+  @keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+  .fade-in{opacity:0;transition:opacity .18s ease}
+  .fade-in.ready{opacity:1}
+
+  /* Sponsor footer */
+  .sponsor-footer {
+    text-align:center;
+    font-size:13px;
+    color:#cbd5e1;
+    opacity:0.85;
+    padding:10px;
+    border-top:1px solid rgba(249,215,28,.25);
+  }
+  .sponsor-footer .footer-logo {
+    height:18px;
+    vertical-align:middle;
+    margin-left:6px;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+
+      <!-- Title / Updated -->
+      <div class="title">
+        <h1>Ruby Season 1 Standings</h1>
+        <span class="badge" id="updated">Loading…</span>
+      </div>
+
+      <!-- Skeleton -->
+      <div id="sk-standings" class="skeleton"></div>
+
+      <!-- Desktop/tablet -->
+      <div class="table-desktop fade-in">
+        <table id="t"></table>
+      </div>
+
+      <!-- Mobile compact -->
+      <div class="table-mobile fade-in">
+        <table id="t-compact"></table>
+      </div>
+
+      <!-- Sponsor footer -->
+      <div class="sponsor-footer">
+        This league is sponsored by
+        <img src="https://lh3.googleusercontent.com/eOjbPhVmMtCzGb3OXqyUxflsxNqrIFP2hCI6qqQxleNgTrGt7Nd7NyyBH0fmwEXahcL5VPx2lmLnfnuS9Qdzs3C66tVm8VGEo72ROV-Ttfmk_w3SyjSrCZ6OjLRtH8DVJ9_VwP_vnrTKQ5gIuwx4LDI2MvtKCPY6_pbNC9wCzYSVaQam8ZFq8Q=w1280"
+             alt="Sponsor Logo" class="footer-logo">
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ===== CONFIG ===== */
+const SHEET_ID  = '1bdayFx3kdv0B0_8ZJ66z6fkXzJ3ss-NzBkVXhttLy8Q';
+const SHEET_TAB = 'Standings';
+const RANGE     = 'P1:Y17';
+
+/* Cache bucket: 5 minutes */
+const BUCKET_MS = 5 * 60 * 1000;
+const CB = Math.floor(Date.now() / BUCKET_MS);
+
+function isNumeric(v){ return /^-?\d+(\.\d+)?$/.test(String(v)); }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function parseGviz(text){
+  const a=text.indexOf('{'), b=text.lastIndexOf('}');
+  if(a===-1||b===-1) throw new Error('Could not find JSON object in GViz response.');
+  return JSON.parse(text.slice(a,b+1));
+}
+function paintInstant(elId, key, skId){
+  try{
+    const cached = localStorage.getItem(key);
+    if(cached){
+      document.getElementById(elId).innerHTML = cached;
+      document.querySelectorAll('.fade-in').forEach(n => n.classList.add('ready'));
+      const sk = skId && document.getElementById(skId);
+      if(sk) sk.style.display = 'none';
+    }
+  }catch(e){}
+}
+function saveHTML(key, html){ try{ localStorage.setItem(key, html); }catch(e){} }
+
+/* Paint immediately if cached */
+paintInstant('t', 'efpl:standings:full', 'sk-standings');
+paintInstant('t-compact', 'efpl:standings:mob', 'sk-standings');
+
+async function loadStandings(){
+  const statusEl = document.getElementById('updated');
+  try{
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq`
+      + `?tqx=out:json&sheet=${encodeURIComponent(SHEET_TAB)}`
+      + `&range=${encodeURIComponent(RANGE)}&cachebust=${CB}`;
+    const res = await fetch(url);
+    const text = await res.text();
+    if(!res.ok) throw new Error('HTTP '+res.status+' — '+text.slice(0,200));
+    const json = parseGviz(text);
+    const headers = json.table.cols.map(c => c.label || '');
+    const rows = (json.table.rows || []).map(r => (r.c || []).map(c => c ? c.v : ''));
+
+    let html = '<thead><tr>'+headers.map(h=>`<th>${esc(h)}</th>`).join('')+'</tr></thead><tbody>';
+    for(let idx=0; idx<rows.length; idx++){
+      const r = rows[idx];
+      if(!r || r.every(x => String(x).trim()==='')) continue;
+
+      const posClass = (idx===0) ? 'pos-1' : (idx>=1 && idx<=4 ? 'pos-2-5' : '');
+      const cutClass = (idx===5) ? 'after-top5' : '';
+      const rowClass = [posClass, cutClass].filter(Boolean).join(' ');
+
+      html += `<tr class="${rowClass}">`;
+      r.forEach((cell,i)=>{
+        const s = esc(cell ?? '');
+        const right = isNumeric(s) ? ' right' : '';
+        const pointsCol = (headers[i] || '').toLowerCase().includes('pts') ? ' points' : '';
+        html += `<td class="${right}${pointsCol}">${s}</td>`;
+      });
+      html += '</tr>';
+    }
+    html += '</tbody>';
+
+    document.getElementById('t').innerHTML = html;
+    saveHTML('efpl:standings:full', html);
+
+    buildCompact(headers, rows);
+    saveHTML('efpl:standings:mob', document.getElementById('t-compact').innerHTML);
+
+    document.querySelectorAll('.fade-in').forEach(n => n.classList.add('ready'));
+    document.getElementById('sk-standings').style.display='none';
+    statusEl.textContent = 'Updated ' + new Date().toLocaleString();
+  }catch(err){
+    document.getElementById('t').innerHTML = '';
+    document.getElementById('t-compact').innerHTML = '';
+    statusEl.textContent = 'Error — ' + err.message;
+    console.error(err);
+  }
+}
+
+function buildCompact(headers, rows){
+  function findCol(names){
+    const lower = headers.map(h => (h||'').toString().trim().toLowerCase());
+    for(const n of names){ const i = lower.indexOf(n); if(i !== -1) return i; }
+    return -1;
+  }
+  const iPos  = findCol(['pos','#','position','rank']);
+  const iTeam = findCol(['team','club','name']);
+  const iP    = findCol(['p','pl','played']);
+  const iPts  = findCol(['pts','points']);
+  const cols = [iPos, iTeam, iP, iPts].map((i,k)=> i !== -1 ? i : k);
+
+  let out = '<thead><tr><th>POS</th><th>Team</th><th>P</th><th>PTS</th></tr></thead><tbody>';
+  for(let idx=0; idx<rows.length; idx++){
+    const r = rows[idx];
+    if(!r || r.every(x => String(x).trim()==='')) continue;
+
+    const pos  = r[cols[0]] ?? '';
+    const team = r[cols[1]] ?? '';
+    const p    = r[cols[2]] ?? '';
+    const pts  = r[cols[3]] ?? '';
+
+    const posClass = (idx===0) ? 'pos-1' : (idx>=1 && idx<=4 ? 'pos-2-5' : '');
+    const cutClass = (idx===5) ? 'after-top5' : '';
+    const rowClass = [posClass, cutClass].filter(Boolean).join(' ');
+
+    out += `<tr class="${rowClass}">
+      <td class="right">${esc(pos)}</td>
+      <td>${esc(team)}</td>
+      <td class="right">${esc(p)}</td>
+      <td class="right points">${esc(pts)}</td>
+    </tr>`;
+  }
+  out += '</tbody>';
+  document.getElementById('t-compact').innerHTML = out;
+}
+
+loadStandings();
+</script>
+</body>
+</html>
