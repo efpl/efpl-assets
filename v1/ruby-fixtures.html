@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>eFPL Fixtures</title>
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://docs.google.com" crossorigin>
+<link rel="preconnect" href="https://www.google.com" crossorigin>
+<style>
+  :root{
+    --bg:#00143b;        /* page/navy */
+    --row:#031e4a;       /* row base */
+    --row2:#07265a;      /* row alt */
+    --ink:#ffffff;
+    --accent:#f9d71c;    /* gold */
+    --line:rgba(249,215,28,.25);
+    --muted:#cbd5e1;
+  }
+
+  /* FIX: fill iframe background with navy (no grey bleed) */
+  html,body{background:var(--bg) !important}
+
+  body{margin:0;font:16px/1.45 system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink)}
+  /* FIX: remove outer margin so no gap shows around card */
+  .wrap{max-width:1100px;margin:0 auto;padding:16px;background:var(--bg);border-radius:14px}
+
+  /* Header row (title left, updated pill right) */
+  .bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .bar h1{margin:0;font-weight:900;font-size:26px}
+  .stamp{
+    background:var(--accent); color:#00143b; font-weight:900;
+    padding:10px 16px; border-radius:999px; white-space:nowrap;
+    box-shadow:0 2px 8px rgba(0,0,0,.25); font-size:15px;
+  }
+
+  /* Table */
+  table{width:100%;border-collapse:separate;border-spacing:0}
+  thead th{
+    background:var(--accent); color:#00143b; font-weight:900;
+    text-transform:uppercase; letter-spacing:.06em; font-size:13px;
+    padding:14px 10px; text-align:center; border-top:1px solid #0003;
+  }
+  thead th:first-child{border-radius:8px 0 0 0}
+  thead th:last-child{border-radius:0 8px 0 0}
+
+  tbody tr td{
+    padding:16px 14px; border-bottom:1px solid rgba(255,255,255,.04);
+  }
+  tbody tr:nth-child(odd)  td{ background:var(--row) }
+  tbody tr:nth-child(even) td{ background:var(--row2) }
+
+  /* cells */
+  .home{text-align:right}
+  .mid {text-align:center; width:90px; color:var(--muted); font-weight:800; letter-spacing:.02em}
+  .away{text-align:left}
+
+  /* Mid-season divider row */
+  .milestone-row td{
+    background:#05225a !important;
+    text-align:center; border-top:1px dashed var(--accent); border-bottom:1px dashed var(--accent);
+    padding:14px 10px;
+  }
+  .chip{
+    display:inline-block; background:var(--accent); color:#00143b; font-weight:900;
+    padding:4px 12px; border-radius:999px; letter-spacing:.03em;
+  }
+
+  /* Footer radius */
+  tbody tr:last-child td:first-child { border-radius:0 0 0 8px }
+  tbody tr:last-child td:last-child  { border-radius:0 0 8px 0 }
+
+  /* Mobile trims */
+  @media (max-width:680px){
+    .wrap{padding:12px}
+    .bar h1{font-size:22px}
+    .stamp{font-size:13px;padding:8px 12px}
+    thead th{padding:12px 8px;font-size:12px}
+    tbody tr td{padding:12px 10px}
+    .mid{width:64px}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="bar">
+      <h1>Fixtures</h1>
+      <div id="stamp" class="stamp">Updated …</div>
+    </div>
+
+    <table id="fixturesTable" aria-describedby="status">
+      <thead>
+        <tr>
+          <th>Home</th>
+          <th>&nbsp;</th>
+          <th>Away</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div id="status" style="text-align:center;color:var(--muted);margin-top:10px;font-size:14px">Loading…</div>
+  </div>
+
+<script>
+(function(){
+  // === CONFIG ===
+  const SHEET_ID   = '1bdayFx3kdv0B0_8ZJ66z6fkXzJ3ss-NzBkVXhttLy8Q';
+  const SHEET_NAME = 'Fixtures (Embed)';
+  const RANGE      = 'A1:C241';
+  const MID_AFTER  = 45;   // insert divider AFTER 45 fixtures (i.e., before #46)
+  // ==============
+
+  const tbody = document.querySelector('#fixturesTable tbody');
+  const statusEl = document.getElementById('status');
+  const stampEl  = document.getElementById('stamp');
+
+  // Updated pill timestamp (local)
+  (function setStamp(){
+    const d = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    const text = `Updated ${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}, ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    stampEl.textContent = text;
+  })();
+
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}&range=${encodeURIComponent(RANGE)}`;
+
+  function parseGViz(text){
+    const s = text.indexOf('{'), e = text.lastIndexOf('}');
+    if(s===-1||e===-1) throw new Error('Bad GViz response');
+    return JSON.parse(text.slice(s,e+1));
+  }
+
+  function insertMidRow(){
+    const tr = document.createElement('tr');
+    tr.className = 'milestone-row';
+    const td = document.createElement('td');
+    td.colSpan = 3;
+    td.innerHTML = '<span class="chip">MID-SEASON CHECKPOINT</span>';
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+  }
+
+  function build(rows){
+    tbody.innerHTML = '';
+    let count = 0;
+
+    // If first row looks like a header, skip it.
+    const looksHeader = rows.length && (
+      String(rows[0][0]||'').toLowerCase().includes('home') ||
+      String(rows[0][2]||'').toLowerCase().includes('away')
+    );
+    const start = looksHeader ? 1 : 0;
+
+    for(let i=start;i<rows.length;i++){
+      const r = rows[i] || [];
+      const home = (r[0]||'').toString().trim();
+      const mid  = (r[1]||'').toString().trim();
+      const away = (r[2]||'').toString().trim();
+      if(!home && !mid && !away) continue;
+
+      // If you ever put "#MID" in sheet col A, honor it:
+      if(home === '#MID'){ insertMidRow(); continue; }
+
+      if(count === MID_AFTER){ insertMidRow(); }
+
+      const tr = document.createElement('tr');
+      const tdH = document.createElement('td'); tdH.className='home'; tdH.textContent = home;
+      const tdM = document.createElement('td'); tdM.className='mid';  tdM.textContent = mid;
+      const tdA = document.createElement('td'); tdA.className='away'; tdA.textContent = away;
+      tr.appendChild(tdH); tr.appendChild(tdM); tr.appendChild(tdA);
+      tbody.appendChild(tr);
+
+      count++;
+    }
+
+    statusEl.textContent = count ? '' : 'No fixtures found.';
+  }
+
+  fetch(url)
+    .then(r=>r.text())
+    .then(t=>{ const data = parseGViz(t);
+      const rows = (data.table.rows||[]).map(row => (row.c||[]).map(c => c ? c.v : ''));
+      build(rows);
+    })
+    .catch(err=>{ console.error(err); statusEl.textContent='Error loading fixtures.'; });
+})();
+</script>
+</body>
+</html>
