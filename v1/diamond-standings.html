@@ -116,6 +116,30 @@
     transition:transform 0.2s ease;
   }
   .sponsor-footer a:hover .footer-logo { transform:scale(1.08); }
+  /* --- Mobile header wrap + compact sizing --- */
+@media (max-width: 560px){
+  .title, .bar{ flex-wrap: wrap; gap: 8px; }
+  .title h1, .bar h1{
+    flex: 1 1 100%;
+    font-size: 18px;          /* was 20/26 */
+    line-height: 1.2;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .title-sponsor-logo{ height: 20px; }  /* was 26px */
+  .title .badge, .bar .stamp{
+    order: 2; width: 100%;
+    font-size: 12px; padding: 6px 10px;
+    text-align: left;          /* sits under the title line */
+  }
+}
+@media (max-width: 380px){
+  .title h1, .bar h1{ font-size: 16px; }
+  .title-sponsor-logo{ height: 18px; }
+}
+@media (max-width: 340px){
+  .title .badge, .bar .stamp{ display: none; }
+}
+
 </style>
 </head>
 <body>
@@ -238,7 +262,10 @@ async function loadStandings(){
 
     document.querySelectorAll('.fade-in').forEach(n => n.classList.add('ready'));
     document.getElementById('sk-standings').style.display='none';
-    statusEl.textContent = 'Updated ' + new Date().toLocaleString();
+const d = new Date();
+const pad = n => String(n).padStart(2,'0');
+const yy  = String(d.getFullYear()).slice(-2);
+statusEl.textContent = `Updated ${pad(d.getDate())}/${pad(d.getMonth()+1)}/${yy}`;
   }catch(err){
     document.getElementById('t').innerHTML = '';
     document.getElementById('t-compact').innerHTML = '';
