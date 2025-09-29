@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>eFPL Knockout Cup — Split Bracket</title>
+<title>eFPL — Champions Cup</title>
 <style>
   :root{
     --bg:#00143b; --card:#05225a; --ink:#fff; --muted:#cbd5e1;
@@ -28,8 +28,14 @@
 
   /* Match cards */
   .match{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:210px;box-shadow:0 2px 6px rgba(0,0,0,.2)}
-  .fixture{display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:800}
-  .team{flex:1}
+  .fixture{
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    align-items:center;
+    gap:8px;
+    font-weight:800;
+  }
+  .team{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .team.right{text-align:right}
   .vs{opacity:.85;font-weight:900}
 
@@ -68,63 +74,131 @@
 <body>
   <div class="wrap">
     <div class="title">
-      <span class="eyebrow">Knockout Cup</span>
+      <span class="eyebrow">Champions Cup</span>
       <h1>Road to the Final</h1>
     </div>
 
     <div class="stage">
-      <!-- LEFT: 4 x R16 -> 2 x QF -> 1 x SF -->
+      <!-- LEFT -->
       <div class="side left">
         <div class="group r16">
           <h3>Round of 16</h3>
-          <div class="match"><div class="fixture"><span class="team">Team 1</span><span class="vs">vs</span><span class="team right">Team 2</span></div></div>
-          <div class="match"><div class="fixture"><span class="team">Team 3</span><span class="vs">vs</span><span class="team right">Team 4</span></div></div>
-          <div class="match"><div class="fixture"><span class="team">Team 5</span><span class="vs">vs</span><span class="team right">Team 6</span></div></div>
-          <div class="match"><div class="fixture"><span class="team">Team 7</span><span class="vs">vs</span><span class="team right">Team 8</span></div></div>
+          <div class="match"><div class="fixture"><span class="team" id="R16A-home">Team 1</span><span class="vs" id="R16A-score">vs</span><span class="team right" id="R16A-away">Team 2</span></div></div>
+          <div class="match"><div class="fixture"><span class="team" id="R16B-home">Team 3</span><span class="vs" id="R16B-score">vs</span><span class="team right" id="R16B-away">Team 4</span></div></div>
+          <div class="match"><div class="fixture"><span class="team" id="R16C-home">Team 5</span><span class="vs" id="R16C-score">vs</span><span class="team right" id="R16C-away">Team 6</span></div></div>
+          <div class="match"><div class="fixture"><span class="team" id="R16D-home">Team 7</span><span class="vs" id="R16D-score">vs</span><span class="team right" id="R16D-away">Team 8</span></div></div>
         </div>
         <div class="group qf">
           <h3>Quarter Final</h3>
-          <div class="match"><div class="fixture"><span class="team">Winner A</span><span class="vs">vs</span><span class="team right">Winner B</span></div></div>
-          <div class="match"><div class="fixture"><span class="team">Winner C</span><span class="vs">vs</span><span class="team right">Winner D</span></div></div>
+          <div class="match"><div class="fixture"><span class="team" id="Q1-home">Winner A</span><span class="vs" id="Q1-score">vs</span><span class="team right" id="Q1-away">Winner B</span></div></div>
+          <div class="match"><div class="fixture"><span class="team" id="Q2-home">Winner C</span><span class="vs" id="Q2-score">vs</span><span class="team right" id="Q2-away">Winner D</span></div></div>
         </div>
         <div class="group sf">
           <h3>Semi Final</h3>
-          <div class="match"><div class="fixture"><span class="team">Winner Q1</span><span class="vs">vs</span><span class="team right">Winner Q2</span></div></div>
+          <div class="match"><div class="fixture"><span class="team" id="S1-home">Winner Q1</span><span class="vs" id="S1-score">vs</span><span class="team right" id="S1-away">Winner Q2</span></div></div>
         </div>
       </div>
 
       <!-- CENTER -->
       <div class="center">
-        <!-- Swap with your preferred transparent PNG/SVG trophy -->
-        <img class="trophy" alt="Trophy"
-             src="https://i.imgur.com/0sct2LO.png" />
-        <div class="final">Final: Winner S1 vs Winner S2</div>
-        <div class="champion"><span class="cup">🏆</span> Champion: TBD</div>
-        <div class="note">Edit names/scores as the cup progresses</div>
+        <img class="trophy" alt="Champions Cup Trophy" src="https://efpl-assets.pages.dev/img/champions-cup.png" />
+        <div class="final" id="final-line">Final: Winner S1 vs Winner S2</div>
+        <div class="champion" id="champion"><span class="cup">🏆</span> Champion: TBD</div>
       </div>
 
-      <!-- RIGHT: 4 x R16 -> 2 x QF -> 1 x SF -->
+      <!-- RIGHT -->
       <div class="side right">
         <div class="group r16">
           <h3>Round of 16</h3>
-          <div class="match"><div class="fixture"><span class="team">Team 9</span><span class="vs">vs</span><span class="team right">Team 10</span></div></div>
-          <div class="match"><div class="fixture"><span class="team">Team 11</span><span class="vs">vs</span><span class="team right">Team 12</span></div></div>
-          <div class="match"><div class="fixture"><span class="team">Team 13</span><span class="vs">vs</span><span class="team right">Team 14</span></div></div>
-          <div class="match"><div class="fixture"><span class="team">Team 15</span><span class="vs">vs</span><span class="team right">Team 16</span></div></div>
+          <div class="match"><div class="fixture"><span class="team" id="R16E-home">Team 9</span><span class="vs" id="R16E-score">vs</span><span class="team right" id="R16E-away">Team 10</span></div></div>
+          <div class="match"><div class="fixture"><span class="team" id="R16F-home">Team 11</span><span class="vs" id="R16F-score">vs</span><span class="team right" id="R16F-away">Team 12</span></div></div>
+          <div class="match"><div class="fixture"><span class="team" id="R16G-home">Team 13</span><span class="vs" id="R16G-score">vs</span><span class="team right" id="R16G-away">Team 14</span></div></div>
+          <div class="match"><div class="fixture"><span class="team" id="R16H-home">Team 15</span><span class="vs" id="R16H-score">vs</span><span class="team right" id="R16H-away">Team 16</span></div></div>
         </div>
         <div class="group qf">
           <h3>Quarter Final</h3>
-          <div class="match"><div class="fixture"><span class="team">Winner E</span><span class="vs">vs</span><span class="team right">Winner F</span></div></div>
-          <div class="match"><div class="fixture"><span class="team">Winner G</span><span class="vs">vs</span><span class="team right">Winner H</span></div></div>
+          <div class="match"><div class="fixture"><span class="team" id="Q3-home">Winner E</span><span class="vs" id="Q3-score">vs</span><span class="team right" id="Q3-away">Winner F</span></div></div>
+          <div class="match"><div class="fixture"><span class="team" id="Q4-home">Winner G</span><span class="vs" id="Q4-score">vs</span><span class="team right" id="Q4-away">Winner H</span></div></div>
         </div>
         <div class="group sf">
           <h3>Semi Final</h3>
-          <div class="match"><div class="fixture"><span class="team">Winner Q3</span><span class="vs">vs</span><span class="team right">Winner Q4</span></div></div>
+          <div class="match"><div class="fixture"><span class="team" id="S2-home">Winner Q3</span><span class="vs" id="S2-score">vs</span><span class="team right" id="S2-away">Winner Q4</span></div></div>
         </div>
       </div>
     </div>
-
-    <!-- Optional mobile-only stacked summary (appears automatically via media query if you want to add later) -->
   </div>
+
+  <!-- Fetch Cup_Bracket (A..H) and fill the bracket -->
+<script>
+(function(){
+  const SHEET_ID = "1kp4Pz8sS7nP-7TLZiNz-d-wbsOjFMl8HN_bZrB2LY9g";
+  const GID = "2096637032";
+  const tq = "select A,B,C,D,E,F,G,H where A is not null";
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${GID}&tqx=out:json&tq=`+encodeURIComponent(tq)+`&cachebust=`+Date.now();
+
+  // Map row index (in the returned table) to our element key
+  function keyByIndex(i){
+    // Expecting: 8 (R16) + 4 (QF) + 2 (SF) + 1 (F) = 15 rows
+    if (i >= 0 && i <= 7) {
+      const letters = ["A","B","C","D","E","F","G","H"];
+      return "R16" + letters[i];
+    }
+    if (i >= 8 && i <= 11) {
+      return "Q" + (i - 7); // 8->Q1, 9->Q2, 10->Q3, 11->Q4
+    }
+    if (i >= 12 && i <= 13) {
+      return "S" + (i - 11); // 12->S1, 13->S2
+    }
+    if (i === 14) {
+      return "F1";
+    }
+    return ""; // unexpected rows ignored
+  }
+
+  fetch(url).then(r => r.text()).then(t => {
+    const json = JSON.parse(t.substring(t.indexOf('{'), t.lastIndexOf('}')+1));
+    const rows = (json.table && json.table.rows) ? json.table.rows : [];
+
+    let finalText = "Final: Winner S1 vs Winner S2";
+    let championText = "🏆 Champion: TBD";
+
+    rows.forEach((row, i) => {
+      const [round, slot, home, away, hs, as, done, winner] = row.c.map(c => c ? c.v : "");
+      const key = keyByIndex(i);
+      if (!key) return;
+
+      const elHome = document.getElementById(`${key}-home`);
+      const elAway = document.getElementById(`${key}-away`);
+      const elScore = document.getElementById(`${key}-score`);
+
+      if (elHome) elHome.textContent = home || "TBD";
+      if (elAway) elAway.textContent = away || "TBD";
+
+      const hasScore = done === true && hs !== "" && as !== "" && !isNaN(+hs) && !isNaN(+as);
+      if (elScore) elScore.textContent = hasScore ? `${hs} - ${as}` : "vs";
+
+      if (key === "F1") {
+        const h = home || "Winner S1";
+        const a = away || "Winner S2";
+        finalText = hasScore ? `Final: ${h} ${hs} - ${as} ${a}` : `Final: ${h} vs ${a}`;
+        if (hasScore && winner) championText = `🏆 Champion: ${winner}`;
+      }
+    });
+
+    const finalEl = document.getElementById("final-line");
+    if (finalEl) finalEl.textContent = finalText;
+
+    const champEl = document.getElementById("champion");
+    if (champEl) champEl.textContent = championText;
+  }).catch(err => {
+    console.error(err);
+    const note = document.createElement('div');
+    note.className = 'note';
+    note.textContent = 'Could not load cup data. Please refresh.';
+    document.body.appendChild(note);
+  });
+})();
+</script>
+
 </body>
 </html>
