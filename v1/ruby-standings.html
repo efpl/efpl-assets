@@ -23,8 +23,17 @@
 
   /* Title row */
   .title{display:flex;justify-content:space-between;align-items:center;margin:0 0 12px;padding:12px}
-  .title h1{font-size:20px;margin:0;color:var(--text)}
+  .title h1{
+    font-size:20px;margin:0;color:var(--text);
+    display:flex;align-items:center;gap:10px;
+  }
   .badge{background:var(--accent);color:#000;padding:4px 12px;border-radius:999px;font-weight:700}
+
+  /* Sponsor logo in title */
+  .title-sponsor-logo{
+    height:26px;vertical-align:middle;transition:transform .2s ease;
+  }
+  .title a:hover .title-sponsor-logo{ transform:scale(1.08); }
 
   /* Table */
   table{width:100%;border-collapse:collapse}
@@ -88,15 +97,19 @@
     text-align:center;
     font-size:13px;
     color:#cbd5e1;
-    opacity:0.85;
+    opacity:0.9;
     padding:10px;
     border-top:1px solid rgba(249,215,28,.25);
+    line-height:1.6;
   }
   .sponsor-footer .footer-logo {
-    height:18px;
+    height:28px; /* increased from 18px */
     vertical-align:middle;
-    margin-left:6px;
+    margin-left:8px;
+    margin-right:6px;
+    transition:transform 0.2s ease;
   }
+  .sponsor-footer a:hover .footer-logo { transform:scale(1.08); }
 </style>
 </head>
 <body>
@@ -105,7 +118,15 @@
 
       <!-- Title / Updated -->
       <div class="title">
-        <h1>Ruby Season 1 Standings</h1>
+        <h1>
+          <a href="https://www.instant-gaming.com/?igr=eFPL"
+             target="_blank" rel="sponsored noopener noreferrer nofollow"
+             aria-label="Instant Gaming — save on games">
+            <img src="https://efpl-assets.pages.dev/img/instant-gaming.png"
+                 alt="Instant Gaming" class="title-sponsor-logo">
+          </a>
+          Ruby League | Season 1 Standings
+        </h1>
         <span class="badge" id="updated">Loading…</span>
       </div>
 
@@ -125,8 +146,13 @@
       <!-- Sponsor footer -->
       <div class="sponsor-footer">
         This league is sponsored by
-        <img src="https://lh3.googleusercontent.com/eOjbPhVmMtCzGb3OXqyUxflsxNqrIFP2hCI6qqQxleNgTrGt7Nd7NyyBH0fmwEXahcL5VPx2lmLnfnuS9Qdzs3C66tVm8VGEo72ROV-Ttfmk_w3SyjSrCZ6OjLRtH8DVJ9_VwP_vnrTKQ5gIuwx4LDI2MvtKCPY6_pbNC9wCzYSVaQam8ZFq8Q=w1280"
-             alt="Sponsor Logo" class="footer-logo">
+        <a href="https://www.instant-gaming.com/?igr=eFPL"
+           target="_blank" rel="sponsored noopener noreferrer nofollow"
+           aria-label="Instant Gaming — save on games">
+          <img src="https://efpl-assets.pages.dev/img/instant-gaming.png"
+               alt="Instant Gaming" class="footer-logo">
+        </a>
+        Save up to <strong>90%</strong> on all digital games!
       </div>
     </div>
   </div>
