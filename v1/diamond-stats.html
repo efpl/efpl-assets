@@ -41,6 +41,13 @@
   tbody td{border-bottom:1px solid rgba(255,255,255,.06)}
   .right{text-align:right}
 
+  /* Form chips */
+  .form{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{display:inline-block;padding:2px 8px;border-radius:999px;font-weight:900;font-size:12px}
+  .W{background:#14b8a6;color:#072014}
+  .D{background:#94a3b8;color:#0b1220}
+  .L{background:#ef4444;color:#2a0e0e}
+
   /* Sponsor footer */
   .sponsor-footer{margin-top:16px;text-align:center;font-size:13px;color:var(--muted);opacity:.9;padding:12px;border-top:1px solid var(--line);line-height:1.6}
   .sponsor-footer .footer-logo{height:28px;vertical-align:middle;margin:0 6px;transition:transform .2s}
@@ -75,9 +82,21 @@
       <div class="card"><h3>Total goals</h3><div class="stat" id="s-goals">–</div><div class="sub">Across all played matches</div></div>
       <div class="card"><h3>Avg goals / match</h3><div class="stat" id="s-avg">–</div><div class="sub">Total goals ÷ matches</div></div>
 
-      <div class="card"><h3>Best attack (GF)</h3><div class="stat" id="s-best-attack">–</div><div class="sub" id="s-best-attack-team">–</div></div>
-      <div class="card"><h3>Leakiest defence (GA)</h3><div class="stat" id="s-worst-def">–</div><div class="sub" id="s-worst-def-team">–</div></div>
-      <div class="card"><h3>Clean sheets (most)</h3><div class="stat" id="s-cleansheets">–</div><div class="sub" id="s-cleansheets-team">–</div></div>
+      <div class="card"><h3>Home win %</h3><div class="stat" id="s-homewin">–%</div><div class="sub">Home wins / matches</div></div>
+      <div class="card"><h3>Away win %</h3><div class="stat" id="s-awaywin">–%</div><div class="sub">Away wins / matches</div></div>
+      <div class="card"><h3>Draws (total)</h3><div class="stat" id="s-draws">–</div><div class="sub">League-wide</div></div>
+
+      <div class="card"><h3>Most draws (team)</h3><div class="stat" id="s-mostdraws-val">–</div><div class="sub" id="s-mostdraws-team">–</div></div>
+      <div class="card"><h3>Fewest defeats</h3><div class="stat" id="s-fewestL-val">–</div><div class="sub" id="s-fewestL-team">–</div></div>
+      <div class="card"><h3>Best attack (GF/avg)</h3><div class="stat" id="s-best-avg-gf">–</div><div class="sub" id="s-best-avg-gf-team">–</div></div>
+
+      <div class="card"><h3>Best defence (lowest GA/avg)</h3><div class="stat" id="s-best-avg-ga">–</div><div class="sub" id="s-best-avg-ga-team">–</div></div>
+      <div class="card"><h3>Most goals by one team (match)</h3><div class="stat" id="s-most-one-match">–</div><div class="sub" id="s-most-one-match-desc">–</div></div>
+      <div class="card"><h3>Most conceded (match)</h3><div class="stat" id="s-most-conc-match">–</div><div class="sub" id="s-most-conc-match-desc">–</div></div>
+
+      <div class="card"><h3>Longest winning streak</h3><div class="stat" id="s-streak-W">–</div><div class="sub" id="s-streak-W-team">–</div></div>
+      <div class="card"><h3>Longest losing streak</h3><div class="stat" id="s-streak-L">–</div><div class="sub" id="s-streak-L-team">–</div></div>
+      <div class="card"><h3>Longest draw streak</h3><div class="stat" id="s-streak-D">–</div><div class="sub" id="s-streak-D-team">–</div></div>
 
       <div class="card wide">
         <h3>Match highlights</h3>
@@ -85,7 +104,16 @@
       </div>
     </div>
 
-    <!-- Optional team tables -->
+    <!-- Form table -->
+    <div class="card" style="margin-top:12px">
+      <h3>Current form (last 5)</h3>
+      <table id="tbl-form">
+        <thead><tr><th>Team</th><th>Form</th><th class="right">W–D–L</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- Clean sheets & GA (kept) -->
     <div class="card" style="margin-top:12px">
       <h3>Clean sheets by team</h3>
       <table id="tbl-clean">
@@ -114,12 +142,12 @@
 
 <script>
 (async function(){
-  /* ===== CONFIG (swap per league) ===== */
+  /* ===== SWAP THESE PER LEAGUE ===== */
   const LEAGUE_NAME = 'Diamond League';
   const SHEET_ID    = '17OW81tsw1w2dCeP4AzcJlxa7gr6eFE9ExXJbuovLNNQ';   // Diamond
   const FIX_TAB     = 'Fixtures (Embed)';                                  // same tab you use
   const FIX_RANGE   = 'A1:C241';
-  /* =================================== */
+  /* ================================= */
 
   // Utilities
   const pad = n => String(n).padStart(2,'0');
@@ -135,8 +163,7 @@
     return JSON.parse(text.slice(s,e+1));
   }
   function scoreFrom(mid){
-    // Accept formats like "2-1", "3 – 2", "1 : 0"
-    const m = String(mid||'').match(/(\d+)\s*[-–:]\s*(\d+)/);
+    const m = String(mid||'').match(/(\d+)\s*[-–:]\s*(\d+)/); // 2-1, 3 – 2, 1:0
     return m ? [parseInt(m[1],10), parseInt(m[2],10)] : null;
   }
 
@@ -153,16 +180,27 @@
   );
   const start = looksHeader ? 1 : 0;
 
-  // Accumulators
-  let matches=0, goals=0;
-  const teams = new Map(); // name -> {gf,ga,cs,unbeaten}
-  function teamRec(name){
-    if(!teams.has(name)) teams.set(name,{gf:0,ga:0,cs:0,unbeaten:0,_currUnb:0});
-    return teams.get(name);
+  // Per-team record shape
+  function newRec(){
+    return {
+      played:0, W:0, D:0, L:0, gf:0, ga:0, cs:0,
+      streakW:0, bestW:0, streakL:0, bestL:0, streakD:0, bestD:0,
+      form:[] // last N results (strings 'W','D','L')
+    };
   }
-  let biggestWin = null;       // {home, away, diff, score}
-  let highestScoring = null;   // {home, away, total, score}
+  const teams = new Map();
+  const T = name => { if(!teams.has(name)) teams.set(name, newRec()); return teams.get(name); };
 
+  // League accumulators
+  let matches=0, goals=0, homeWins=0, awayWins=0, draws=0;
+
+  // Match highlight trackers
+  let biggestWin=null;        // {home,away,diff,score}
+  let highestScoring=null;    // {home,away,total,score}
+  let mostByOne=null;         // {team,opponent,goals,score}
+  let mostConcededOne=null;   // {team,opponent,goalsAgainst,score}
+
+  // Process fixtures
   for(let i=start;i<rows.length;i++){
     const [home, mid, away] = [rows[i][0]||'', rows[i][1]||'', rows[i][2]||''];
     if(!home && !mid && !away) continue;
@@ -174,46 +212,79 @@
     matches++;
     goals += h + a;
 
-    const H = teamRec(home), A = teamRec(away);
-    H.gf += h; H.ga += a; A.gf += a; A.ga += h;
+    const H=T(home), A=T(away);
+    H.played++; A.played++;
+    H.gf+=h; H.ga+=a; A.gf+=a; A.ga+=h;
 
-    // Clean sheets
     if(a===0) H.cs++;
     if(h===0) A.cs++;
 
-    // Unbeaten (very simple: +1 if not lost)
-    if(h >= a){ H._currUnb++; A._currUnb = 0; } else { A._currUnb++; H._currUnb = 0; }
-    H.unbeaten = Math.max(H.unbeaten, H._currUnb);
-    A.unbeaten = Math.max(A.unbeaten, A._currUnb);
+    // Outcome
+    let outcomeH, outcomeA;
+    if(h>a){ outcomeH='W'; outcomeA='L'; homeWins++; }
+    else if(h<a){ outcomeH='L'; outcomeA='W'; awayWins++; }
+    else{ outcomeH='D'; outcomeA='D'; draws++; }
 
-    // Biggest win (by goal difference)
+    // Update W/D/L
+    H[outcomeH]++; A[outcomeA]++;
+
+    // Update streaks (W/L/D)
+    function updateStreak(rec, out){
+      if(out==='W'){ rec.streakW++; rec.bestW=Math.max(rec.bestW, rec.streakW); rec.streakL=0; rec.streakD=0; }
+      else if(out==='L'){ rec.streakL++; rec.bestL=Math.max(rec.bestL, rec.streakL); rec.streakW=0; rec.streakD=0; }
+      else { rec.streakD++; rec.bestD=Math.max(rec.bestD, rec.streakD); rec.streakW=0; rec.streakL=0; }
+      // form buffer (keep last 5)
+      rec.form.push(out);
+      if(rec.form.length>5) rec.form.shift();
+    }
+    updateStreak(H, outcomeH);
+    updateStreak(A, outcomeA);
+
+    // Biggest win by goal diff
     const diff = Math.abs(h-a);
     if(!biggestWin || diff > biggestWin.diff){
-      biggestWin = {home,away,diff,score:`${h}-${a}`};
+      biggestWin = {home, away, diff, score:`${h}-${a}`};
     }
-
-    // Highest scoring (by total goals)
+    // Highest scoring (total)
     const total = h + a;
     if(!highestScoring || total > highestScoring.total){
-      highestScoring = {home,away,total,score:`${h}-${a}`};
+      highestScoring = {home, away, total, score:`${h}-${a}`};
     }
+    // Most by one team in a single match
+    if(!mostByOne || h>mostByOne.goals){ mostByOne = {team:home, opponent:away, goals:h, score:`${h}-${a}`}; }
+    if(!mostByOne || a>mostByOne.goals){ mostByOne = {team:away, opponent:home, goals:a, score:`${h}-${a}`}; }
+    // Most conceded in a single match
+    if(!mostConcededOne || a>mostConcededOne.goalsAgainst){ mostConcededOne = {team:away, opponent:home, goalsAgainst:a, score:`${h}-${a}`}; }
+    if(!mostConcededOne || h>mostConcededOne.goalsAgainst){ mostConcededOne = {team:home, opponent:away, goalsAgainst:h, score:`${h}-${a}`}; }
   }
 
-  // Derive tops
-  function topBy(key, dir='desc'){
-    let topName = '-', topVal = 0;
-    for(const [name, rec] of teams){
-      const v = rec[key] || 0;
-      if((dir==='desc' && v>topVal) || (dir==='asc' && (topName==='-' || v<topVal))){
-        topVal = v; topName = name;
-      }
+  // Helpers to pick tops
+  function topBy(fn, dir='desc'){
+    let winner='–', val=null;
+    for(const [name,rec] of teams){
+      const v = fn(rec);
+      if(v==null) continue;
+      if(val==null || (dir==='desc' ? v>val : v<val)){ val=v; winner=name; }
     }
-    return {name: topName, val: topVal};
+    return {name:winner, val:val==null?0:val};
   }
-  const bestAttack = topBy('gf','desc');
-  const worstDef   = topBy('ga','desc');
-  const mostCS     = topBy('cs','desc');
-  const bestUnb    = topBy('unbeaten','desc');
+  function withPlayed(fn, dir='desc'){
+    return topBy(r => r.played ? fn(r) : null, dir);
+  }
+
+  // Derivatives
+  const homePct = matches ? Math.round((homeWins/matches)*100) : 0;
+  const awayPct = matches ? Math.round((awayWins/matches)*100) : 0;
+
+  const mostDraws = topBy(r=>r.D,'desc');
+  const fewestL   = withPlayed(r=>r.L,'asc');
+
+  const bestAvgGF = withPlayed(r=>r.gf/r.played,'desc');
+  const bestAvgGA = withPlayed(r=>r.ga/r.played,'asc');
+
+  const bestStreakW = topBy(r=>r.bestW,'desc');
+  const bestStreakL = topBy(r=>r.bestL,'desc');
+  const bestStreakD = topBy(r=>r.bestD,'desc');
 
   // Paint top cards
   const set = (id,v) => document.getElementById(id).textContent = v;
@@ -221,29 +292,61 @@
   set('s-goals', goals || '0');
   set('s-avg', matches ? (goals/matches).toFixed(2) : '0.00');
 
-  set('s-best-attack', bestAttack.val || '0');
-  set('s-best-attack-team', bestAttack.name);
-  set('s-worst-def', worstDef.val || '0');
-  set('s-worst-def-team', worstDef.name);
-  set('s-cleansheets', mostCS.val || '0');
-  set('s-cleansheets-team', mostCS.name);
+  set('s-homewin', homePct + '%');
+  set('s-awaywin', awayPct + '%');
+  set('s-draws', draws);
 
+  set('s-mostdraws-val', mostDraws.val || '0');
+  set('s-mostdraws-team', mostDraws.name);
+  set('s-fewestL-val', (fewestL.val ?? '0'));
+  set('s-fewestL-team', fewestL.name);
+
+  set('s-best-avg-gf', bestAvgGF.val ? bestAvgGF.val.toFixed(2) : '0.00');
+  set('s-best-avg-gf-team', bestAvgGF.name);
+  set('s-best-avg-ga', bestAvgGA.val ? bestAvgGA.val.toFixed(2) : '0.00');
+  set('s-best-avg-ga-team', bestAvgGA.name);
+
+  set('s-most-one-match', mostByOne ? mostByOne.goals : '0');
+  document.getElementById('s-most-one-match-desc').innerHTML = mostByOne ? `${mostByOne.team} vs ${mostByOne.opponent} (${mostByOne.score})` : '–';
+
+  set('s-most-conc-match', mostConcededOne ? mostConcededOne.goalsAgainst : '0');
+  document.getElementById('s-most-conc-match-desc').innerHTML = mostConcededOne ? `${mostConcededOne.team} vs ${mostConcededOne.opponent} (${mostConcededOne.score})` : '–';
+
+  set('s-streak-W', bestStreakW.val || '0'); document.getElementById('s-streak-W-team').textContent = bestStreakW.name;
+  set('s-streak-L', bestStreakL.val || '0'); document.getElementById('s-streak-L-team').textContent = bestStreakL.name;
+  set('s-streak-D', bestStreakD.val || '0'); document.getElementById('s-streak-D-team').textContent = bestStreakD.name;
+
+  // Highlights line
   const hi = [];
   if(biggestWin) hi.push(`Biggest win: <strong>${biggestWin.home}</strong> vs <strong>${biggestWin.away}</strong> (${biggestWin.score}, +${biggestWin.diff})`);
   if(highestScoring) hi.push(`Highest scoring: <strong>${highestScoring.home}</strong> vs <strong>${highestScoring.away}</strong> (${highestScoring.score}, ${highestScoring.total} goals)`);
-  if(bestUnb.name !== '-') hi.push(`Longest unbeaten run: <strong>${bestUnb.name}</strong> (${bestUnb.val})`);
   document.getElementById('s-highlights').innerHTML = hi.length ? hi.join(' &nbsp;•&nbsp; ') : 'No finished matches yet.';
 
-  // Tables: clean sheets & GA
+  // Tables: Form, Clean sheets, GA
   function fillTable(tbodyId, rows){
     const tb = document.querySelector(`#${tbodyId} tbody`);
-    tb.innerHTML = rows.map(([name,val]) => `<tr><td>${name}</td><td class="right">${val}</td></tr>`).join('');
+    tb.innerHTML = rows.map(html => `<tr>${html}</tr>`).join('');
   }
+
+  // Form: show all teams, sorted by points in last 5 (W=3,D=1,L=0) then name
+  function formPoints(f){ return f.reduce((s,ch)=>s+(ch==='W'?3:ch==='D'?1:0),0); }
+  const formRows = Array.from(teams.entries()).map(([name,r])=>{
+    const f = r.form.slice(-5); // last 5
+    const pts = formPoints(f);
+    const w = f.filter(x=>x==='W').length, d = f.filter(x=>x==='D').length, l = f.filter(x=>x==='L').length;
+    const chips = f.map(x=>`<span class="chip ${x}">${x}</span>`).join(' ');
+    return {name, html:`<td>${name}</td><td><div class="form">${chips || '<span class="sub">No recent games</span>'}</div></td><td class="right">${w}–${d}–${l} (${pts} pts)</td>`, pts};
+  }).sort((a,b)=> b.pts - a.pts || a.name.localeCompare(b.name));
+  fillTable('tbl-form', formRows.map(r=>r.html));
+
   // Clean sheets desc
-  const csRows = Array.from(teams.entries()).map(([n,r])=>[n,r.cs]).sort((a,b)=>b[1]-a[1]);
+  const csRows = Array.from(teams.entries()).map(([n,r])=>[n,r.cs]).sort((a,b)=>b[1]-a[1])
+    .map(([n,v])=>`<td>${n}</td><td class="right">${v}</td>`);
   fillTable('tbl-clean', csRows);
+
   // GA desc
-  const gaRows = Array.from(teams.entries()).map(([n,r])=>[n,r.ga]).sort((a,b)=>b[1]-a[1]);
+  const gaRows = Array.from(teams.entries()).map(([n,r])=>[n,r.ga]).sort((a,b)=>b[1]-a[1])
+    .map(([n,v])=>`<td>${n}</td><td class="right">${v}</td>`);
   fillTable('tbl-ga', gaRows);
 
 })();
