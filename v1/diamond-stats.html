@@ -19,9 +19,7 @@
 
   /* Header */
   .bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-  .bar h1{
-    margin:0;font-weight:900;font-size:26px;display:flex;align-items:center;gap:10px;color:var(--ink);
-  }
+  .bar h1{margin:0;font-weight:900;font-size:26px;display:flex;align-items:center;gap:10px;color:var(--ink)}
   .title-sponsor-logo{height:26px;transition:transform .2s}
   .bar a:hover .title-sponsor-logo{transform:scale(1.08)}
   .stamp{background:var(--accent);color:#00143b;font-weight:900;padding:10px 16px;border-radius:999px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.25);font-size:15px}
@@ -111,9 +109,10 @@
         <thead><tr><th>Team</th><th>Form</th><th class="right">W–D–L</th></tr></thead>
         <tbody></tbody>
       </table>
+      <div class="sub" style="margin-top:6px">Form is calculated by <em>Date Completed</em> (column I) so out-of-order results reflect real timing.</div>
     </div>
 
-    <!-- Clean sheets & GA (kept) -->
+    <!-- Clean sheets & GA -->
     <div class="card" style="margin-top:12px">
       <h3>Clean sheets by team</h3>
       <table id="tbl-clean">
@@ -144,12 +143,13 @@
 (async function(){
   /* ===== SWAP THESE PER LEAGUE ===== */
   const LEAGUE_NAME = 'Diamond League';
-  const SHEET_ID    = '17OW81tsw1w2dCeP4AzcJlxa7gr6eFE9ExXJbuovLNNQ';   // Diamond
-  const FIX_TAB     = 'Fixtures (Embed)';                                  // same tab you use
-  const FIX_RANGE   = 'A1:C241';
+  const SHEET_ID    = '17OW81tsw1w2dCeP4AzcJlxa7gr6eFE9ExXJbuovLNNQ'; // Diamond
+  const FIX_TAB     = 'Fixtures (Embed)';
+  // IMPORTANT: include column I now
+  const FIX_RANGE   = 'A1:I241';  // A:Home, B:Score, C:Away, ... I:Date Completed
   /* ================================= */
 
-  // Utilities
+  // Utils
   const pad = n => String(n).padStart(2,'0');
   function setStamp(){
     const d = new Date(); const yy = String(d.getFullYear()).slice(-2);
@@ -166,99 +166,108 @@
     const m = String(mid||'').match(/(\d+)\s*[-–:]\s*(\d+)/); // 2-1, 3 – 2, 1:0
     return m ? [parseInt(m[1],10), parseInt(m[2],10)] : null;
   }
+  function parseDateCell(v){
+    // GViz JSON sometimes returns "Date(YYYY,MM,DD,...)" or a plain string/date
+    if(!v) return null;
+    if(typeof v === 'string'){
+      const m = v.match(/^Date\((\d+),\s*(\d+),\s*(\d+)(?:,[^)]+)?\)$/);
+      if(m){
+        const Y = +m[1], M = +m[2], D = +m[3];
+        return new Date(Y, M, D);
+      }
+      const d = new Date(v);
+      return isNaN(d) ? null : d;
+    }
+    if(v instanceof Date) return v;
+    // sometimes Google returns objects like { "v": "Date(...)" } but we already pulled .v
+    return null;
+  }
 
   // Fetch fixtures
   const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(FIX_TAB)}&range=${encodeURIComponent(FIX_RANGE)}`;
   const res = await fetch(url); const text = await res.text();
   const data = parseGViz(text);
-  const rows = (data.table.rows||[]).map(r => (r.c||[]).map(c => c ? c.v : ''));
+  const raw = (data.table.rows||[]).map((r,i) => ({ i, cells:(r.c||[]).map(c => c ? c.v : '') }));
 
   // Detect header row
-  const looksHeader = rows.length && (
-    String(rows[0][0]||'').toLowerCase().includes('home') ||
-    String(rows[0][2]||'').toLowerCase().includes('away')
+  const looksHeader = raw.length && (
+    String(raw[0].cells[0]||'').toLowerCase().includes('home') ||
+    String(raw[0].cells[2]||'').toLowerCase().includes('away')
   );
   const start = looksHeader ? 1 : 0;
 
-  // Per-team record shape
+  // Build finished matches with a date
+  const matchesList = [];
+  for(let idx=start; idx<raw.length; idx++){
+    const row = raw[idx].cells;
+    const home = row[0]||'', mid = row[1]||'', away = row[2]||'';
+    const dtVal = row[8]; // column I = index 8
+    const sc = scoreFrom(mid);
+    const dt = parseDateCell(dtVal);
+    if(!home && !mid && !away) continue;
+    if(!sc) continue;          // must have a score
+    if(!dt) continue;          // must have a completion date
+    matchesList.push({home, away, h:sc[0], a:sc[1], date:dt, rowIndex:idx});
+  }
+
+  // Sort by completion date (oldest -> newest). Tie-break by row index for stability.
+  matchesList.sort((A,B) => (A.date - B.date) || (A.rowIndex - B.rowIndex));
+
+  // Per-team record
   function newRec(){
     return {
       played:0, W:0, D:0, L:0, gf:0, ga:0, cs:0,
       streakW:0, bestW:0, streakL:0, bestL:0, streakD:0, bestD:0,
-      form:[] // last N results (strings 'W','D','L')
+      form:[] // chronological; we'll keep last 5 for the UI
     };
   }
   const teams = new Map();
-  const T = name => { if(!teams.has(name)) teams.set(name, newRec()); return teams.get(name); };
+  const T = n => { if(!teams.has(n)) teams.set(n, newRec()); return teams.get(n); };
 
-  // League accumulators
-  let matches=0, goals=0, homeWins=0, awayWins=0, draws=0;
+  // League accumulators & highlights
+  let played=0, goals=0, homeWins=0, awayWins=0, draws=0;
+  let biggestWin=null, highestScoring=null, mostByOne=null, mostConcededOne=null;
 
-  // Match highlight trackers
-  let biggestWin=null;        // {home,away,diff,score}
-  let highestScoring=null;    // {home,away,total,score}
-  let mostByOne=null;         // {team,opponent,goals,score}
-  let mostConcededOne=null;   // {team,opponent,goalsAgainst,score}
-
-  // Process fixtures
-  for(let i=start;i<rows.length;i++){
-    const [home, mid, away] = [rows[i][0]||'', rows[i][1]||'', rows[i][2]||''];
-    if(!home && !mid && !away) continue;
-
-    const s = scoreFrom(mid);
-    if(!s) continue; // not played yet
-    const [h,a] = s;
-
-    matches++;
-    goals += h + a;
+  // Process in chronological order
+  for(const m of matchesList){
+    const {home, away, h, a} = m;
+    played++; goals += h+a;
 
     const H=T(home), A=T(away);
     H.played++; A.played++;
     H.gf+=h; H.ga+=a; A.gf+=a; A.ga+=h;
-
     if(a===0) H.cs++;
     if(h===0) A.cs++;
 
-    // Outcome
     let outcomeH, outcomeA;
     if(h>a){ outcomeH='W'; outcomeA='L'; homeWins++; }
     else if(h<a){ outcomeH='L'; outcomeA='W'; awayWins++; }
-    else{ outcomeH='D'; outcomeA='D'; draws++; }
+    else { outcomeH='D'; outcomeA='D'; draws++; }
 
-    // Update W/D/L
     H[outcomeH]++; A[outcomeA]++;
 
-    // Update streaks (W/L/D)
+    // streaks & form (date-aware)
     function updateStreak(rec, out){
       if(out==='W'){ rec.streakW++; rec.bestW=Math.max(rec.bestW, rec.streakW); rec.streakL=0; rec.streakD=0; }
       else if(out==='L'){ rec.streakL++; rec.bestL=Math.max(rec.bestL, rec.streakL); rec.streakW=0; rec.streakD=0; }
       else { rec.streakD++; rec.bestD=Math.max(rec.bestD, rec.streakD); rec.streakW=0; rec.streakL=0; }
-      // form buffer (keep last 5)
-      rec.form.push(out);
-      if(rec.form.length>5) rec.form.shift();
+      rec.form.push(out); // chronological push
     }
     updateStreak(H, outcomeH);
     updateStreak(A, outcomeA);
 
-    // Biggest win by goal diff
+    // Highlights
     const diff = Math.abs(h-a);
-    if(!biggestWin || diff > biggestWin.diff){
-      biggestWin = {home, away, diff, score:`${h}-${a}`};
-    }
-    // Highest scoring (total)
-    const total = h + a;
-    if(!highestScoring || total > highestScoring.total){
-      highestScoring = {home, away, total, score:`${h}-${a}`};
-    }
-    // Most by one team in a single match
+    if(!biggestWin || diff > biggestWin.diff){ biggestWin = {home, away, diff, score:`${h}-${a}`}; }
+    const total = h+a;
+    if(!highestScoring || total > highestScoring.total){ highestScoring = {home, away, total, score:`${h}-${a}`}; }
     if(!mostByOne || h>mostByOne.goals){ mostByOne = {team:home, opponent:away, goals:h, score:`${h}-${a}`}; }
     if(!mostByOne || a>mostByOne.goals){ mostByOne = {team:away, opponent:home, goals:a, score:`${h}-${a}`}; }
-    // Most conceded in a single match
     if(!mostConcededOne || a>mostConcededOne.goalsAgainst){ mostConcededOne = {team:away, opponent:home, goalsAgainst:a, score:`${h}-${a}`}; }
     if(!mostConcededOne || h>mostConcededOne.goalsAgainst){ mostConcededOne = {team:home, opponent:away, goalsAgainst:h, score:`${h}-${a}`}; }
   }
 
-  // Helpers to pick tops
+  // Leader pickers
   function topBy(fn, dir='desc'){
     let winner='–', val=null;
     for(const [name,rec] of teams){
@@ -268,13 +277,11 @@
     }
     return {name:winner, val:val==null?0:val};
   }
-  function withPlayed(fn, dir='desc'){
-    return topBy(r => r.played ? fn(r) : null, dir);
-  }
+  function withPlayed(fn, dir='desc'){ return topBy(r=>r.played?fn(r):null, dir); }
 
   // Derivatives
-  const homePct = matches ? Math.round((homeWins/matches)*100) : 0;
-  const awayPct = matches ? Math.round((awayWins/matches)*100) : 0;
+  const homePct = played ? Math.round((homeWins/played)*100) : 0;
+  const awayPct = played ? Math.round((awayWins/played)*100) : 0;
 
   const mostDraws = topBy(r=>r.D,'desc');
   const fewestL   = withPlayed(r=>r.L,'asc');
@@ -288,18 +295,15 @@
 
   // Paint top cards
   const set = (id,v) => document.getElementById(id).textContent = v;
-  set('s-matches', matches || '0');
+  set('s-matches', played || '0');
   set('s-goals', goals || '0');
-  set('s-avg', matches ? (goals/matches).toFixed(2) : '0.00');
-
+  set('s-avg', played ? (goals/played).toFixed(2) : '0.00');
   set('s-homewin', homePct + '%');
   set('s-awaywin', awayPct + '%');
   set('s-draws', draws);
 
-  set('s-mostdraws-val', mostDraws.val || '0');
-  set('s-mostdraws-team', mostDraws.name);
-  set('s-fewestL-val', (fewestL.val ?? '0'));
-  set('s-fewestL-team', fewestL.name);
+  set('s-mostdraws-val', mostDraws.val || '0'); set('s-mostdraws-team', mostDraws.name);
+  set('s-fewestL-val', (fewestL.val ?? '0'));   set('s-fewestL-team', fewestL.name);
 
   set('s-best-avg-gf', bestAvgGF.val ? bestAvgGF.val.toFixed(2) : '0.00');
   set('s-best-avg-gf-team', bestAvgGF.name);
@@ -322,16 +326,18 @@
   if(highestScoring) hi.push(`Highest scoring: <strong>${highestScoring.home}</strong> vs <strong>${highestScoring.away}</strong> (${highestScoring.score}, ${highestScoring.total} goals)`);
   document.getElementById('s-highlights').innerHTML = hi.length ? hi.join(' &nbsp;•&nbsp; ') : 'No finished matches yet.';
 
-  // Tables: Form, Clean sheets, GA
+  // Tables: Form (date-aware), Clean sheets, GA
   function fillTable(tbodyId, rows){
     const tb = document.querySelector(`#${tbodyId} tbody`);
     tb.innerHTML = rows.map(html => `<tr>${html}</tr>`).join('');
   }
 
-  // Form: show all teams, sorted by points in last 5 (W=3,D=1,L=0) then name
+  // Form points helper
   function formPoints(f){ return f.reduce((s,ch)=>s+(ch==='W'?3:ch==='D'?1:0),0); }
+
+  // Build form entries using the *last 5 chronological* results
   const formRows = Array.from(teams.entries()).map(([name,r])=>{
-    const f = r.form.slice(-5); // last 5
+    const f = r.form.slice(-5); // last 5 by date
     const pts = formPoints(f);
     const w = f.filter(x=>x==='W').length, d = f.filter(x=>x==='D').length, l = f.filter(x=>x==='L').length;
     const chips = f.map(x=>`<span class="chip ${x}">${x}</span>`).join(' ');
