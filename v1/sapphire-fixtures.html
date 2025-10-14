@@ -18,77 +18,70 @@
     --muted:#cbd5e1;
   }
 
-  /* Fill iframe background with navy (no grey bleed) */
-  html,body{background:var(--bg) !important}
-
+  html,body{background:var(--bg)!important}
   body{margin:0;font:16px/1.45 system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink)}
-  /* Remove outer margin so no gap shows around card */
   .wrap{max-width:1100px;margin:0 auto;padding:16px;background:var(--bg);border-radius:14px}
 
-  /* Header row (title left, updated pill right) */
-  .bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-  .bar h1{
-    margin:0;font-weight:900;font-size:26px;
-    display:flex;align-items:center;gap:10px;color:var(--ink);
-  }
-  .title-sponsor-logo{
-    height:26px;vertical-align:middle;transition:transform .2s ease;
-  }
-  .bar a:hover .title-sponsor-logo{ transform:scale(1.08); }
+  /* Header bar */
+  .bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+  .bar h1{margin:0;font-weight:900;font-size:26px;display:flex;align-items:center;gap:10px;color:var(--ink);}
+  .title-sponsor-logo{height:26px;vertical-align:middle;transition:transform .2s ease;}
+  .bar a:hover .title-sponsor-logo{transform:scale(1.08);}
 
+  .controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .controls label{font-weight:900}
+  .select,.btn{
+    background:transparent;border:1px solid var(--line);color:var(--ink);
+    padding:8px 10px;border-radius:999px;cursor:pointer;font-weight:700;
+  }
+  .btn{background:var(--accent);color:#00143b;border-color:transparent}
   .stamp{
-    background:var(--accent); color:#00143b; font-weight:900;
-    padding:10px 16px; border-radius:999px; white-space:nowrap;
-    box-shadow:0 2px 8px rgba(0,0,0,.25); font-size:15px;
+    background:var(--accent);color:#00143b;font-weight:900;
+    padding:10px 16px;border-radius:999px;white-space:nowrap;
+    box-shadow:0 2px 8px rgba(0,0,0,.25);font-size:15px;
   }
 
   /* Table */
   table{width:100%;border-collapse:separate;border-spacing:0}
   thead th{
-    background:var(--accent); color:#00143b; font-weight:900;
-    text-transform:uppercase; letter-spacing:.06em; font-size:13px;
-    padding:14px 10px; text-align:center; border-top:1px solid #0003;
+    background:var(--accent);color:#00143b;font-weight:900;
+    text-transform:uppercase;letter-spacing:.06em;font-size:13px;
+    padding:14px 10px;text-align:center;border-top:1px solid #0003;
   }
   thead th:first-child{border-radius:8px 0 0 0}
   thead th:last-child{border-radius:0 8px 0 0}
-
-  tbody tr td{
-    padding:16px 14px; border-bottom:1px solid rgba(255,255,255,.04);
-  }
-  tbody tr:nth-child(odd)  td{ background:var(--row) }
-  tbody tr:nth-child(even) td{ background:var(--row2) }
-
-  /* cells */
+  tbody tr td{padding:16px 14px;border-bottom:1px solid rgba(255,255,255,.04);}
+  tbody tr:nth-child(odd) td{background:var(--row)}
+  tbody tr:nth-child(even) td{background:var(--row2)}
   .home{text-align:right}
-  .mid {text-align:center; width:90px; color:var(--muted); font-weight:800; letter-spacing:.02em}
+  .mid{text-align:center;width:90px;color:var(--muted);font-weight:800;letter-spacing:.02em}
   .away{text-align:left}
 
-  /* Mid-season divider row */
+  /* Mid-season row */
   .milestone-row td{
-    background:#05225a !important;
-    text-align:center; border-top:1px dashed var(--accent); border-bottom:1px dashed var(--accent);
+    background:#05225a!important;text-align:center;
+    border-top:1px dashed var(--accent);border-bottom:1px dashed var(--accent);
     padding:14px 10px;
   }
   .chip{
-    display:inline-block; background:var(--accent); color:#00143b; font-weight:900;
-    padding:4px 12px; border-radius:999px; letter-spacing:.03em;
+    display:inline-block;background:var(--accent);color:#00143b;font-weight:900;
+    padding:4px 12px;border-radius:999px;letter-spacing:.03em;
   }
 
-  /* Footer radius */
-  tbody tr:last-child td:first-child { border-radius:0 0 0 8px }
-  tbody tr:last-child td:last-child  { border-radius:0 0 8px 0 }
+  tbody tr:last-child td:first-child{border-radius:0 0 0 8px}
+  tbody tr:last-child td:last-child{border-radius:0 0 8px 0}
 
-  /* Sponsor footer (matches others) */
+  /* Footer */
   .sponsor-footer{
     text-align:center;font-size:13px;color:var(--muted);
     opacity:.9;padding:12px;margin-top:10px;border-top:1px solid var(--line);line-height:1.6;
   }
   .sponsor-footer .footer-logo{
-    height:28px;vertical-align:middle;margin-left:8px;margin-right:6px;transition:transform .2s ease;
+    height:28px;vertical-align:middle;margin:0 6px;transition:transform .2s ease;
   }
-  .sponsor-footer a:hover .footer-logo{ transform:scale(1.08); }
+  .sponsor-footer a:hover .footer-logo{transform:scale(1.08);}
 
-  /* Mobile trims */
+  /* Mobile tweaks */
   @media (max-width:680px){
     .wrap{padding:12px}
     .bar h1{font-size:22px}
@@ -97,30 +90,15 @@
     tbody tr td{padding:12px 10px}
     .mid{width:64px}
   }
-  /* --- Mobile header wrap + compact sizing --- */
-@media (max-width: 560px){
-  .title, .bar{ flex-wrap: wrap; gap: 8px; }
-  .title h1, .bar h1{
-    flex: 1 1 100%;
-    font-size: 18px;          /* was 20/26 */
-    line-height: 1.2;
-    display: flex; align-items: center; gap: 8px;
+  @media (max-width:560px){
+    .bar{gap:8px}
+    .bar h1{flex:1 1 100%;font-size:18px;line-height:1.2}
+    .title-sponsor-logo{height:20px}
+    .controls{order:2}
+    .stamp{order:3}
   }
-  .title-sponsor-logo{ height: 20px; }  /* was 26px */
-  .title .badge, .bar .stamp{
-    order: 2; width: 100%;
-    font-size: 12px; padding: 6px 10px;
-    text-align: left;          /* sits under the title line */
-  }
-}
-@media (max-width: 380px){
-  .title h1, .bar h1{ font-size: 16px; }
-  .title-sponsor-logo{ height: 18px; }
-}
-@media (max-width: 340px){
-  .title .badge, .bar .stamp{ display: none; }
-}
-
+  @media (max-width:380px){.bar h1{font-size:16px}.title-sponsor-logo{height:18px}}
+  @media (max-width:340px){.stamp{display:none}}
 </style>
 </head>
 <body>
@@ -135,16 +113,22 @@
         </a>
         Sapphire League | Fixtures
       </h1>
+
+      <!-- NEW: filter controls -->
+      <div class="controls" aria-label="Filter fixtures">
+        <label for="fx-select">Filter</label>
+        <select id="fx-select" class="select">
+          <option value="">All fixtures</option>
+        </select>
+        <button id="fx-clear" class="btn" type="button">Clear</button>
+      </div>
+
       <div id="stamp" class="stamp">Updated …</div>
     </div>
 
     <table id="fixturesTable" aria-describedby="status">
       <thead>
-        <tr>
-          <th>Home</th>
-          <th>&nbsp;</th>
-          <th>Away</th>
-        </tr>
+        <tr><th>Home</th><th>&nbsp;</th><th>Away</th></tr>
       </thead>
       <tbody></tbody>
     </table>
@@ -166,50 +150,57 @@
 
 <script>
 (function(){
-  // === CONFIG ===
+  // === CONFIG (Sapphire) ===
   const SHEET_ID   = '1SBwblENySaLUImMMIJTQ2BSqAKWiAQGk89FFZ2Y_yHA';
   const SHEET_NAME = 'Fixtures (Embed)';
-  const RANGE      = 'A1:C241';
-  const MID_AFTER  = 45;   // insert divider AFTER 45 fixtures (i.e., before #46)
-  // ==============
+  const RANGE      = 'A1:C241';          // A=Home, B=v/score, C=Away
+  const MID_AFTER  = 45;                 // divider after N fixtures
+  const LS_KEY     = 'efpl:fixtures:sapphire:filter';
 
-  const tbody = document.querySelector('#fixturesTable tbody');
+  // Cache-bust in 5-minute buckets
+  const BUCKET_MS = 5*60*1000;
+  const CB = Math.floor(Date.now()/BUCKET_MS);
+
+  const tbody    = document.querySelector('#fixturesTable tbody');
   const statusEl = document.getElementById('status');
   const stampEl  = document.getElementById('stamp');
+  const selEl    = document.getElementById('fx-select');
+  const clearEl  = document.getElementById('fx-clear');
 
-  // Updated pill timestamp (local)
-(function setStamp(){
-  const d = new Date();
-  const pad = n => String(n).padStart(2,'0');
-  const yy  = String(d.getFullYear()).slice(-2); // "25"
-  // Date-only: DD/MM/YY
-  const text = `Updated ${pad(d.getDate())}/${pad(d.getMonth()+1)}/${yy}`;
-  stampEl.textContent = text;
-})();
+  function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]))}
 
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}&range=${encodeURIComponent(RANGE)}`;
+  // Updated pill (DD/MM/YY)
+  (function setStamp(){
+    const d=new Date(), p=n=>String(n).padStart(2,'0'), yy=String(d.getFullYear()).slice(-2);
+    stampEl.textContent=`Updated ${p(d.getDate())}/${p(d.getMonth()+1)}/${yy}`;
+  })();
+
+  function getTeamFromQuery(){try{return new URLSearchParams(location.search).get('team')?.trim()||'';}catch{ return '' }}
 
   function parseGViz(text){
-    const s = text.indexOf('{'), e = text.lastIndexOf('}');
+    const s=text.indexOf('{'), e=text.lastIndexOf('}');
     if(s===-1||e===-1) throw new Error('Bad GViz response');
     return JSON.parse(text.slice(s,e+1));
   }
 
-  function insertMidRow(){
-    const tr = document.createElement('tr');
-    tr.className = 'milestone-row';
-    const td = document.createElement('td');
-    td.colSpan = 3;
-    td.innerHTML = '<span class="chip">MID-SEASON CHECKPOINT</span>';
+  function insertDivider(){
+    const tr=document.createElement('tr');
+    tr.className='milestone-row';
+    const td=document.createElement('td');
+    td.colSpan=3;
+    td.innerHTML='<span class="chip">MID-SEASON CHECKPOINT</span>';
     tr.appendChild(td);
     tbody.appendChild(tr);
   }
 
-  function build(rows){
-    tbody.innerHTML = '';
-    let count = 0;
+  // Build table with optional filter, preserving mid-season divider position (even when filtered)
+  function build(rows, filterName){
+    tbody.innerHTML='';
+    let shownCount=0, seasonIndex=0, autoInserted=false, manualInserted=false;
+    const activeFilter = filterName && filterName.trim().length>0;
+    const q = activeFilter ? filterName.toLowerCase() : '';
 
-    // If first row looks like a header, skip it.
+    // Skip header-like first row
     const looksHeader = rows.length && (
       String(rows[0][0]||'').toLowerCase().includes('home') ||
       String(rows[0][2]||'').toLowerCase().includes('away')
@@ -223,31 +214,105 @@
       const away = (r[2]||'').toString().trim();
       if(!home && !mid && !away) continue;
 
-      // If you ever put "#MID" in sheet col A, honor it:
-      if(home === '#MID'){ insertMidRow(); continue; }
+      // Manual marker
+      if(home === '#MID'){
+        if(!manualInserted){ insertDivider(); manualInserted = true; }
+        continue; // not a fixture
+      }
 
-      if(count === MID_AFTER){ insertMidRow(); }
+      // Count real fixtures to find mid point even under filtering
+      seasonIndex++;
+      if(!autoInserted && seasonIndex === MID_AFTER){
+        insertDivider();
+        autoInserted = true;
+      }
 
-      const tr = document.createElement('tr');
-      const tdH = document.createElement('td'); tdH.className='home'; tdH.textContent = home;
-      const tdM = document.createElement('td'); tdM.className='mid';  tdM.textContent = mid;
-      const tdA = document.createElement('td'); tdA.className='away'; tdA.textContent = away;
-      tr.appendChild(tdH); tr.appendChild(tdM); tr.appendChild(tdA);
+      // Apply filter if active
+      if(activeFilter){
+        const hl = home.toLowerCase(), al = away.toLowerCase();
+        if(hl !== q && al !== q) continue;
+      }
+
+      const tr=document.createElement('tr');
+      tr.innerHTML = `<td class="home">${esc(home)}</td><td class="mid">${esc(mid)}</td><td class="away">${esc(away)}</td>`;
       tbody.appendChild(tr);
-
-      count++;
+      shownCount++;
     }
 
-    statusEl.textContent = count ? '' : 'No fixtures found.';
+    statusEl.textContent = shownCount ? '' : (activeFilter ? 'No fixtures for this player.' : 'No fixtures found.');
   }
 
-  fetch(url)
-    .then(r=>r.text())
-    .then(t=>{ const data = parseGViz(t);
-      const rows = (data.table.rows||[]).map(row => (row.c||[]).map(c => c ? c.v : ''));
-      build(rows);
-    })
-    .catch(err=>{ console.error(err); statusEl.textContent='Error loading fixtures.'; });
+  // Fill dropdown from unique Home/Away names
+  function populateSelect(rows){
+    const names = new Set();
+    const looksHeader = rows.length && (
+      String(rows[0][0]||'').toLowerCase().includes('home') ||
+      String(rows[0][2]||'').toLowerCase().includes('away')
+    );
+    const start = looksHeader ? 1 : 0;
+
+    for(let i=start;i<rows.length;i++){
+      const r = rows[i] || [];
+      const h = (r[0]||'').toString().trim();
+      const a = (r[2]||'').toString().trim();
+      if(h && h !== '#MID') names.add(h);
+      if(a) names.add(a);
+    }
+
+    const sorted = [...names].sort((a,b)=>a.localeCompare(b));
+    for(let i=selEl.options.length-1;i>=1;i--) selEl.remove(i);
+    for(const n of sorted){
+      const opt=document.createElement('option');
+      opt.value=n; opt.textContent=n;
+      selEl.appendChild(opt);
+    }
+  }
+
+  async function init(){
+    try{
+      const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}&range=${encodeURIComponent(RANGE)}&cache=${CB}`;
+      const txt=await fetch(url).then(r=>r.text());
+      const data=parseGViz(txt);
+      const rows=(data.table.rows||[]).map(row => (row.c||[]).map(c => c ? c.v : ''));
+
+      populateSelect(rows);
+
+      // initial selection order: URL ?team, then saved, else none
+      const urlTeam = getTeamFromQuery();
+      const saved = localStorage.getItem(LS_KEY) || '';
+      const initial = urlTeam || saved || '';
+      if(initial){
+        const match = [...selEl.options].find(o => o.value.toLowerCase() === initial.toLowerCase());
+        selEl.value = match ? match.value : '';
+      }else{
+        selEl.value = '';
+      }
+
+      build(rows, selEl.value);
+
+      selEl.addEventListener('change', ()=>{
+        localStorage.setItem(LS_KEY, selEl.value);
+        build(rows, selEl.value);
+      });
+
+      clearEl.addEventListener('click', ()=>{
+        selEl.value='';
+        localStorage.setItem(LS_KEY, '');
+        build(rows, '');
+        try{
+          const u=new URL(location.href);
+          u.searchParams.delete('team');
+          history.replaceState({},'',u.toString());
+        }catch{}
+      });
+
+    }catch(err){
+      console.error(err);
+      statusEl.textContent='Error loading fixtures.';
+    }
+  }
+
+  init();
 })();
 </script>
 </body>
