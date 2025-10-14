@@ -123,6 +123,24 @@ tbody td{
   tbody tr td{ padding: 8px 6px; font-size: 13px; }
   .mid{ min-width: 28px; }
 }
+table{ table-layout: fixed; }
+
+tbody td{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mid{
+  overflow: visible;
+  text-overflow: clip;
+  white-space: nowrap;
+  min-width: 56px;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 380px){ .mid{ min-width: 50px; } }
+@media (max-width: 330px){ .mid{ min-width: 46px; } }
 
 </style>
 </head>
@@ -149,10 +167,10 @@ tbody td{
     </div>
 
     <table id="fixturesTable" aria-describedby="status">
-	<colgroup>
-  <col style="width:44%">
-  <col style="width:12%">
-  <col style="width:44%">
+<colgroup>
+  <col style="width:42%">
+  <col style="width:16%">
+  <col style="width:42%">
 </colgroup>
       <thead><tr><th>Home</th><th>&nbsp;</th><th>Away</th></tr></thead>
       <tbody></tbody>
