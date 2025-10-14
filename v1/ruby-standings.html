@@ -110,30 +110,30 @@
     transition:transform 0.2s ease;
   }
   .sponsor-footer a:hover .footer-logo { transform:scale(1.08); }
-  /* --- Mobile header wrap + compact sizing --- */
-@media (max-width: 560px){
-  .title, .bar{ flex-wrap: wrap; gap: 8px; }
-  .title h1, .bar h1{
-    flex: 1 1 100%;
-    font-size: 18px;          /* was 20/26 */
-    line-height: 1.2;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .title-sponsor-logo{ height: 20px; }  /* was 26px */
-  .title .badge, .bar .stamp{
-    order: 2; width: 100%;
-    font-size: 12px; padding: 6px 10px;
-    text-align: left;          /* sits under the title line */
-  }
-}
-@media (max-width: 380px){
-  .title h1, .bar h1{ font-size: 16px; }
-  .title-sponsor-logo{ height: 18px; }
-}
-@media (max-width: 340px){
-  .title .badge, .bar .stamp{ display: none; }
-}
 
+  /* --- Mobile header wrap + compact sizing --- */
+  @media (max-width: 560px){
+    .title, .bar{ flex-wrap: wrap; gap: 8px; }
+    .title h1, .bar h1{
+      flex: 1 1 100%;
+      font-size: 18px;
+      line-height: 1.2;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .title-sponsor-logo{ height: 20px; }
+    .title .badge, .bar .stamp{
+      order: 2; width: 100%;
+      font-size: 12px; padding: 6px 10px;
+      text-align: left;
+    }
+  }
+  @media (max-width: 380px){
+    .title h1, .bar h1{ font-size: 16px; }
+    .title-sponsor-logo{ height: 18px; }
+  }
+  @media (max-width: 340px){
+    .title .badge, .bar .stamp{ display: none; }
+  }
 </style>
 </head>
 <body>
@@ -166,6 +166,11 @@
       <div class="table-mobile fade-in">
         <table id="t-compact"></table>
       </div>
+
+      <!-- Footnote: hidden by default (left-aligned) -->
+      <p id="deductions-note" style="display:none;color:#cbd5e1;font-size:13px;text-align:left;margin:8px 12px 0;opacity:0.85;">
+        * denotes points deduction
+      </p>
 
       <!-- Sponsor footer -->
       <div class="sponsor-footer">
@@ -206,10 +211,23 @@ function paintInstant(elId, key, skId){
       document.querySelectorAll('.fade-in').forEach(n => n.classList.add('ready'));
       const sk = skId && document.getElementById(skId);
       if(sk) sk.style.display = 'none';
+      checkForDeductions();
     }
   }catch(e){}
 }
 function saveHTML(key, html){ try{ localStorage.setItem(key, html); }catch(e){} }
+
+/* Footnote toggle: show only if a star (*) exists */
+function checkForDeductions(){
+  const note  = document.getElementById('deductions-note');
+  if (!note) return;
+  const t1 = document.getElementById('t');
+  const t2 = document.getElementById('t-compact');
+  const hasStar =
+    (t1 && t1.textContent.includes('*')) ||
+    (t2 && t2.textContent.includes('*'));
+  note.style.display = hasStar ? 'block' : 'none';
+}
 
 /* Paint immediately if cached */
 paintInstant('t', 'efpl:standings:full', 'sk-standings');
@@ -256,10 +274,12 @@ async function loadStandings(){
 
     document.querySelectorAll('.fade-in').forEach(n => n.classList.add('ready'));
     document.getElementById('sk-standings').style.display='none';
-const d = new Date();
-const pad = n => String(n).padStart(2,'0');
-const yy  = String(d.getFullYear()).slice(-2);
-statusEl.textContent = `Updated ${pad(d.getDate())}/${pad(d.getMonth()+1)}/${yy}`;
+    const d = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    const yy  = String(d.getFullYear()).slice(-2);
+    statusEl.textContent = `Updated ${pad(d.getDate())}/${pad(d.getMonth()+1)}/${yy}`;
+
+    checkForDeductions(); // run after load
   }catch(err){
     document.getElementById('t').innerHTML = '';
     document.getElementById('t-compact').innerHTML = '';
