@@ -99,6 +99,31 @@
   }
   @media (max-width:380px){.bar h1{font-size:16px}.title-sponsor-logo{height:18px}}
   @media (max-width:340px){.stamp{display:none}}
+/* Prevent tiny screens from breaking the middle cell onto new lines */
+table{ table-layout: fixed; }                 /* respect the colgroup widths */
+tbody td{
+  white-space: nowrap;                        /* keep each cell on one line */
+  overflow: hidden; text-overflow: ellipsis;  /* trim long names gracefully */
+}
+.mid{
+  width: 1%;          /* let colgroup control it; keep it skinny */
+  min-width: 38px;    /* enough for "10-10" without wrapping */
+  letter-spacing: 0;
+}
+
+/* Tighter spacing + readable sizing on the smallest phones */
+@media (max-width: 380px){
+  thead th{ padding: 10px 8px; font-size: 11px; }
+  tbody tr td{ padding: 10px 8px; font-size: 14px; }
+  .mid{ min-width: 32px; font-weight: 900; }  /* sturdy mid column */
+}
+
+/* Ultra-narrow devices: squeeze a bit more */
+@media (max-width: 330px){
+  tbody tr td{ padding: 8px 6px; font-size: 13px; }
+  .mid{ min-width: 28px; }
+}
+
 </style>
 </head>
 <body>
@@ -127,6 +152,11 @@
     </div>
 
     <table id="fixturesTable" aria-describedby="status">
+	<colgroup>
+  <col style="width:44%">
+  <col style="width:12%">
+  <col style="width:44%">
+</colgroup>
       <thead>
         <tr><th>Home</th><th>&nbsp;</th><th>Away</th></tr>
       </thead>
