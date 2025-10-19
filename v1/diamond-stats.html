@@ -6,20 +6,30 @@
 <title>eFPL — Full Stats</title>
 
 <!--
-- Pulls live data from Standings + Fixtures (Embed)
-- Uses Date Completed (col D) when present to order results for form/streaks
-- Adds a player filter (dropdown) that re-renders KPIs, Records, Leaderboards, and Form
-- 5-minute localStorage caching (like your other embeds)
+HOW THIS WORKS
+- Pulls live data from 2 tabs in your Google Sheet (Standings + Fixtures Embed)
+- Calculates league-wide KPIs, team leaderboards, streaks, and form
+- Uses Date Completed if present in Fixtures (Embed) column D — otherwise falls back to sheet order
+
+QUICK SETUP
+1) Ensure your Sheet exposes these tabs:
+   - Standings  (like your existing standings.html uses)
+   - Fixtures (Embed) with columns: A=Home, B=Score (e.g., 3-2 or 'v' if unplayed), C=Away, D=Date Completed (optional)
+2) If your Date Completed column isn’t in the embed, either add it to col D, or change FIX_TAB/RANGE to the main Fixtures tab that includes it.
+
+NOTES
+- Styling intentionally matches your dark navy/yellow look.
+- Caches results in localStorage for 5 minutes like your other pages.
 -->
 
 <style>
   :root{
-    --bg:#000b26;
-    --card:#00143b;
-    --card2:#05225a;
-    --ink:#ffffff;
-    --muted:#cbd5e1;
-    --accent:#f9d71c;
+    --bg:#000b26;         /* page backdrop tint (very dark navy) */
+    --card:#00143b;       /* primary card */
+    --card2:#05225a;      /* secondary card */
+    --ink:#ffffff;        /* primary text */
+    --muted:#cbd5e1;      /* secondary text */
+    --accent:#f9d71c;     /* yellow */
     --line:rgba(249,215,28,.35);
     --row1:#001a4d; --row2:#002060; --hover:#002b80;
   }
@@ -30,13 +40,6 @@
   .title{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
   .title h1{margin:0;font-size:clamp(24px,4.8vw,34px)}
   .badge{background:var(--accent);color:#0b1b3d;padding:4px 12px;border-radius:999px;font-weight:900}
-
-  /* Filter UI */
-  .filters{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 12px}
-  .filters label{font-weight:800}
-  .filters select{background:var(--card2);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-weight:700}
-  .filters button{background:var(--accent);color:#0b1b3d;border:none;border-radius:10px;padding:8px 12px;font-weight:900;cursor:pointer}
-  .filters button:hover{opacity:.95}
 
   .grid{display:grid;gap:14px;grid-template-columns:1fr}
   @media (min-width:960px){ .grid{grid-template-columns:1.2fr .8fr} }
@@ -70,6 +73,7 @@
   .fade-in{opacity:0;transition:opacity .18s ease}
   .fade-in.ready{opacity:1}
 
+  /* Mobile polish */
   @media (max-width:680px){ .wrap{padding:12px} .card{border-radius:10px} }
 </style>
 </head>
@@ -78,15 +82,6 @@
     <div class="title">
       <h1>League Stats Dashboard</h1>
       <div class="badge" id="updated">Loading…</div>
-    </div>
-
-    <!-- Player/Team filter -->
-    <div class="filters">
-      <label for="teamFilter">Filter:</label>
-      <select id="teamFilter" aria-label="Filter by team">
-        <option value="">All teams</option>
-      </select>
-      <button id="clearFilter" type="button">Reset</button>
     </div>
 
     <div class="grid">
@@ -122,11 +117,20 @@
 
 <script>
 /******************* CONFIG *******************/
-const SHEET_ID   = '1pPQbrjEivgy88KtyVe5ABsKjQSDutZwEO51TgKIPF5E'; // <- replace if needed
-const STAND_TAB  = 'Standings';
-const STAND_RANGE= 'P1:Y17';
-const FIX_TAB    = 'Fixtures (Embed)';
-const FIX_RANGE  = 'A1:D1000';   // A=Home, B=Score or 'v', C=Away, D=Date Completed (optional)
+const SHEET_ID   = '17OW81tsw1w2dCeP4AzcJlxa7gr6eFE9ExXJbuovLNNQ';
+
+// Using tab GIDs provided
+const STAND_GID  = 710555534;
+const STAND_RANGE= 'A1:Z1000';
+
+const FIX_GID    = 1818979381;
+const FIX_RANGE  = 'A1:E2000';   // A=Home, B=Score or 'v', C=Away, D=Date Completed (optional)
+
+// Cache bucket: 5 minutes
+const BUCKET_MS  = 5 * 60 * 1000;
+const CB         = Math.floor(Date.now() / BUCKET_MS);   // A=Home, B=Score or 'v', C=Away, D=Date Completed (optional)
+
+// Cache bucket: 5 minutes
 const BUCKET_MS  = 5 * 60 * 1000;
 const CB         = Math.floor(Date.now() / BUCKET_MS);
 
@@ -140,12 +144,24 @@ async function fetchSheet(sheet, range){
   const rows = (json.table.rows||[]).map(r => (r.c||[]).map(c => c ? c.v : ''));
   return { headers, rows };
 }
+
+// Fetch by numeric tab gid (provided)
+async function fetchByGid(gid, range){
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${gid}&tqx=out:json&range=${encodeURIComponent(range)}&cachebust=${CB}`;
+  const res = await fetch(url); const txt = await res.text(); if(!res.ok) throw new Error(res.status+' '+txt.slice(0,200));
+  const json = parseGviz(txt); const headers = (json.table.cols||[]).map(c => (c.label||'').toString());
+  const rows = (json.table.rows||[]).map(r => (r.c||[]).map(c => c ? c.v : ''));
+  return { headers, rows };
+}
 function toNum(v){ const n = Number(v); return Number.isFinite(n) ? n : 0; }
-function parseScore(str){ const m = String(str||'').match(/^(\d+)\s*[-–]\s*(\d+)$/); return m ? ({hg:+m[1], ag:+m[2]}) : null; }
+function parseScore(str){ const m = String(str||'').match(/^(\d+)\s*[-–]\s*(\d+)$/); return m ? {hg:+m[1], ag:+m[2]} : null; }
 function parseDateRaw(v){
+  // Google GViz may return native dates or serials; also allow ISO strings.
   if(v instanceof Date) return v.getTime();
-  if(typeof v === 'number'){
+  if(typeof v === 'number'){ // GViz often gives JS Date objects already, but just in case serial days
+    // Assume already millis is unlikely. Treat numbers as millis if > 10^10
     if(v > 1e10) return v;
+    // Excel-style days since 1899-12-30 (Google Sheets) → ms
     const epoch = new Date(Date.UTC(1899,11,30));
     return new Date(epoch.getTime() + v*86400000).getTime();
   }
@@ -155,15 +171,7 @@ function parseDateRaw(v){
 
 /*************** LocalStorage paint ***************/
 function paintInstant(id, key){
-  try{
-    const html = localStorage.getItem(key);
-    if(html){
-      document.getElementById(id).innerHTML = html;
-      document.getElementById(id).closest('.fade-in')?.classList.add('ready');
-      const sk = document.querySelector('#'+id).previousElementSibling;
-      if(sk && sk.classList.contains('skeleton')) sk.style.display='none';
-    }
-  }catch(e){}
+  try{ const html = localStorage.getItem(key); if(html){ document.getElementById(id).innerHTML = html; document.getElementById(id).closest('.fade-in')?.classList.add('ready'); const sk = document.querySelector('#'+id).previousElementSibling; if(sk && sk.classList.contains('skeleton')) sk.style.display='none'; } }catch(e){}
 }
 function saveHTML(key, html){ try{ localStorage.setItem(key, html); }catch(e){} }
 
@@ -172,16 +180,13 @@ paintInstant('records', 'efpl:stats:records');
 paintInstant('leaders', 'efpl:stats:leaders');
 paintInstant('form',    'efpl:stats:form');
 
-// Global store for filtering
-const STATE = { ready:false, base:null, filter:"" };
-
 /***************** Main load *****************/
 (async function main(){
   const updated = document.getElementById('updated');
   try{
     const [stand, fix] = await Promise.all([
-      fetchSheet(STAND_TAB, STAND_RANGE),
-      fetchSheet(FIX_TAB,   FIX_RANGE)
+      fetchByGid(STAND_GID, STAND_RANGE),
+      fetchByGid(FIX_GID,   FIX_RANGE)
     ]);
 
     // 1) Parse standings headers
@@ -227,9 +232,11 @@ const STATE = { ready:false, base:null, filter:"" };
 
       if(done){
         const {hg, ag} = score;
+        // Home perspective
         if(teams[home]){
           teams[home].results.push({ts: Number.isFinite(dateMs)?dateMs:Infinity, gf: hg, ga: ag, outcome: hg>ag?'W':hg===ag?'D':'L', opp: away});
         }
+        // Away perspective
         if(teams[away]){
           teams[away].results.push({ts: Number.isFinite(dateMs)?dateMs:Infinity, gf: ag, ga: hg, outcome: ag>hg?'W':ag===hg?'D':'L', opp: home});
         }
@@ -239,124 +246,140 @@ const STATE = { ready:false, base:null, filter:"" };
     // Sort results per team by date (fallback to sheet order if no dates)
     for(const t of Object.values(teams)){
       t.results.sort((a,b)=> a.ts - b.ts);
+      // Last 5 form
       const last5 = t.results.slice(-5);
       t.form = last5.map(x => x.outcome==='W'?'W':x.outcome==='D'?'D':'L');
+      // Current streak
       let streakType=null, streakLen=0; for(let i=t.results.length-1;i>=0;i--){
         const o=t.results[i].outcome; if(!streakType) { streakType=o; streakLen=1; }
         else if(o===streakType) streakLen++; else break;
       }
       t.streak = { type: streakType||'-', len: streakLen };
+      // Win rate & PPG (fallback to standings P & Pts if present)
       const P = t.P || t.results.length; const W = t.W || t.results.filter(r=>r.outcome==='W').length;
       t.winRate = P? (W/P) : 0; t.ppg = P? ((t.Pts|| (W*3 + t.results.filter(r=>r.outcome==='D').length))/P) : 0;
     }
 
-    // Completed, clean sheets
+    // 3) League KPIs
     const completed = matches.filter(m => m.done);
+    const totalGames = completed.length;
+    const totalGoals = completed.reduce((a,m)=> a + m.score.hg + m.score.ag, 0);
+    const avgGPG = totalGames ? (totalGoals/totalGames) : 0;
+
+    // Biggest Win / Highest Scoring
+    let biggestWin=null, highestScoring=null;
+    for(const m of completed){
+      const diff = Math.abs(m.score.hg - m.score.ag);
+      const sum  = m.score.hg + m.score.ag;
+      if(!biggestWin || diff > biggestWin.diff){ biggestWin = {diff, m}; }
+      if(!highestScoring || sum > highestScoring.sum){ highestScoring = {sum, m}; }
+    }
+
+    // Clean sheets count per team
     const cleanSheets = {};
     for(const m of completed){
       if(m.score.ag === 0){ cleanSheets[m.home] = (cleanSheets[m.home]||0)+1; }
       if(m.score.hg === 0){ cleanSheets[m.away] = (cleanSheets[m.away]||0)+1; }
     }
 
-    // Save base for filtering + populate dropdown
-    STATE.base = { teams, matches, completed, cleanSheets };
-    STATE.ready = true;
+    /*************** RENDER ***************/
+    // KPIs
+    const kpiHTML = `
+      <div class="kpi"><div class="label">Matches Played</div><div class="value">${totalGames}</div></div>
+      <div class="kpi"><div class="label">Total Goals</div><div class="value">${totalGoals}</div></div>
+      <div class="kpi"><div class="label">Avg Goals / Game</div><div class="value">${avgGPG.toFixed(2)}</div></div>
+      <div class="kpi"><div class="label">Teams</div><div class="value">${Object.keys(teams).length}</div></div>
+      <div class="kpi"><div class="label">Data freshness</div><div class="value">Every 5 min</div></div>`;
+    document.getElementById('kpis').innerHTML = kpiHTML;
 
-    const sel = document.getElementById('teamFilter');
-    const names = Object.keys(teams).sort();
-    sel.innerHTML = '<option value="">All teams</option>' + names.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');
-    sel.onchange = ()=> { STATE.filter = sel.value; applyFilter(); };
-    document.getElementById('clearFilter').onclick = ()=> { sel.value=''; STATE.filter=''; applyFilter(); };
+    // Records
+    function fmtMatch(m){ if(!m) return '<div class="muted">—</div>'; const a = esc(m.m.home), b = esc(m.m.away); return `<div><span class="pill">${m.m.score.hg}-${m.m.score.ag}</span> <span class="muted">${a} vs ${b}</span></div>`; }
+    const recHTML = `
+      <table>
+        <thead><tr><th>Record</th><th>Fixture</th></tr></thead>
+        <tbody>
+          <tr><td>Biggest Win (goal diff)</td><td>${fmtMatch(biggestWin)}</td></tr>
+          <tr><td>Highest Scoring Match</td><td>${fmtMatch(highestScoring)}</td></tr>
+        </tbody>
+      </table>`;
+    document.getElementById('records').innerHTML = recHTML;
 
-    // Initial render
-    applyFilter();
+    // Leaderboards
+    const arr = Object.values(teams);
+    const topAttack = [...arr].sort((a,b)=> b.GF - a.GF).slice(0,10);
+    const bestDefense = [...arr].sort((a,b)=> a.GA - b.GA).slice(0,10);
+    const topPPG = [...arr].sort((a,b)=> b.ppg - a.ppg).slice(0,10);
+    const topWR  = [...arr].sort((a,b)=> b.winRate - a.winRate).slice(0,10);
+
+    function tb(rows, cols){
+      let h = '<table><thead><tr>' + cols.map(c=>`<th>${esc(c)}</th>`).join('') + '</tr></thead><tbody>';
+      for(const r of rows){ h += '<tr>' + r.map((c,i)=>`<td class="${i>0?'right':''}">${esc(c)}</td>`).join('') + '</tr>'; }
+      h += '</tbody></table>'; return h;
+    }
+
+    const leadersHTML = `
+      <div style="display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
+        <div class="card" style="padding:10px">
+          <h3 style="margin:0 0 6px">Top Attack (GF)</h3>
+          ${tb(topAttack.map(t=>[t.name, t.GF]), ['Team','GF'])}
+        </div>
+        <div class="card" style="padding:10px">
+          <h3 style="margin:0 0 6px">Best Defense (GA)</h3>
+          ${tb(bestDefense.map(t=>[t.name, t.GA]), ['Team','GA'])}
+        </div>
+        <div class="card" style="padding:10px">
+          <h3 style="margin:0 0 6px">Points per Game</h3>
+          ${tb(topPPG.map(t=>[t.name, t.ppg.toFixed(2)]), ['Team','PPG'])}
+        </div>
+        <div class="card" style="padding:10px">
+          <h3 style="margin:0 0 6px">Win Rate</h3>
+          ${tb(topWR.map(t=>[t.name, (t.winRate*100).toFixed(1)+'%']), ['Team','Win%'])}
+        </div>
+      </div>`;
+    document.getElementById('leaders').innerHTML = leadersHTML;
+
+    // Form & streaks
+    function formDots(f){ return `<span class="form">${f.map(x=>`<i class="f ${x==='W'?'w':x==='D'?'d':'l'}" title="${x}"></i>`).join('')}</span>`; }
+    const formRows = arr.map(t=>{
+      const cs = cleanSheets[t.name]||0;
+      const s  = t.streak; const st = s.type? `${s.type} ×${s.len}` : '—';
+      const P  = t.P || t.results.length; const GD = (t.GD || (t.GF - t.GA));
+      return [
+        t.name,
+        formDots(t.form),
+        st,
+        P,
+        t.GF,
+        t.GA,
+        GD,
+        (t.ppg||0).toFixed(2),
+        ((t.winRate||0)*100).toFixed(1)+'%',
+        cs
+      ];
+    });
+    // Sort by PPG by default
+    formRows.sort((a,b)=> parseFloat(b[7]) - parseFloat(a[7]));
+
+    const formHTML = tb(formRows, ['Team','Form (Last 5)','Streak','P','GF','GA','GD','PPG','Win%','Clean Sheets']);
+    document.getElementById('form').innerHTML = formHTML;
 
     // Reveal + cache
     document.querySelectorAll('.fade-in').forEach(n => n.classList.add('ready'));
     document.querySelectorAll('.skeleton').forEach(n => n.style.display='none');
 
-    document.getElementById('updated').textContent = 'Updated ' + new Date().toLocaleString();
+    saveHTML('efpl:stats:kpis',    document.getElementById('kpis').innerHTML);
+    saveHTML('efpl:stats:records', document.getElementById('records').innerHTML);
+    saveHTML('efpl:stats:leaders', document.getElementById('leaders').innerHTML);
+    saveHTML('efpl:stats:form',    document.getElementById('form').innerHTML);
+
+    updated.textContent = 'Updated ' + new Date().toLocaleString();
   }catch(err){
     console.error(err);
-    document.getElementById('updated').textContent = 'Error — ' + err.message;
+    updated.textContent = 'Error — ' + err.message;
+    // Clear areas to avoid stale views
     ['kpis','records','leaders','form'].forEach(id => document.getElementById(id).innerHTML = '');
   }
 })();
-
-/*************** Render with filter ***************/
-function tb(rows, cols){
-  let h='<table><thead><tr>'+cols.map(c=>`<th>${esc(c)}</th>`).join('')+'</tr></thead><tbody>';
-  for(const r of rows){ h+='<tr>'+r.map((c,i)=>`<td class="${i>0?'right':''}">${esc(c)}</td>`).join('')+'</tr>'; }
-  h+='</tbody></table>'; return h;
-}
-function formDots(f){ return `<span class="form">${f.map(x=>`<i class="f ${x==='W'?'w':x==='D'?'d':'l'}" title="${x}"></i>`).join('')}</span>`; }
-
-function applyFilter(){
-  const f = STATE.filter;
-  const {teams, completed, cleanSheets} = STATE.base;
-  const allTeams = Object.values(teams);
-
-  // Scope
-  const scopeMatches = f ? completed.filter(m=> m.home===f || m.away===f) : completed;
-  const scopeTeams   = f ? allTeams.filter(t=> t.name===f) : allTeams;
-
-  // KPIs
-  const totalGames = scopeMatches.length;
-  const totalGoals = scopeMatches.reduce((a,m)=> a + m.score.hg + m.score.ag, 0);
-  const avgGPG = totalGames ? (totalGoals/totalGames) : 0;
-  document.getElementById('kpis').innerHTML = `
-    <div class="kpi"><div class="label">${f? 'Matches Played (for '+esc(f)+')':'Matches Played'}</div><div class="value">${totalGames}</div></div>
-    <div class="kpi"><div class="label">Total Goals${f?' (both teams)':''}</div><div class="value">${totalGoals}</div></div>
-    <div class="kpi"><div class="label">Avg Goals / Game</div><div class="value">${avgGPG.toFixed(2)}</div></div>
-    <div class="kpi"><div class="label">Teams</div><div class="value">${f?1:Object.keys(teams).length}</div></div>
-    <div class="kpi"><div class="label">Filter</div><div class="value">${f?esc(f):'All teams'}</div></div>
-  `;
-
-  // Records (within scope)
-  let biggestWin=null, highestScoring=null;
-  for(const m of scopeMatches){
-    const diff=Math.abs(m.score.hg-m.score.ag), sum=m.score.hg+m.score.ag;
-    if(!biggestWin || diff>biggestWin.diff) biggestWin={diff,m};
-    if(!highestScoring || sum>highestScoring.sum) highestScoring={sum,m};
-  }
-  const fmt = o => o ? `<div><span class="pill">${o.m.score.hg}-${o.m.score.ag}</span> <span class="muted">${esc(o.m.home)} vs ${esc(o.m.away)}</span></div>` : '<div class="muted">—</div>';
-  document.getElementById('records').innerHTML = `
-    <table><thead><tr><th>Record${f? ' — '+esc(f):''}</th><th>Fixture</th></tr></thead><tbody>
-      <tr><td>Biggest Win</td><td>${fmt(biggestWin)}</td></tr>
-      <tr><td>Highest Scoring</td><td>${fmt(highestScoring)}</td></tr>
-    </tbody></table>
-  `;
-
-  // Leaderboards (collapse to selected team when filtered)
-  const topAttack   = [...scopeTeams].sort((a,b)=> b.GF - a.GF).slice(0, f?1:10);
-  const bestDefense = [...scopeTeams].sort((a,b)=> a.GA - b.GA).slice(0, f?1:10);
-  const topPPG      = [...scopeTeams].sort((a,b)=> b.ppg - a.ppg).slice(0, f?1:10);
-  const topWR       = [...scopeTeams].sort((a,b)=> b.winRate - a.winRate).slice(0, f?1:10);
-  document.getElementById('leaders').innerHTML = `
-    <div style="display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
-      <div class="card" style="padding:10px"><h3 style="margin:0 0 6px">Top Attack (GF)</h3>${tb(topAttack.map(t=>[t.name, t.GF]), ['Team','GF'])}</div>
-      <div class="card" style="padding:10px"><h3 style="margin:0 0 6px">Best Defense (GA)</h3>${tb(bestDefense.map(t=>[t.name, t.GA]), ['Team','GA'])}</div>
-      <div class="card" style="padding:10px"><h3 style="margin:0 0 6px">Points per Game</h3>${tb(topPPG.map(t=>[t.name, t.ppg.toFixed(2)]), ['Team','PPG'])}</div>
-      <div class="card" style="padding:10px"><h3 style="margin:0 0 6px">Win Rate</h3>${tb(topWR.map(t=>[t.name, (t.winRate*100).toFixed(1)+'%']), ['Team','Win%'])}</div>
-    </div>
-  `;
-
-  // Form table
-  const formRows = scopeTeams.map(t=>{
-    const cs = (cleanSheets[t.name]||0);
-    const s  = t.streak;
-    const P  = t.P || t.results.length;
-    const GD = (t.GD || (t.GF - t.GA));
-    return [ t.name, formDots(t.form), (s.type? `${s.type} ×${s.len}` : '—'), P, t.GF, t.GA, GD, (t.ppg||0).toFixed(2), ((t.winRate||0)*100).toFixed(1)+'%', cs ];
-  }).sort((a,b)=> parseFloat(b[7]) - parseFloat(a[7]));
-  document.getElementById('form').innerHTML = tb(formRows, ['Team','Form (Last 5)','Streak','P','GF','GA','GD','PPG','Win%','Clean Sheets']);
-
-  // Cache filtered views too
-  saveHTML('efpl:stats:kpis',    document.getElementById('kpis').innerHTML);
-  saveHTML('efpl:stats:records', document.getElementById('records').innerHTML);
-  saveHTML('efpl:stats:leaders', document.getElementById('leaders').innerHTML);
-  saveHTML('efpl:stats:form',    document.getElementById('form').innerHTML);
-}
 </script>
 </body>
 </html>
