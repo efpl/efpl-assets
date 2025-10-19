@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>eFPL Diamond Standings</title>
 
-<!-- Speed: preconnect to Sheets -->
 <link rel="preconnect" href="https://docs.google.com" crossorigin>
 <link rel="preconnect" href="https://www.google.com" crossorigin>
 
@@ -23,13 +22,9 @@
 
   /* Title row */
   .title{display:flex;justify-content:space-between;align-items:center;margin:0 0 12px;padding:12px}
-  .title h1{
-    font-size:20px;margin:0;color:var(--text);
-    display:flex;align-items:center;gap:10px;
-  }
+  .title h1{font-size:20px;margin:0;color:var(--text);display:flex;align-items:center;gap:10px}
   .badge{background:var(--accent);color:#000;padding:4px 12px;border-radius:999px;font-weight:700}
 
-  /* Sponsor logo in title */
   .title-sponsor-logo{height:26px;vertical-align:middle;transition:transform .2s}
   .title-sponsor-logo:hover{transform:scale(1.08)}
 
@@ -68,34 +63,29 @@
   }
   tbody tr.after-top5 td{ border-top:2px dashed var(--fx-border); }
 
-  /* --- Form pills (desktop letters) --- */
+  /* --- Form pills (desktop letters ONLY) --- */
   .form{display:inline-flex;gap:6px;align-items:center;justify-content:center}
   .fpill{display:inline-block;width:18px;height:18px;border-radius:999px;
          font-size:11px;line-height:18px;font-weight:900;text-align:center}
-  .f-W{background:#16a34a;color:#fff} /* Win: green */
-  .f-D{background:#e5e7eb;color:#111} /* Draw: grey  */
-  .f-L{background:#dc2626;color:#fff} /* Loss: red   */
+  .f-W{background:#16a34a;color:#fff}
+  .f-D{background:#e5e7eb;color:#111}
+  .f-L{background:#dc2626;color:#fff}
 
-  /* --- Table visibility (robust for Google Sites) --- */
+  /* One-table visibility (robust against host CSS) */
   .table-desktop{ display:block !important; }
   .table-mobile{  display:none  !important; }
+
+  /* Switch to compact at ≤680px.
+     (Desktop stays as small as it reasonably can; when this hits,
+      we show compact with NO form at all.) */
   @media (max-width:680px){
     .wrap{padding:12px}
     .card{border-radius:10px}
     .table-desktop{ display:none  !important; }
     .table-mobile{  display:block !important; }
     .table-mobile th,.table-mobile td{padding:10px;font-size:14px}
-  }
-
-  /* --- Inline dots for compact table (tablets/phones) --- */
-  @media (max-width:680px){
-    .fpill-dot{ width:10px; height:10px; border-radius:50%; display:inline-block; }
-    .form-dots{ gap:4px; margin-left:8px; vertical-align:middle; display:inline-flex; }
-  }
-
-  /* Hide form entirely only on the smallest screens ≤560px */
-  @media (max-width:560px){
-    #t-compact .form-dots{ display:none !important; }
+    /* Never show any form in compact */
+    #t-compact .form{ display:none !important; }
   }
 
   /* Skeleton + fade-in */
@@ -150,7 +140,7 @@
       <!-- Skeleton -->
       <div id="sk-standings" class="skeleton"></div>
 
-      <!-- Desktop/tablet -->
+      <!-- Desktop -->
       <div class="table-desktop fade-in">
         <table id="t"></table>
       </div>
@@ -183,7 +173,7 @@
 /* ===== CONFIG ===== */
 const SHEET_ID  = '17OW81tsw1w2dCeP4AzcJlxa7gr6eFE9ExXJbuovLNNQ';
 const SHEET_TAB = 'Standings';
-const RANGE     = 'P1:Z17'; // include Form column (Z)
+const RANGE     = 'P1:Z17'; // includes Form column (Z) for desktop
 
 /* Cache bucket: 5 minutes */
 const BUCKET_MS = 5 * 60 * 1000;
@@ -197,7 +187,7 @@ function parseGviz(text){
   return JSON.parse(text.slice(a,b+1));
 }
 
-/* Safety net: ensure only one table visible (helps inside Google Sites) */
+/* Safety net: enforce one table visible (helps inside Google Sites) */
 function setTableMode(){
   const compact = window.matchMedia('(max-width:680px)').matches;
   const d = document.querySelector('.table-desktop');
@@ -233,23 +223,13 @@ function checkForDeductions(){
   note.style.display = hasStar ? 'block' : 'none';
 }
 
-/* Render W/D/L as coloured pills (desktop letters) */
+/* Desktop: render W/D/L as coloured letters */
 function renderFormLetters(s){
   const raw=String(s||"").replace(/\s+/g,"").slice(-5);
   if(!raw) return '';
   return '<span class="form" aria-label="Recent form: '+raw+'">' + [...raw].map(ch=>{
     const cls = ch==='W' ? 'f-W' : ch==='D' ? 'f-D' : 'f-L';
     return `<span class="fpill ${cls}">${ch}</span>`;
-  }).join('') + '</span>';
-}
-
-/* Inline dot renderer for compact table */
-function renderFormDots(s){
-  const raw=String(s||"").replace(/\s+/g,"").slice(-5);
-  if(!raw) return '';
-  return '<span class="form-dots" aria-label="Recent form: '+raw+'">' + [...raw].map(ch=>{
-    const cls = ch==='W' ? 'f-W' : ch==='D' ? 'f-D' : 'f-L';
-    return `<span class="fpill-dot ${cls}" aria-hidden="true"></span>`;
   }).join('') + '</span>';
 }
 
@@ -273,7 +253,7 @@ async function loadStandings(){
 
     const iForm = headers.findIndex(h => (h||'').toString().toLowerCase().includes('form'));
 
-    /* Desktop render */
+    /* Desktop render (includes Form) */
     let html = '<thead><tr>'+headers.map(h=>`<th>${esc(h)}</th>`).join('')+'</tr></thead><tbody>';
     for(let idx=0; idx<rows.length; idx++){
       const r = rows[idx];
@@ -297,13 +277,13 @@ async function loadStandings(){
     document.getElementById('t').innerHTML = html;
     saveHTML('efpl:standings:full', html);
 
-    /* Compact render (with dots) */
-    buildCompact(headers, rows, iForm);
+    /* Compact render (NO Form at all) */
+    buildCompact(headers, rows);
     saveHTML('efpl:standings:mob', document.getElementById('t-compact').innerHTML);
 
     document.querySelectorAll('.fade-in').forEach(n => n.classList.add('ready'));
     document.getElementById('sk-standings').style.display='none';
-    const d = new Date(), pad=n=>String(n).padStart(2,'0'), yy=String(d.getFullYear()).slice(-2);
+    const d=new Date(), pad=n=>String(n).padStart(2,'0'), yy=String(d.getFullYear()).slice(-2);
     statusEl.textContent = `Updated ${pad(d.getDate())}/${pad(d.getMonth()+1)}/${yy}`;
 
     checkForDeductions();
@@ -316,7 +296,7 @@ async function loadStandings(){
   }
 }
 
-function buildCompact(headers, rows, iForm){
+function buildCompact(headers, rows){
   function findCol(names){
     const lower = headers.map(h => (h||'').toString().trim().toLowerCase());
     for(const n of names){ const i = lower.indexOf(n); if(i !== -1) return i; }
@@ -337,7 +317,6 @@ function buildCompact(headers, rows, iForm){
     const team = r[cols[1]] ?? '';
     const p    = r[cols[2]] ?? '';
     const pts  = r[cols[3]] ?? '';
-    const form = (iForm !== -1) ? (r[iForm] ?? '') : '';
 
     const posClass = (idx===0) ? 'pos-1' : (idx>=1 && idx<=4 ? 'pos-2-5' : '');
     const cutClass = (idx===5) ? 'after-top5' : '';
@@ -345,10 +324,7 @@ function buildCompact(headers, rows, iForm){
 
     out += `<tr class="${rowClass}">
       <td class="right">${esc(pos)}</td>
-      <td>
-        <span>${esc(team)}</span>
-        ${iForm !== -1 ? renderFormDots(form) : ''}
-      </td>
+      <td>${esc(team)}</td>
       <td class="right">${esc(p)}</td>
       <td class="right points">${esc(pts)}</td>
     </tr>`;
