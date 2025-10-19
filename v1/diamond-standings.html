@@ -78,7 +78,7 @@
   /* dashed divider above 6th */
   tbody tr.after-top5 td{ border-top:2px dashed var(--fx-border); }
 
-  /* --- Form pills --- */
+  /* --- Form pills (desktop letters) --- */
   .form{display:inline-flex;gap:6px;align-items:center;justify-content:center}
   .fpill{
     display:inline-block;width:18px;height:18px;border-radius:999px;
@@ -96,9 +96,12 @@
     .table-desktop{display:none;}
     .table-mobile{display:block;}
     .table-mobile th,.table-mobile td{padding:10px;font-size:14px}
-    /* Show team name + form stacked */
-    .team-stack{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
-    .team-stack .form{justify-content:flex-start}
+    /* Inline dot variant for mobile */
+    .fpill-dot{
+      width:10px; height:10px; border-radius:50%; display:inline-block;
+    }
+    .form{gap:4px}
+    .table-mobile td{padding:8px 10px;}
   }
 
   /* Skeleton + fade-in */
@@ -152,6 +155,8 @@
   }
   @media (max-width: 340px){
     .title .badge, .bar .stamp{ display: none; }
+    /* hide form on ultra-tiny screens for readability */
+    #t-compact .form{ display:none; }
   }
 </style>
 </head>
@@ -248,13 +253,18 @@ function checkForDeductions(){
   note.style.display = hasStar ? 'block' : 'none';
 }
 
-/* --- Render W/D/L as coloured pills --- */
-function renderFormCell(s){
+/* --- Render W/D/L as coloured pills
+      Desktop: letters (W/D/L)
+      Mobile:  tiny dots (no letters) --- */
+function renderFormCell(s, mode='full'){
   const raw = String(s||"").replace(/\s+/g,"").slice(-5); // last 5
   if(!raw) return '';
-  return '<span class="form">' + [...raw].map(ch=>{
+  const isDots = (mode === 'dots');
+  return '<span class="form" aria-label="Recent form: '+raw+'">' + [...raw].map(ch=>{
     const cls = ch==='W' ? 'f-W' : ch==='D' ? 'f-D' : 'f-L';
-    return `<span class="fpill ${cls}">${ch}</span>`;
+    return isDots
+      ? `<span class="fpill fpill-dot ${cls}" aria-hidden="true"></span>`
+      : `<span class="fpill ${cls}">${ch}</span>`;
   }).join('') + '</span>';
 }
 
@@ -292,7 +302,7 @@ async function loadStandings(){
         const s = esc(cell ?? '');
         const right = isNumeric(s) ? ' right' : '';
         const pointsCol = (headers[i] || '').toLowerCase().includes('pts') ? ' points' : '';
-        const value = (i === iForm) ? renderFormCell(cell) : s;
+        const value = (i === iForm) ? renderFormCell(cell, 'full') : s; // letters on desktop
         html += `<td class="${right}${pointsCol}">${value}</td>`;
       });
       html += '</tr>';
@@ -352,10 +362,8 @@ function buildCompact(headers, rows){
     out += `<tr class="${rowClass}">
       <td class="right">${esc(pos)}</td>
       <td>
-        <div class="team-stack">
-          <span>${esc(team)}</span>
-          ${iForm !== -1 ? renderFormCell(form) : ''}
-        </div>
+        <span>${esc(team)}</span>
+        ${iForm !== -1 ? renderFormCell(form, 'dots') : ''}  <!-- dots inline -->
       </td>
       <td class="right">${esc(p)}</td>
       <td class="right points">${esc(pts)}</td>
