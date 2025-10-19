@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>eFPL Ruby Standings</title>
 
-<!-- Speed: preconnect to Sheets -->
 <link rel="preconnect" href="https://docs.google.com" crossorigin>
 <link rel="preconnect" href="https://www.google.com" crossorigin>
 
@@ -23,19 +22,13 @@
 
   /* Title row */
   .title{display:flex;justify-content:space-between;align-items:center;margin:0 0 12px;padding:12px}
-  .title h1{
-    font-size:20px;margin:0;color:var(--text);
-    display:flex;align-items:center;gap:10px;
-  }
+  .title h1{font-size:20px;margin:0;color:var(--text);display:flex;align-items:center;gap:10px}
   .badge{background:var(--accent);color:#000;padding:4px 12px;border-radius:999px;font-weight:700}
 
-  /* Sponsor logo in title */
-  .title-sponsor-logo{
-    height:26px;vertical-align:middle;transition:transform .2s ease;
-  }
-  .title a:hover .title-sponsor-logo{ transform:scale(1.08); }
+  .title-sponsor-logo{height:26px;vertical-align:middle;transition:transform .2s}
+  .title-sponsor-logo:hover{transform:scale(1.08)}
 
-  /* Table */
+  /* Tables */
   table{width:100%;border-collapse:collapse}
   thead th{
     background:var(--header-bg);color:var(--header-text);
@@ -50,7 +43,7 @@
   td.points{font-weight:800}
   td:first-child{font-weight:800}
 
-  /* #1 full-row highlight + crown */
+  /* #1 row highlight + crown */
   tbody tr.pos-1 td{
     background:linear-gradient(90deg, rgba(249,215,28,.18), rgba(249,215,28,.08)) !important;
     color:var(--text); font-weight:800; position:relative;
@@ -63,23 +56,33 @@
     content:"👑"; margin-right:8px; display:inline-block; transform:translateY(1px);
   }
 
-  /* #2–#5 subtle bar */
+  /* #2–#5 subtle bar + dashed divider after 5th */
   tbody tr.pos-2-5 td{ position:relative; background:var(--row1) !important; color:var(--text); }
   tbody tr.pos-2-5 td:first-child::before{
     content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--accent);
   }
-
-  /* dashed divider above 6th */
   tbody tr.after-top5 td{ border-top:2px dashed var(--fx-border); }
 
-  /* Mobile compact table */
-  .table-mobile{display:none;}
+  /* --- Form pills (desktop letters ONLY) --- */
+  .form{display:inline-flex;gap:6px;align-items:center;justify-content:center}
+  .fpill{display:inline-block;width:18px;height:18px;border-radius:999px;
+         font-size:11px;line-height:18px;font-weight:900;text-align:center}
+  .f-W{background:#16a34a;color:#fff}
+  .f-D{background:#e5e7eb;color:#111}
+  .f-L{background:#dc2626;color:#fff}
+
+  /* One-table visibility (robust against host CSS) */
+  .table-desktop{ display:block !important; }
+  .table-mobile{  display:none  !important; }
+
+  /* Switch to compact at ≤680px with no form */
   @media (max-width:680px){
     .wrap{padding:12px}
     .card{border-radius:10px}
-    .table-desktop{display:none;}
-    .table-mobile{display:block;}
+    .table-desktop{ display:none  !important; }
+    .table-mobile{  display:block !important; }
     .table-mobile th,.table-mobile td{padding:10px;font-size:14px}
+    #t-compact .form{ display:none !important; }
   }
 
   /* Skeleton + fade-in */
@@ -93,46 +96,23 @@
   .fade-in.ready{opacity:1}
 
   /* Sponsor footer */
-  .sponsor-footer {
-    text-align:center;
-    font-size:13px;
-    color:#cbd5e1;
-    opacity:0.9;
-    padding:10px;
-    border-top:1px solid rgba(249,215,28,.25);
-    line-height:1.6;
+  .sponsor-footer{
+    text-align:center;font-size:13px;color:#cbd5e1;opacity:.9;
+    padding:10px;border-top:1px solid rgba(249,215,28,.25);line-height:1.6;
   }
-  .sponsor-footer .footer-logo {
-    height:28px; /* increased from 18px */
-    vertical-align:middle;
-    margin-left:8px;
-    margin-right:6px;
-    transition:transform 0.2s ease;
-  }
-  .sponsor-footer a:hover .footer-logo { transform:scale(1.08); }
+  .sponsor-footer .footer-logo{height:28px;vertical-align:middle;margin:0 6px;transition:transform .2s}
+  .sponsor-footer a:hover .footer-logo{transform:scale(1.08)}
 
-  /* --- Mobile header wrap + compact sizing --- */
-  @media (max-width: 560px){
-    .title, .bar{ flex-wrap: wrap; gap: 8px; }
-    .title h1, .bar h1{
-      flex: 1 1 100%;
-      font-size: 18px;
-      line-height: 1.2;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .title-sponsor-logo{ height: 20px; }
-    .title .badge, .bar .stamp{
-      order: 2; width: 100%;
-      font-size: 12px; padding: 6px 10px;
-      text-align: left;
-    }
+  /* Mobile header wrap polish */
+  @media (max-width:560px){
+    .title{flex-wrap:wrap;gap:8px}
+    .title h1{flex:1 1 100%;font-size:18px;line-height:1.2}
+    .title-sponsor-logo{height:20px}
+    .title .badge{order:2;width:100%;font-size:12px;padding:6px 10px;text-align:left}
   }
-  @media (max-width: 380px){
-    .title h1, .bar h1{ font-size: 16px; }
-    .title-sponsor-logo{ height: 18px; }
-  }
-  @media (max-width: 340px){
-    .title .badge, .bar .stamp{ display: none; }
+  @media (max-width:380px){
+    .title h1{font-size:16px}
+    .title-sponsor-logo{height:18px}
   }
 </style>
 </head>
@@ -157,18 +137,17 @@
       <!-- Skeleton -->
       <div id="sk-standings" class="skeleton"></div>
 
-      <!-- Desktop/tablet -->
+      <!-- Desktop -->
       <div class="table-desktop fade-in">
         <table id="t"></table>
       </div>
 
-      <!-- Mobile compact -->
+      <!-- Compact -->
       <div class="table-mobile fade-in">
         <table id="t-compact"></table>
       </div>
 
-      <!-- Footnote: hidden by default (left-aligned) -->
-      <p id="deductions-note" style="display:none;color:#cbd5e1;font-size:13px;text-align:left;margin:8px 12px 0;opacity:0.85;">
+      <p id="deductions-note" style="display:none;color:#cbd5e1;font-size:13px;text-align:left;margin:8px 12px 0;opacity:.85;">
         * denotes points deduction
       </p>
 
@@ -188,9 +167,9 @@
 
 <script>
 /* ===== CONFIG ===== */
-const SHEET_ID  = '1bdayFx3kdv0B0_8ZJ66z6fkXzJ3ss-NzBkVXhttLy8Q';
+const SHEET_ID  = '1RkEkDlfyZ2hvKBLQmFFsxP8KpdGQup6FklRxXXc6Fs8';
 const SHEET_TAB = 'Standings';
-const RANGE     = 'P1:Y17';
+const RANGE     = 'P1:Z17'; // includes Form column (Z)
 
 /* Cache bucket: 5 minutes */
 const BUCKET_MS = 5 * 60 * 1000;
@@ -203,6 +182,17 @@ function parseGviz(text){
   if(a===-1||b===-1) throw new Error('Could not find JSON object in GViz response.');
   return JSON.parse(text.slice(a,b+1));
 }
+
+function setTableMode(){
+  const compact = window.matchMedia('(max-width:680px)').matches;
+  const d = document.querySelector('.table-desktop');
+  const m = document.querySelector('.table-mobile');
+  if(d) d.style.display = compact ? 'none'  : 'block';
+  if(m) m.style.display = compact ? 'block' : 'none';
+}
+window.addEventListener('resize', setTableMode);
+window.addEventListener('orientationchange', setTableMode);
+
 function paintInstant(elId, key, skId){
   try{
     const cached = localStorage.getItem(key);
@@ -212,26 +202,32 @@ function paintInstant(elId, key, skId){
       const sk = skId && document.getElementById(skId);
       if(sk) sk.style.display = 'none';
       checkForDeductions();
+      setTableMode();
     }
   }catch(e){}
 }
 function saveHTML(key, html){ try{ localStorage.setItem(key, html); }catch(e){} }
 
-/* Footnote toggle: show only if a star (*) exists */
 function checkForDeductions(){
-  const note  = document.getElementById('deductions-note');
-  if (!note) return;
-  const t1 = document.getElementById('t');
-  const t2 = document.getElementById('t-compact');
-  const hasStar =
-    (t1 && t1.textContent.includes('*')) ||
-    (t2 && t2.textContent.includes('*'));
+  const note=document.getElementById('deductions-note');
+  if(!note) return;
+  const t1=document.getElementById('t');
+  const t2=document.getElementById('t-compact');
+  const hasStar=(t1 && t1.textContent.includes('*'))||(t2 && t2.textContent.includes('*'));
   note.style.display = hasStar ? 'block' : 'none';
 }
 
-/* Paint immediately if cached */
-paintInstant('t', 'efpl:standings:full', 'sk-standings');
-paintInstant('t-compact', 'efpl:standings:mob', 'sk-standings');
+function renderFormLetters(s){
+  const raw=String(s||"").replace(/\s+/g,"").slice(-5);
+  if(!raw) return '';
+  return '<span class="form" aria-label="Recent form: '+raw+'">' + [...raw].map(ch=>{
+    const cls = ch==='W' ? 'f-W' : ch==='D' ? 'f-D' : 'f-L';
+    return `<span class="fpill ${cls}">${ch}</span>`;
+  }).join('') + '</span>';
+}
+
+paintInstant('t', 'efpl:ruby:full', 'sk-standings');
+paintInstant('t-compact', 'efpl:ruby:mob', 'sk-standings');
 
 async function loadStandings(){
   const statusEl = document.getElementById('updated');
@@ -243,9 +239,13 @@ async function loadStandings(){
     const text = await res.text();
     if(!res.ok) throw new Error('HTTP '+res.status+' — '+text.slice(0,200));
     const json = parseGviz(text);
+
     const headers = json.table.cols.map(c => c.label || '');
     const rows = (json.table.rows || []).map(r => (r.c || []).map(c => c ? c.v : ''));
 
+    const iForm = headers.findIndex(h => (h||'').toString().toLowerCase().includes('form'));
+
+    /* Desktop render */
     let html = '<thead><tr>'+headers.map(h=>`<th>${esc(h)}</th>`).join('')+'</tr></thead><tbody>';
     for(let idx=0; idx<rows.length; idx++){
       const r = rows[idx];
@@ -260,26 +260,25 @@ async function loadStandings(){
         const s = esc(cell ?? '');
         const right = isNumeric(s) ? ' right' : '';
         const pointsCol = (headers[i] || '').toLowerCase().includes('pts') ? ' points' : '';
-        html += `<td class="${right}${pointsCol}">${s}</td>`;
+        const value = (i === iForm) ? renderFormLetters(cell) : s;
+        html += `<td class="${right}${pointsCol}">${value}</td>`;
       });
       html += '</tr>';
     }
     html += '</tbody>';
-
     document.getElementById('t').innerHTML = html;
-    saveHTML('efpl:standings:full', html);
+    saveHTML('efpl:ruby:full', html);
 
     buildCompact(headers, rows);
-    saveHTML('efpl:standings:mob', document.getElementById('t-compact').innerHTML);
+    saveHTML('efpl:ruby:mob', document.getElementById('t-compact').innerHTML);
 
     document.querySelectorAll('.fade-in').forEach(n => n.classList.add('ready'));
     document.getElementById('sk-standings').style.display='none';
-    const d = new Date();
-    const pad = n => String(n).padStart(2,'0');
-    const yy  = String(d.getFullYear()).slice(-2);
+    const d=new Date(), pad=n=>String(n).padStart(2,'0'), yy=String(d.getFullYear()).slice(-2);
     statusEl.textContent = `Updated ${pad(d.getDate())}/${pad(d.getMonth()+1)}/${yy}`;
 
-    checkForDeductions(); // run after load
+    checkForDeductions();
+    setTableMode();
   }catch(err){
     document.getElementById('t').innerHTML = '';
     document.getElementById('t-compact').innerHTML = '';
