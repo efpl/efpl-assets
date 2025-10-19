@@ -72,14 +72,29 @@
   /* dashed divider above 6th */
   tbody tr.after-top5 td{ border-top:2px dashed var(--fx-border); }
 
-  /* Mobile compact table */
-  .table-mobile{display:none;}
+  /* --- Form pills (desktop only) --- */
+  .form{display:inline-flex;gap:6px;align-items:center;justify-content:center}
+  .fpill{
+    display:inline-block;width:18px;height:18px;border-radius:999px;
+    font-size:11px;line-height:18px;font-weight:900;text-align:center
+  }
+  .f-W{background:#16a34a;color:#fff} /* Win: green */
+  .f-D{background:#e5e7eb;color:#111} /* Draw: grey  */
+  .f-L{background:#dc2626;color:#fff} /* Loss: red   */
+
+  /* Table visibility (make it bulletproof on hosts like Google Sites) */
+  .table-desktop{display:block !important;}
+  .table-mobile{display:none !important;}
+
+  /* Mobile compact table — no Form at all */
   @media (max-width:680px){
     .wrap{padding:12px}
     .card{border-radius:10px}
-    .table-desktop{display:none;}
-    .table-mobile{display:block;}
+    .table-desktop{display:none !important;}
+    .table-mobile{display:block !important;}
     .table-mobile th,.table-mobile td{padding:10px;font-size:14px}
+    /* Never show any .form content in compact table */
+    #t-compact .form{display:none !important;}
   }
 
   /* Skeleton + fade-in */
@@ -103,7 +118,7 @@
     line-height:1.6;
   }
   .sponsor-footer .footer-logo {
-    height:28px; /* increased from 18px */
+    height:28px;
     vertical-align:middle;
     margin-left:8px;
     margin-right:6px;
@@ -188,9 +203,9 @@
 
 <script>
 /* ===== CONFIG ===== */
-const SHEET_ID  = '1bdayFx3kdv0B0_8ZJ66z6fkXzJ3ss-NzBkVXhttLy8Q';
+const SHEET_ID  = '1bdayFx3kdv0B0_8ZJ66z6fkXzJ3ss-NzBkVXhttLy8Q'; // your Ruby sheet
 const SHEET_TAB = 'Standings';
-const RANGE     = 'P1:Y17';
+const RANGE     = 'P1:Z17'; // extend to Z to include Form if present
 
 /* Cache bucket: 5 minutes */
 const BUCKET_MS = 5 * 60 * 1000;
@@ -229,9 +244,19 @@ function checkForDeductions(){
   note.style.display = hasStar ? 'block' : 'none';
 }
 
+/* --- Render W/D/L as coloured pills (desktop only) --- */
+function renderFormCell(s){
+  const raw = String(s||"").replace(/\s+/g,"").slice(-5); // last 5
+  if(!raw) return '';
+  return '<span class="form">' + [...raw].map(ch=>{
+    const cls = ch==='W' ? 'f-W' : ch==='D' ? 'f-D' : 'f-L';
+    return `<span class="fpill ${cls}">${ch}</span>`;
+  }).join('') + '</span>';
+}
+
 /* Paint immediately if cached */
-paintInstant('t', 'efpl:standings:full', 'sk-standings');
-paintInstant('t-compact', 'efpl:standings:mob', 'sk-standings');
+paintInstant('t', 'efpl:ruby:full', 'sk-standings');
+paintInstant('t-compact', 'efpl:ruby:mob', 'sk-standings');
 
 async function loadStandings(){
   const statusEl = document.getElementById('updated');
@@ -245,6 +270,9 @@ async function loadStandings(){
     const json = parseGviz(text);
     const headers = json.table.cols.map(c => c.label || '');
     const rows = (json.table.rows || []).map(r => (r.c || []).map(c => c ? c.v : ''));
+
+    /* detect Form column if present */
+    const iForm = headers.findIndex(h => (h||'').toString().trim().toLowerCase().includes('form'));
 
     let html = '<thead><tr>'+headers.map(h=>`<th>${esc(h)}</th>`).join('')+'</tr></thead><tbody>';
     for(let idx=0; idx<rows.length; idx++){
@@ -260,17 +288,21 @@ async function loadStandings(){
         const s = esc(cell ?? '');
         const right = isNumeric(s) ? ' right' : '';
         const pointsCol = (headers[i] || '').toLowerCase().includes('pts') ? ' points' : '';
-        html += `<td class="${right}${pointsCol}">${s}</td>`;
+
+        /* Only render pills on desktop table; mobile table is separate and hides .form */
+        const value = (i === iForm && iForm !== -1) ? renderFormCell(cell) : s;
+
+        html += `<td class="${right}${pointsCol}">${value}</td>`;
       });
       html += '</tr>';
     }
     html += '</tbody>';
 
     document.getElementById('t').innerHTML = html;
-    saveHTML('efpl:standings:full', html);
+    saveHTML('efpl:ruby:full', html);
 
     buildCompact(headers, rows);
-    saveHTML('efpl:standings:mob', document.getElementById('t-compact').innerHTML);
+    saveHTML('efpl:ruby:mob', document.getElementById('t-compact').innerHTML);
 
     document.querySelectorAll('.fade-in').forEach(n => n.classList.add('ready'));
     document.getElementById('sk-standings').style.display='none';
