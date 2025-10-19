@@ -78,6 +78,16 @@
   /* dashed divider above 6th */
   tbody tr.after-top5 td{ border-top:2px dashed var(--fx-border); }
 
+  /* --- Form pills --- */
+  .form{display:inline-flex;gap:6px;align-items:center;justify-content:center}
+  .fpill{
+    display:inline-block;width:18px;height:18px;border-radius:999px;
+    font-size:11px;line-height:18px;font-weight:900;text-align:center
+  }
+  .f-W{background:#16a34a;color:#fff} /* Win: green */
+  .f-D{background:#e5e7eb;color:#111} /* Draw: grey  */
+  .f-L{background:#dc2626;color:#fff} /* Loss: red   */
+
   /* Mobile compact table */
   .table-mobile{display:none;}
   @media (max-width:680px){
@@ -86,6 +96,9 @@
     .table-desktop{display:none;}
     .table-mobile{display:block;}
     .table-mobile th,.table-mobile td{padding:10px;font-size:14px}
+    /* Show team name + form stacked */
+    .team-stack{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+    .team-stack .form{justify-content:flex-start}
   }
 
   /* Skeleton + fade-in */
@@ -196,7 +209,7 @@
 /* ===== CONFIG ===== */
 const SHEET_ID  = '17OW81tsw1w2dCeP4AzcJlxa7gr6eFE9ExXJbuovLNNQ';
 const SHEET_TAB = 'Standings';
-const RANGE     = 'P1:Y17';
+const RANGE     = 'P1:Z17'; // include Form column (Z)
 
 /* Cache bucket: 5 minutes */
 const BUCKET_MS = 5 * 60 * 1000;
@@ -235,6 +248,16 @@ function checkForDeductions(){
   note.style.display = hasStar ? 'block' : 'none';
 }
 
+/* --- Render W/D/L as coloured pills --- */
+function renderFormCell(s){
+  const raw = String(s||"").replace(/\s+/g,"").slice(-5); // last 5
+  if(!raw) return '';
+  return '<span class="form">' + [...raw].map(ch=>{
+    const cls = ch==='W' ? 'f-W' : ch==='D' ? 'f-D' : 'f-L';
+    return `<span class="fpill ${cls}">${ch}</span>`;
+  }).join('') + '</span>';
+}
+
 /* Paint immediately if cached */
 paintInstant('t', 'efpl:standings:full', 'sk-standings');
 paintInstant('t-compact', 'efpl:standings:mob', 'sk-standings');
@@ -252,6 +275,9 @@ async function loadStandings(){
     const headers = json.table.cols.map(c => c.label || '');
     const rows = (json.table.rows || []).map(r => (r.c || []).map(c => c ? c.v : ''));
 
+    /* which column is Form? */
+    const iForm = headers.findIndex(h => (h||'').toString().toLowerCase().includes('form'));
+
     let html = '<thead><tr>'+headers.map(h=>`<th>${esc(h)}</th>`).join('')+'</tr></thead><tbody>';
     for(let idx=0; idx<rows.length; idx++){
       const r = rows[idx];
@@ -266,7 +292,8 @@ async function loadStandings(){
         const s = esc(cell ?? '');
         const right = isNumeric(s) ? ' right' : '';
         const pointsCol = (headers[i] || '').toLowerCase().includes('pts') ? ' points' : '';
-        html += `<td class="${right}${pointsCol}">${s}</td>`;
+        const value = (i === iForm) ? renderFormCell(cell) : s;
+        html += `<td class="${right}${pointsCol}">${value}</td>`;
       });
       html += '</tr>';
     }
@@ -304,6 +331,7 @@ function buildCompact(headers, rows){
   const iTeam = findCol(['team','club','name']);
   const iP    = findCol(['p','pl','played']);
   const iPts  = findCol(['pts','points']);
+  const iForm = findCol(['form']); // new
   const cols = [iPos, iTeam, iP, iPts].map((i,k)=> i !== -1 ? i : k);
 
   let out = '<thead><tr><th>POS</th><th>Team</th><th>P</th><th>PTS</th></tr></thead><tbody>';
@@ -315,6 +343,7 @@ function buildCompact(headers, rows){
     const team = r[cols[1]] ?? '';
     const p    = r[cols[2]] ?? '';
     const pts  = r[cols[3]] ?? '';
+    const form = (iForm !== -1) ? (r[iForm] ?? '') : '';
 
     const posClass = (idx===0) ? 'pos-1' : (idx>=1 && idx<=4 ? 'pos-2-5' : '');
     const cutClass = (idx===5) ? 'after-top5' : '';
@@ -322,7 +351,12 @@ function buildCompact(headers, rows){
 
     out += `<tr class="${rowClass}">
       <td class="right">${esc(pos)}</td>
-      <td>${esc(team)}</td>
+      <td>
+        <div class="team-stack">
+          <span>${esc(team)}</span>
+          ${iForm !== -1 ? renderFormCell(form) : ''}
+        </div>
+      </td>
       <td class="right">${esc(p)}</td>
       <td class="right points">${esc(pts)}</td>
     </tr>`;
