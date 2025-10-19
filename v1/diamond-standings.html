@@ -24,24 +24,16 @@
   /* Title row */
   .title{display:flex;justify-content:space-between;align-items:center;margin:0 0 12px;padding:12px}
   .title h1{
-    font-size:20px;
-    margin:0;
-    color:var(--text);
-    display:flex;
-    align-items:center;
-    gap:10px;
+    font-size:20px;margin:0;color:var(--text);
+    display:flex;align-items:center;gap:10px;
   }
   .badge{background:var(--accent);color:#000;padding:4px 12px;border-radius:999px;font-weight:700}
 
   /* Sponsor logo in title */
-  .title-sponsor-logo {
-    height:26px;
-    vertical-align:middle;
-    transition:transform 0.2s ease;
-  }
-  .title-sponsor-logo:hover { transform:scale(1.08); }
+  .title-sponsor-logo{height:26px;vertical-align:middle;transition:transform .2s}
+  .title-sponsor-logo:hover{transform:scale(1.08)}
 
-  /* Table */
+  /* Tables */
   table{width:100%;border-collapse:collapse}
   thead th{
     background:var(--header-bg);color:var(--header-text);
@@ -56,7 +48,7 @@
   td.points{font-weight:800}
   td:first-child{font-weight:800}
 
-  /* #1 full-row highlight + crown */
+  /* #1 row highlight + crown */
   tbody tr.pos-1 td{
     background:linear-gradient(90deg, rgba(249,215,28,.18), rgba(249,215,28,.08)) !important;
     color:var(--text); font-weight:800; position:relative;
@@ -69,39 +61,41 @@
     content:"👑"; margin-right:8px; display:inline-block; transform:translateY(1px);
   }
 
-  /* #2–#5 subtle bar */
+  /* #2–#5 subtle bar + dashed divider after 5th */
   tbody tr.pos-2-5 td{ position:relative; background:var(--row1) !important; color:var(--text); }
   tbody tr.pos-2-5 td:first-child::before{
     content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--accent);
   }
-
-  /* dashed divider above 6th */
   tbody tr.after-top5 td{ border-top:2px dashed var(--fx-border); }
 
   /* --- Form pills (desktop letters) --- */
   .form{display:inline-flex;gap:6px;align-items:center;justify-content:center}
-  .fpill{
-    display:inline-block;width:18px;height:18px;border-radius:999px;
-    font-size:11px;line-height:18px;font-weight:900;text-align:center
-  }
+  .fpill{display:inline-block;width:18px;height:18px;border-radius:999px;
+         font-size:11px;line-height:18px;font-weight:900;text-align:center}
   .f-W{background:#16a34a;color:#fff} /* Win: green */
   .f-D{background:#e5e7eb;color:#111} /* Draw: grey  */
   .f-L{background:#dc2626;color:#fff} /* Loss: red   */
 
-  /* Mobile compact table */
-  .table-mobile{display:none;}
+  /* --- Table visibility (robust for Google Sites) --- */
+  .table-desktop{ display:block !important; }
+  .table-mobile{  display:none  !important; }
   @media (max-width:680px){
     .wrap{padding:12px}
     .card{border-radius:10px}
-    .table-desktop{display:none;}
-    .table-mobile{display:block;}
+    .table-desktop{ display:none  !important; }
+    .table-mobile{  display:block !important; }
     .table-mobile th,.table-mobile td{padding:10px;font-size:14px}
-    /* Inline dot variant for mobile */
-    .fpill-dot{
-      width:10px; height:10px; border-radius:50%; display:inline-block;
-    }
-    .form{gap:4px}
-    .table-mobile td{padding:8px 10px;}
+  }
+
+  /* --- Inline dots for compact table (tablets/phones) --- */
+  @media (max-width:680px){
+    .fpill-dot{ width:10px; height:10px; border-radius:50%; display:inline-block; }
+    .form-dots{ gap:4px; margin-left:8px; vertical-align:middle; display:inline-flex; }
+  }
+
+  /* Hide form entirely only on the smallest screens ≤560px */
+  @media (max-width:560px){
+    #t-compact .form-dots{ display:none !important; }
   }
 
   /* Skeleton + fade-in */
@@ -115,48 +109,23 @@
   .fade-in.ready{opacity:1}
 
   /* Sponsor footer */
-  .sponsor-footer {
-    text-align:center;
-    font-size:13px;
-    color:#cbd5e1;
-    opacity:0.9;
-    padding:10px;
-    border-top:1px solid rgba(249,215,28,.25);
-    line-height:1.6;
+  .sponsor-footer{
+    text-align:center;font-size:13px;color:#cbd5e1;opacity:.9;
+    padding:10px;border-top:1px solid rgba(249,215,28,.25);line-height:1.6;
   }
-  .sponsor-footer .footer-logo {
-    height:28px;
-    vertical-align:middle;
-    margin-left:8px;
-    margin-right:6px;
-    transition:transform 0.2s ease;
-  }
-  .sponsor-footer a:hover .footer-logo { transform:scale(1.08); }
+  .sponsor-footer .footer-logo{height:28px;vertical-align:middle;margin:0 6px;transition:transform .2s}
+  .sponsor-footer a:hover .footer-logo{transform:scale(1.08)}
 
-  /* --- Mobile header wrap + compact sizing --- */
-  @media (max-width: 560px){
-    .title, .bar{ flex-wrap: wrap; gap: 8px; }
-    .title h1, .bar h1{
-      flex: 1 1 100%;
-      font-size: 18px;
-      line-height: 1.2;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .title-sponsor-logo{ height: 20px; }
-    .title .badge, .bar .stamp{
-      order: 2; width: 100%;
-      font-size: 12px; padding: 6px 10px;
-      text-align: left;
-    }
+  /* Mobile header wrap polish */
+  @media (max-width:560px){
+    .title{flex-wrap:wrap;gap:8px}
+    .title h1{flex:1 1 100%;font-size:18px;line-height:1.2}
+    .title-sponsor-logo{height:20px}
+    .title .badge{order:2;width:100%;font-size:12px;padding:6px 10px;text-align:left}
   }
-  @media (max-width: 380px){
-    .title h1, .bar h1{ font-size: 16px; }
-    .title-sponsor-logo{ height: 18px; }
-  }
-  @media (max-width: 340px){
-    .title .badge, .bar .stamp{ display: none; }
-    /* hide form on ultra-tiny screens for readability */
-    #t-compact .form{ display:none; }
+  @media (max-width:380px){
+    .title h1{font-size:16px}
+    .title-sponsor-logo{height:18px}
   }
 </style>
 </head>
@@ -167,10 +136,10 @@
       <!-- Title / Updated -->
       <div class="title">
         <h1>
-          <a href="https://www.instant-gaming.com/?igr=eFPL" 
+          <a href="https://www.instant-gaming.com/?igr=eFPL"
              target="_blank" rel="sponsored noopener noreferrer nofollow"
              aria-label="Instant Gaming — save on games">
-            <img src="https://efpl-assets.pages.dev/img/instant-gaming.png" 
+            <img src="https://efpl-assets.pages.dev/img/instant-gaming.png"
                  alt="Instant Gaming" class="title-sponsor-logo">
           </a>
           Diamond League | Season 1
@@ -186,20 +155,20 @@
         <table id="t"></table>
       </div>
 
-      <!-- Mobile compact -->
+      <!-- Compact (phones & small tablets) -->
       <div class="table-mobile fade-in">
         <table id="t-compact"></table>
       </div>
 
-      <!-- Footnote: hidden by default -->
-      <p id="deductions-note" style="display:none;color:#cbd5e1;font-size:13px;text-align:left;margin:8px 12px 0;opacity:0.85;">
+      <!-- Footnote -->
+      <p id="deductions-note" style="display:none;color:#cbd5e1;font-size:13px;text-align:left;margin:8px 12px 0;opacity:.85">
         * denotes points deduction
       </p>
 
       <!-- Sponsor footer -->
       <div class="sponsor-footer">
         This league is sponsored by
-        <a href="https://www.instant-gaming.com/?igr=eFPL" 
+        <a href="https://www.instant-gaming.com/?igr=eFPL"
            target="_blank" rel="sponsored noopener noreferrer nofollow"
            aria-label="Instant Gaming — save on games">
           <img src="https://efpl-assets.pages.dev/img/instant-gaming.png"
@@ -227,6 +196,18 @@ function parseGviz(text){
   if(a===-1||b===-1) throw new Error('Could not find JSON object in GViz response.');
   return JSON.parse(text.slice(a,b+1));
 }
+
+/* Safety net: ensure only one table visible (helps inside Google Sites) */
+function setTableMode(){
+  const compact = window.matchMedia('(max-width:680px)').matches;
+  const d = document.querySelector('.table-desktop');
+  const m = document.querySelector('.table-mobile');
+  if(d) d.style.display = compact ? 'none'  : 'block';
+  if(m) m.style.display = compact ? 'block' : 'none';
+}
+window.addEventListener('resize', setTableMode);
+window.addEventListener('orientationchange', setTableMode);
+
 function paintInstant(elId, key, skId){
   try{
     const cached = localStorage.getItem(key);
@@ -236,35 +217,39 @@ function paintInstant(elId, key, skId){
       const sk = skId && document.getElementById(skId);
       if(sk) sk.style.display = 'none';
       checkForDeductions();
+      setTableMode();
     }
   }catch(e){}
 }
 function saveHTML(key, html){ try{ localStorage.setItem(key, html); }catch(e){} }
 
-/* Show footnote only if a * is found in either table */
+/* Footnote appears if any * is present */
 function checkForDeductions(){
-  const note  = document.getElementById('deductions-note');
-  if (!note) return;
-  const t1 = document.getElementById('t');
-  const t2 = document.getElementById('t-compact');
-  const hasStar =
-    (t1 && t1.textContent.includes('*')) ||
-    (t2 && t2.textContent.includes('*'));
+  const note=document.getElementById('deductions-note');
+  if(!note) return;
+  const t1=document.getElementById('t');
+  const t2=document.getElementById('t-compact');
+  const hasStar=(t1 && t1.textContent.includes('*'))||(t2 && t2.textContent.includes('*'));
   note.style.display = hasStar ? 'block' : 'none';
 }
 
-/* --- Render W/D/L as coloured pills
-      Desktop: letters (W/D/L)
-      Mobile:  tiny dots (no letters) --- */
-function renderFormCell(s, mode='full'){
-  const raw = String(s||"").replace(/\s+/g,"").slice(-5); // last 5
+/* Render W/D/L as coloured pills (desktop letters) */
+function renderFormLetters(s){
+  const raw=String(s||"").replace(/\s+/g,"").slice(-5);
   if(!raw) return '';
-  const isDots = (mode === 'dots');
   return '<span class="form" aria-label="Recent form: '+raw+'">' + [...raw].map(ch=>{
     const cls = ch==='W' ? 'f-W' : ch==='D' ? 'f-D' : 'f-L';
-    return isDots
-      ? `<span class="fpill fpill-dot ${cls}" aria-hidden="true"></span>`
-      : `<span class="fpill ${cls}">${ch}</span>`;
+    return `<span class="fpill ${cls}">${ch}</span>`;
+  }).join('') + '</span>';
+}
+
+/* Inline dot renderer for compact table */
+function renderFormDots(s){
+  const raw=String(s||"").replace(/\s+/g,"").slice(-5);
+  if(!raw) return '';
+  return '<span class="form-dots" aria-label="Recent form: '+raw+'">' + [...raw].map(ch=>{
+    const cls = ch==='W' ? 'f-W' : ch==='D' ? 'f-D' : 'f-L';
+    return `<span class="fpill-dot ${cls}" aria-hidden="true"></span>`;
   }).join('') + '</span>';
 }
 
@@ -282,12 +267,13 @@ async function loadStandings(){
     const text = await res.text();
     if(!res.ok) throw new Error('HTTP '+res.status+' — '+text.slice(0,200));
     const json = parseGviz(text);
+
     const headers = json.table.cols.map(c => c.label || '');
     const rows = (json.table.rows || []).map(r => (r.c || []).map(c => c ? c.v : ''));
 
-    /* which column is Form? */
     const iForm = headers.findIndex(h => (h||'').toString().toLowerCase().includes('form'));
 
+    /* Desktop render */
     let html = '<thead><tr>'+headers.map(h=>`<th>${esc(h)}</th>`).join('')+'</tr></thead><tbody>';
     for(let idx=0; idx<rows.length; idx++){
       const r = rows[idx];
@@ -302,27 +288,26 @@ async function loadStandings(){
         const s = esc(cell ?? '');
         const right = isNumeric(s) ? ' right' : '';
         const pointsCol = (headers[i] || '').toLowerCase().includes('pts') ? ' points' : '';
-        const value = (i === iForm) ? renderFormCell(cell, 'full') : s; // letters on desktop
+        const value = (i === iForm) ? renderFormLetters(cell) : s;
         html += `<td class="${right}${pointsCol}">${value}</td>`;
       });
       html += '</tr>';
     }
     html += '</tbody>';
-
     document.getElementById('t').innerHTML = html;
     saveHTML('efpl:standings:full', html);
 
-    buildCompact(headers, rows);
+    /* Compact render (with dots) */
+    buildCompact(headers, rows, iForm);
     saveHTML('efpl:standings:mob', document.getElementById('t-compact').innerHTML);
 
     document.querySelectorAll('.fade-in').forEach(n => n.classList.add('ready'));
     document.getElementById('sk-standings').style.display='none';
-    const d = new Date();
-    const pad = n => String(n).padStart(2,'0');
-    const yy  = String(d.getFullYear()).slice(-2);
+    const d = new Date(), pad=n=>String(n).padStart(2,'0'), yy=String(d.getFullYear()).slice(-2);
     statusEl.textContent = `Updated ${pad(d.getDate())}/${pad(d.getMonth()+1)}/${yy}`;
 
-    checkForDeductions(); // <— check for stars after loading
+    checkForDeductions();
+    setTableMode();
   }catch(err){
     document.getElementById('t').innerHTML = '';
     document.getElementById('t-compact').innerHTML = '';
@@ -331,7 +316,7 @@ async function loadStandings(){
   }
 }
 
-function buildCompact(headers, rows){
+function buildCompact(headers, rows, iForm){
   function findCol(names){
     const lower = headers.map(h => (h||'').toString().trim().toLowerCase());
     for(const n of names){ const i = lower.indexOf(n); if(i !== -1) return i; }
@@ -341,7 +326,6 @@ function buildCompact(headers, rows){
   const iTeam = findCol(['team','club','name']);
   const iP    = findCol(['p','pl','played']);
   const iPts  = findCol(['pts','points']);
-  const iForm = findCol(['form']); // new
   const cols = [iPos, iTeam, iP, iPts].map((i,k)=> i !== -1 ? i : k);
 
   let out = '<thead><tr><th>POS</th><th>Team</th><th>P</th><th>PTS</th></tr></thead><tbody>';
@@ -363,7 +347,7 @@ function buildCompact(headers, rows){
       <td class="right">${esc(pos)}</td>
       <td>
         <span>${esc(team)}</span>
-        ${iForm !== -1 ? renderFormCell(form, 'dots') : ''}  <!-- dots inline -->
+        ${iForm !== -1 ? renderFormDots(form) : ''}
       </td>
       <td class="right">${esc(p)}</td>
       <td class="right points">${esc(pts)}</td>
