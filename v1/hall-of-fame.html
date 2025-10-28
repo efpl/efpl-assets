@@ -1,196 +1,269 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>eFPL Honor Roll</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>eFPL — Honor Roll</title>
 <style>
-  body {
-    background:#00143b;
-    color:#fff;
-    font-family:"Segoe UI",Arial,sans-serif;
-    margin:0;
-    padding:20px;
+  :root{
+    --bg:#00143b; --card:#05225a; --ink:#ffffff; --muted:#cbd5e1;
+    --accent:#f9d71c; --line:rgba(249,215,28,.35);
+    --row1:#001a4d; --row2:#002060; --hover:#002b80;
   }
-  h1 { text-align:center; color:#f9d71c; margin-bottom:20px; }
+  html,body{background:transparent}
+  body{margin:0;font:16px/1.55 system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink)}
+  .wrap{max-width:1100px;margin:24px auto;padding:16px;background:var(--bg);border-radius:14px}
 
-  /* --- All-Time Winners Leaderboard --- */
-  .alltime {
-    margin-bottom:30px;
-    background:#05225a;
-    padding:20px;
-    border-radius:12px;
-    border:1px solid rgba(249,215,28,.35);
-  }
-  .alltime h2 {
-    margin:0 0 15px;
-    color:#f9d71c;
-    text-align:center;
-  }
-  .leaderboard {
-    list-style:none;
-    padding:0;
-    margin:0;
-  }
-  .leaderboard li {
-    padding:10px;
-    margin-bottom:6px;
-    background:#001a4d;
-    border-radius:8px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    font-weight:bold;
-  }
-  .leaderboard li span { color:#f9d71c; font-weight:normal; }
-  .leaderboard .first { background:linear-gradient(90deg,#f9d71c,#bfa100); color:#00143b; }
-  .leaderboard .second { background:linear-gradient(90deg,#c0c0c0,#999); color:#00143b; }
-  .leaderboard .third { background:linear-gradient(90deg,#cd7f32,#8b4513); color:#00143b; }
+  /* Title */
+  .title{display:flex;justify-content:center;align-items:center;gap:10px;margin:0 0 16px}
+  .title h1{margin:0;font-size:clamp(22px,4.5vw,30px);font-weight:900}
+  .eyebrow{background:var(--accent);color:#0b1b3d;padding:2px 10px;border-radius:999px;font-weight:900;font-size:12px}
 
-  /* --- Controls --- */
-  .controls {
-    display:flex;
-    justify-content:flex-end;
-    margin-bottom:12px;
-  }
-  .collapse-btn {
-    background:#f9d71c;
-    color:#00143b;
-    border:none;
-    padding:6px 12px;
-    font-size:13px;
-    font-weight:bold;
-    border-radius:6px;
-    cursor:pointer;
-  }
-  .collapse-btn:hover { background:#e5c41a; }
+  /* All-Time card */
+  .alltime{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+  .alltime .head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+  .alltime h2{margin:0;font-size:18px}
+  .updated{background:var(--accent);color:#0b1b3d;padding:4px 10px;border-radius:999px;font-weight:800;font-size:12px}
 
-  /* --- Accordion --- */
-  .accordion {
-    background:#05225a;
-    border:1px solid rgba(249,215,28,.35);
-    border-radius:12px;
-    margin-bottom:10px;
-    overflow:hidden;
+  .leader{list-style:none;margin:0;padding:0}
+  .leader li{
+    display:flex;justify-content:space-between;align-items:center;
+    background:var(--row1);border:1px solid var(--line);
+    padding:10px;border-radius:8px;margin:8px 0;font-weight:800;
   }
-  .accordion-header {
-    cursor:pointer;
-    padding:14px;
-    font-size:18px;
-    font-weight:bold;
-    color:#f9d71c;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    user-select:none;
+  .leader li:nth-child(even){background:var(--row2)}
+  .leader .medal{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:28px;height:28px;border-radius:999px;font-weight:900;background:rgba(255,255,255,.12)
   }
-  .accordion-header:hover { background:#001a4d; }
-  .accordion-content {
-    max-height:0;
-    overflow:hidden;
-    transition:max-height 0.3s ease;
-    background:#001a4d;
+  .leader .count{color:var(--accent);font-weight:900}
+
+  /* Accordion (seasons) */
+  .controls{display:flex;justify-content:flex-end;margin:12px 0}
+  .btn{
+    background:var(--accent);color:#0b1b3d;border:none;padding:8px 14px;
+    font-size:13px;font-weight:900;border-radius:8px;cursor:pointer
   }
-  .accordion-content-inner { padding:14px; }
-  .winners {
-    display:grid;
-    grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
-    gap:12px;
+  .btn:hover{filter:brightness(.98)}
+
+  .accordion{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:10px;overflow:hidden}
+  .acc-hd{
+    cursor:pointer;padding:14px;font-size:16px;font-weight:900;color:#fff;
+    display:flex;justify-content:space-between;align-items:center;user-select:none
   }
-  .winner {
-    background:#05225a;
-    border:1px solid rgba(249,215,28,.25);
-    border-radius:8px;
-    padding:12px;
-    text-align:center;
+  .acc-hd small{color:var(--muted);font-weight:800}
+  .acc-hd:hover{background:var(--hover)}
+  .acc-ic{font-weight:900;color:#0b1b3d;background:var(--accent);border-radius:6px;padding:2px 8px}
+
+  .acc-bd{max-height:0;overflow:hidden;transition:max-height .28s ease;background:#001a4d}
+  .acc-in{padding:14px}
+
+  /* Winners grid */
+  .winners{
+    display:grid;gap:12px;
+    grid-template-columns:repeat(2,minmax(0,1fr));
   }
-  .winner span { display:block; margin-top:6px; color:#f9d71c; font-weight:bold; }
-  @media (max-width:600px) {
-    .winners { grid-template-columns:1fr; }
-    .controls { justify-content:center; }
+  @media (min-width:860px){ .winners{grid-template-columns:repeat(3,minmax(0,1fr));} }
+  .winner{
+    background:#05225a;border:1px solid var(--line);border-radius:10px;padding:12px;min-height:86px;
+    display:grid;gap:6px
   }
+  .winner .comp{
+    font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:900;
+    text-align:center;position:relative;padding-bottom:6px
+  }
+  .winner .comp::after{
+    content:"";position:absolute;left:50%;transform:translateX(-50%);bottom:0;width:80px;height:3px;
+    background:linear-gradient(90deg, rgba(249,215,28,0), var(--accent), rgba(249,215,28,0));border-radius:999px;opacity:.9
+  }
+  .winner .name{font-weight:900;text-align:center}
+
+  /* Skeleton + fade-in */
+  .skeleton{background:linear-gradient(90deg, rgba(255,255,255,.05), rgba(255,255,255,.12), rgba(255,255,255,.05));background-size:200% 100%;animation:sk 1.1s infinite;border-radius:12px;min-height:160px;margin-bottom:12px}
+  @keyframes sk {0%{background-position:200% 0}100%{background-position:-200% 0}}
+  .fade-in{opacity:0;transition:opacity .18s ease}
+  .fade-in.ready{opacity:1}
+  .note{color:var(--muted);font-size:12px;text-align:center;margin-top:6px}
 </style>
 </head>
 <body>
-<h1>eFPL Honor Roll</h1>
-
-<!-- All-Time Winners -->
-<section class="alltime">
-  <h2>🏆 All-Time Winners</h2>
-  <ol class="leaderboard">
-    <li class="first">Team A <span>3 titles</span></li>
-    <li class="second">Team B <span>2 titles</span></li>
-    <li class="third">Team C <span>1 title</span></li>
-    <li>Team D <span>1 title</span></li>
-    <li>Team E <span>1 title</span></li>
-    <li>Team F <span>1 title</span></li>
-    <li>Team G <span>0 titles</span></li>
-    <li>Team H <span>0 titles</span></li>
-    <li>Team I <span>0 titles</span></li>
-    <li>Team J <span>0 titles</span></li>
-  </ol>
-</section>
-
-<!-- Controls for Accordion -->
-<div class="controls">
-  <button class="collapse-btn" id="collapseAll">Collapse All</button>
-</div>
-
-<!-- Accordion Seasons -->
-<div class="accordion">
-  <div class="accordion-header">Season 1 (2025) <span>+</span></div>
-  <div class="accordion-content">
-    <div class="accordion-content-inner">
-      <div class="winners">
-        <div class="winner">Diamond League <span>Team A</span></div>
-        <div class="winner">Ruby League <span>Team B</span></div>
-        <div class="winner">Sapphire League <span>Team C</span></div>
-        <div class="winner">Cup Winner <span>Team D</span></div>
-      </div>
+  <div class="wrap">
+    <div class="title">
+      <span class="eyebrow">Honor Roll</span>
+      <h1>Hall of Fame</h1>
     </div>
-  </div>
-</div>
 
-<div class="accordion">
-  <div class="accordion-header">Season 2 (2026) <span>+</span></div>
-  <div class="accordion-content">
-    <div class="accordion-content-inner">
-      <div class="winners">
-        <div class="winner">Diamond League <span>Team E</span></div>
-        <div class="winner">Ruby League <span>Team F</span></div>
-        <div class="winner">Sapphire League <span>Team A</span></div>
-        <div class="winner">Cup Winner <span>Team B</span></div>
+    <!-- All-Time Winners -->
+    <section class="alltime fade-in" id="alltime-wrap">
+      <div class="head">
+        <h2>🏆 All-Time Winners (Top 10)</h2>
+        <span class="updated" id="hr-updated">Loading…</span>
       </div>
+      <div id="sk-alltime" class="skeleton"></div>
+      <ol class="leader" id="alltime-list"></ol>
+    </section>
+
+    <!-- Controls -->
+    <div class="controls">
+      <button class="btn" id="collapseAll">Collapse All</button>
     </div>
+
+    <!-- Seasons (accordion) -->
+    <div id="sk-seasons" class="skeleton"></div>
+    <div id="seasons" class="fade-in"></div>
+    <div class="note">Data updates automatically.</div>
   </div>
-</div>
 
 <script>
-  // Accordion toggle
-  document.querySelectorAll('.accordion-header').forEach(header => {
-    header.addEventListener('click', () => {
-      const content = header.nextElementSibling;
-      const icon = header.querySelector('span');
+(function(){
+  /* ====== CONFIGURE THESE ====== */
+  const SHEET_ID   = 'YOUR_SHEET_ID_HERE';
+  const TAB_ALL    = 'All-Time (Embed)';   // A:Competition, B:Team, C:Titles
+  const TAB_SEAS   = 'Seasons (Embed)';    // A:Season, B:Holders per competition
+  const RANGE_ALL  = 'A2:C200';
+  const RANGE_SEAS = 'A2:H200'; // Season | Diamond | Ruby | Sapphire | Gold | Emerald | Champions Cup | Continental Cup
+  /* ============================= */
 
-      if (content.style.maxHeight) {
-        content.style.maxHeight = null;
-        icon.textContent = '+';
-      } else {
-        content.style.maxHeight = content.scrollHeight + "px";
-        icon.textContent = '–';
+  /* Small cache bucket to tame reflows */
+  const BUCKET_MS = 5 * 60 * 1000;
+  const CB = Math.floor(Date.now() / BUCKET_MS);
+
+  function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+  function parseGviz(txt){const a=txt.indexOf('{'),b=txt.lastIndexOf('}');if(a===-1||b===-1)throw new Error('Bad GViz');return JSON.parse(txt.slice(a,b+1))}
+  function gvizUrl(tab, range){return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(tab)}&range=${encodeURIComponent(range)}&cachebust=${CB}`}
+
+  /* Instant paint from cache (so embeds feel snappy) */
+  try{
+    const cachedAll = localStorage.getItem('efpl:honor:alltime');
+    if(cachedAll) document.getElementById('alltime-list').innerHTML = cachedAll;
+    const cachedSeasons = localStorage.getItem('efpl:honor:seasons');
+    if(cachedSeasons) document.getElementById('seasons').innerHTML = cachedSeasons;
+    if(cachedAll || cachedSeasons){
+      document.querySelectorAll('.fade-in').forEach(n=>n.classList.add('ready'));
+      const sk1=document.getElementById('sk-alltime'); if(sk1) sk1.style.display='none';
+      const sk2=document.getElementById('sk-seasons'); if(sk2) sk2.style.display='none';
+    }
+  }catch(e){}
+
+  /* Load All-Time Top 10 */
+  async function loadAllTime(){
+    const url = gvizUrl(TAB_ALL, RANGE_ALL);
+    const res = await fetch(url);
+    const txt = await res.text();
+    if(!res.ok) throw new Error(res.status+' '+txt.slice(0,120));
+    const json = parseGviz(txt);
+    const rows = (json.table.rows||[]).map(r=>(r.c||[]).map(c=>c?c.v:'')).filter(r=>r && r[0]);
+
+    // Expect: [Competition, Team, Titles]
+    // Sort by titles desc then team asc
+    rows.sort((a,b)=>{
+      const tA=Number(a[2]||0), tB=Number(b[2]||0);
+      if(tB!==tA) return tB-tA;
+      return String(a[1]||'').localeCompare(String(b[1]||''));
+    });
+    const top = rows.slice(0,10);
+
+    let h='';
+    top.forEach((r,idx)=>{
+      const comp = esc(r[0]); const team = esc(r[1]); const titles = Number(r[2]||0);
+      let medal = idx+1;
+      let medalHtml = `<span class="medal">${medal}</span>`;
+      if(idx===0) medalHtml = `<span class="medal">🥇</span>`;
+      else if(idx===1) medalHtml = `<span class="medal">🥈</span>`;
+      else if(idx===2) medalHtml = `<span class="medal">🥉</span>`;
+      h += `<li>${medalHtml}<span style="flex:1;margin:0 10px;font-weight:900">${team}</span><span class="count">${titles} ${titles===1?'title':'titles'}</span></li>`;
+    });
+
+    const list = document.getElementById('alltime-list');
+    list.innerHTML = h || '<li style="opacity:.8">No data yet</li>';
+    try{ localStorage.setItem('efpl:honor:alltime', list.innerHTML); }catch(e){}
+
+    const sk = document.getElementById('sk-alltime'); if(sk) sk.style.display='none';
+    document.getElementById('alltime-wrap').classList.add('ready');
+    const badge=document.getElementById('hr-updated');
+    if(badge) badge.textContent = 'Updated ' + new Date().toLocaleString();
+  }
+
+  /* Load Seasons */
+  async function loadSeasons(){
+    const url = gvizUrl(TAB_SEAS, RANGE_SEAS);
+    const res = await fetch(url);
+    const txt = await res.text();
+    if(!res.ok) throw new Error(res.status+' '+txt.slice(0,120));
+    const json = parseGviz(txt);
+    const rows = (json.table.rows||[]).map(r=>(r.c||[]).map(c=>c?c.v:'')).filter(r=>r && r[0]);
+
+    // Header order we expect after Season:
+    const comps = ['Diamond League','Ruby League','Sapphire League','Gold League','Emerald League','Champions Cup','Continental Cup'];
+
+    // Build accordion HTML
+    let html = '';
+    rows.forEach((r,idx)=>{
+      const season = esc(r[0]); // e.g., "Season 1 (2025)"
+      const winners = comps.map((name,i)=>({ name, holder: esc(r[i+1]||'TBD') }));
+
+      html += `
+        <div class="accordion">
+          <div class="acc-hd" role="button" aria-expanded="false">
+            <div>${season} <small>— ${winners.filter(w=>w.holder && w.holder!=='TBD').length} completed</small></div>
+            <div class="acc-ic">+</div>
+          </div>
+          <div class="acc-bd">
+            <div class="acc-in">
+              <div class="winners">
+                ${winners.map(w=>`
+                  <div class="winner">
+                    <div class="comp">${w.name}</div>
+                    <div class="name">${w.holder || 'TBD'}</div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        </div>`;
+    });
+
+    const container = document.getElementById('seasons');
+    container.innerHTML = html || '<div class="note">No seasons to show yet.</div>';
+    try{ localStorage.setItem('efpl:honor:seasons', container.innerHTML); }catch(e){}
+
+    // Wire up accordion behavior
+    container.querySelectorAll('.accordion').forEach((acc, i)=>{
+      const hd = acc.querySelector('.acc-hd');
+      const bd = acc.querySelector('.acc-bd');
+      const ic = acc.querySelector('.acc-ic');
+      hd.addEventListener('click', ()=>{
+        const open = !!bd.style.maxHeight;
+        if(open){
+          bd.style.maxHeight = null; ic.textContent = '+';
+          hd.setAttribute('aria-expanded','false');
+        }else{
+          bd.style.maxHeight = bd.scrollHeight + 'px'; ic.textContent = '–';
+          hd.setAttribute('aria-expanded','true');
+        }
+      });
+      // Open the most recent season by default (last row)
+      if(i === container.querySelectorAll('.accordion').length - 1){
+        bd.style.maxHeight = bd.scrollHeight + 'px';
+        ic.textContent = '–';
+        hd.setAttribute('aria-expanded','true');
       }
     });
+
+    const sk = document.getElementById('sk-seasons'); if(sk) sk.style.display='none';
+    container.classList.add('ready');
+  }
+
+  /* Collapse All control */
+  document.getElementById('collapseAll').addEventListener('click', ()=>{
+    document.querySelectorAll('.acc-bd').forEach(bd=>bd.style.maxHeight=null);
+    document.querySelectorAll('.acc-ic').forEach(ic=>ic.textContent='+');
+    document.querySelectorAll('.acc-hd').forEach(hd=>hd.setAttribute('aria-expanded','false'));
   });
 
-  // Collapse All button
-  document.getElementById('collapseAll').addEventListener('click', () => {
-    document.querySelectorAll('.accordion-content').forEach(content => {
-      content.style.maxHeight = null;
-    });
-    document.querySelectorAll('.accordion-header span').forEach(icon => {
-      icon.textContent = '+';
-    });
-  });
+  /* Kickoff */
+  Promise.allSettled([loadAllTime(), loadSeasons()]).catch(()=>{});
+})();
 </script>
 </body>
 </html>
