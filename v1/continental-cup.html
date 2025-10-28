@@ -39,6 +39,16 @@
   .team.right{text-align:right}
   .vs{opacity:.85;font-weight:900}
 
+  /* NEW: path caption */
+  .path{
+    margin-top:6px;
+    font-size:11px;
+    line-height:1.2;
+    color:var(--muted);
+    text-align:center;
+    letter-spacing:.02em;
+  }
+
   /* Stepping toward center */
   .left  .r16{margin-right:70px} .left  .qf{margin-right:35px} .left  .sf{margin-right:0}
   .right .r16{margin-left:70px} .right .qf{margin-left:35px} .right .sf{margin-left:0}
@@ -90,12 +100,21 @@
         </div>
         <div class="group qf">
           <h3>Quarter Final</h3>
-          <div class="match"><div class="fixture"><span class="team" id="Q1-home">Winner A</span><span class="vs" id="Q1-score">vs</span><span class="team right" id="Q1-away">Winner B</span></div></div>
-          <div class="match"><div class="fixture"><span class="team" id="Q2-home">Winner C</span><span class="vs" id="Q2-score">vs</span><span class="team right" id="Q2-away">Winner D</span></div></div>
+          <div class="match">
+            <div class="fixture"><span class="team" id="Q1-home">Winner A</span><span class="vs" id="Q1-score">vs</span><span class="team right" id="Q1-away">Winner B</span></div>
+            <div class="path" id="Q1-path">From R16 A vs R16 B</div>
+          </div>
+          <div class="match">
+            <div class="fixture"><span class="team" id="Q2-home">Winner C</span><span class="vs" id="Q2-score">vs</span><span class="team right" id="Q2-away">Winner D</span></div>
+            <div class="path" id="Q2-path">From R16 C vs R16 D</div>
+          </div>
         </div>
         <div class="group sf">
           <h3>Semi Final</h3>
-          <div class="match"><div class="fixture"><span class="team" id="S1-home">Winner Q1</span><span class="vs" id="S1-score">vs</span><span class="team right" id="S1-away">Winner Q2</span></div></div>
+          <div class="match">
+            <div class="fixture"><span class="team" id="S1-home">Winner Q1</span><span class="vs" id="S1-score">vs</span><span class="team right" id="S1-away">Winner Q2</span></div>
+            <div class="path" id="S1-path">From QF1 vs QF2</div>
+          </div>
         </div>
       </div>
 
@@ -103,6 +122,7 @@
       <div class="center">
         <img class="trophy" alt="Continetal Cup Trophy" src="https://efpl-assets.pages.dev/img/Continetal.png" />
         <div class="final" id="final-line">Final: Winner S1 vs Winner S2</div>
+        <div class="note" id="final-path">From SF1 vs SF2</div>
         <div class="champion" id="champion"><span class="cup">🏆</span> Champion: TBD</div>
       </div>
 
@@ -117,12 +137,21 @@
         </div>
         <div class="group qf">
           <h3>Quarter Final</h3>
-          <div class="match"><div class="fixture"><span class="team" id="Q3-home">Winner E</span><span class="vs" id="Q3-score">vs</span><span class="team right" id="Q3-away">Winner F</span></div></div>
-          <div class="match"><div class="fixture"><span class="team" id="Q4-home">Winner G</span><span class="vs" id="Q4-score">vs</span><span class="team right" id="Q4-away">Winner H</span></div></div>
+          <div class="match">
+            <div class="fixture"><span class="team" id="Q3-home">Winner E</span><span class="vs" id="Q3-score">vs</span><span class="team right" id="Q3-away">Winner F</span></div>
+            <div class="path" id="Q3-path">From R16 E vs R16 F</div>
+          </div>
+          <div class="match">
+            <div class="fixture"><span class="team" id="Q4-home">Winner G</span><span class="vs" id="Q4-score">vs</span><span class="team right" id="Q4-away">Winner H</span></div>
+            <div class="path" id="Q4-path">From R16 G vs R16 H</div>
+          </div>
         </div>
         <div class="group sf">
           <h3>Semi Final</h3>
-          <div class="match"><div class="fixture"><span class="team" id="S2-home">Winner Q3</span><span class="vs" id="S2-score">vs</span><span class="team right" id="S2-away">Winner Q4</span></div></div>
+          <div class="match">
+            <div class="fixture"><span class="team" id="S2-home">Winner Q3</span><span class="vs" id="S2-score">vs</span><span class="team right" id="S2-away">Winner Q4</span></div>
+            <div class="path" id="S2-path">From QF3 vs QF4</div>
+          </div>
         </div>
       </div>
     </div>
@@ -154,6 +183,24 @@
     }
     return ""; // unexpected rows ignored
   }
+
+  // Fill static path captions so viewers understand the route even when teams are TBD
+  function setPathCaptions(){
+    const map = {
+      "Q1-path": "From R16 A vs R16 B",
+      "Q2-path": "From R16 C vs R16 D",
+      "Q3-path": "From R16 E vs R16 F",
+      "Q4-path": "From R16 G vs R16 H",
+      "S1-path": "From QF1 vs QF2",
+      "S2-path": "From QF3 vs QF4",
+      "final-path": "From SF1 vs SF2"
+    };
+    Object.entries(map).forEach(([id,text])=>{
+      const el = document.getElementById(id);
+      if(el) el.textContent = text;
+    });
+  }
+  setPathCaptions();
 
   fetch(url).then(r => r.text()).then(t => {
     const json = JSON.parse(t.substring(t.indexOf('{'), t.lastIndexOf('}')+1));
