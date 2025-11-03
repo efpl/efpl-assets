@@ -14,7 +14,6 @@
   --header-bg:#f9d71c; --header-text:#00143b;
   --row1:#001a4d; --row2:#002060; --hover:#002b80;
   --accent:#f9d71c; --fx-border:rgba(249,215,28,.55);
-  --neutral:#cbd5e1; /* neutral for bottom-2 stripe + key */
 }
 html,body{background:transparent}
 body{margin:0;font:15px/1.5 "Segoe UI",Arial,sans-serif;color:var(--text);}
@@ -56,24 +55,22 @@ tbody tr.pos-1 td:nth-child(2)::before{
   content:"👑";margin-right:8px;display:inline-block;transform:translateY(1px);
 }
 
-/* Qualification bands (ensure all three have a visible left stripe) */
+/* Qualification bands (updated colors) */
 tbody tr.pos-2-4 td{position:relative;background:var(--row1)!important;color:var(--text);}
 tbody tr.pos-2-4 td:first-child::before{
-  content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);
+  content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:#f9d71c;
 }
 tbody tr.pos-5-8 td{position:relative;background:var(--row2)!important;color:var(--text);}
 tbody tr.pos-5-8 td:first-child::before{
-  content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--fx-border);
+  content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:#89843a;
 }
-/* Bottom-2: neutral but clearly distinct */
 tbody tr.pos-9-10 td{
   position:relative;
   background:linear-gradient(90deg, rgba(255,255,255,.12), rgba(255,255,255,.05)) !important;
   color:var(--text);
 }
 tbody tr.pos-9-10 td:first-child::before{
-  content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--neutral);
-  opacity:.8;
+  content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:#a8b5c8;
 }
 
 /* Cut lines */
@@ -111,21 +108,24 @@ tbody tr:last-child td{box-shadow:inset 0 -1px 0 rgba(255,255,255,.12)}
 .fade-in{opacity:0;transition:opacity .18s ease}
 .fade-in.ready{opacity:1}
 
-/* Bottom color key (minimal, unobtrusive) */
+/* Bottom color key (updated palette) */
 .qual-key{
   display:flex;flex-wrap:wrap;gap:14px;align-items:center;
-  padding:8px 12px 0; margin:2px 0 4px; color:#cbd5e1; font-size:12px; opacity:.9;
+  padding:8px 12px 0;margin:2px 0 4px;color:#cbd5e1;font-size:12px;opacity:.9;
 }
 .k-item{display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
 .k-swatch{
-  display:inline-block; width:22px; height:10px; border-radius:3px;
+  display:inline-block;width:22px;height:10px;border-radius:3px;
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.15);
 }
-.k-top4{ background:linear-gradient(90deg, rgba(249,215,28,.28), rgba(249,215,28,.10)); border:1px solid rgba(249,215,28,.45); box-shadow:none; }
-.k-mid8{ background:var(--row2); border:1px solid rgba(249,215,28,.35); box-shadow:none; }
-.k-bot2{ background:linear-gradient(90deg, rgba(255,255,255,.18), rgba(255,255,255,.08)); border:1px solid rgba(255,255,255,.28); box-shadow:none; }
+.k-top4{background:#f9d71c;border:1px solid #f9d71c;}
+.k-mid8{background:#89843a;border:1px solid #89843a;}
+.k-bot2{background:#a8b5c8;border:1px solid #a8b5c8;}
 .k-label{color:#e5e7eb}
-@media(max-width:680px){ .qual-key{font-size:11px;gap:10px} .k-swatch{width:18px;height:8px} }
+@media(max-width:680px){
+  .qual-key{font-size:11px;gap:10px}
+  .k-swatch{width:18px;height:8px}
+}
 
 /* Footer */
 .sponsor-footer{
@@ -168,7 +168,7 @@ tbody tr:last-child td{box-shadow:inset 0 -1px 0 rgba(255,255,255,.12)}
     <div class="table-desktop fade-in"><table id="t"></table></div>
     <div class="table-mobile fade-in"><table id="t-compact"></table></div>
 
-    <!-- Minimal color key under the tables -->
+    <!-- Bottom color key -->
     <div class="qual-key" aria-label="Qualification color key">
       <div class="k-item">
         <span class="k-swatch k-top4" aria-hidden="true"></span>
