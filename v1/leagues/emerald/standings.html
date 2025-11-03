@@ -78,13 +78,29 @@ tbody tr.after-top4 td{border-top:2px dashed var(--fx-border);}
 tbody tr.after-mid8 td{border-top:2px dashed var(--fx-border);}
 tbody tr:last-child td{box-shadow:inset 0 -1px 0 rgba(255,255,255,.12)}
 
-/* Form pills */
-.form{display:inline-flex;gap:6px;align-items:center;justify-content:center}
-.fpill{display:inline-block;width:18px;height:18px;border-radius:999px;
-       font-size:11px;line-height:18px;font-weight:900;text-align:center}
+/* Form pills (refined) */
+.form{
+  display:inline-flex;
+  gap:4px;
+  align-items:center;
+  justify-content:center;
+  vertical-align:middle;
+  white-space:nowrap;
+}
+.fpill{
+  display:inline-block;
+  width:16px; height:16px;
+  border-radius:999px;
+  font-size:10px; line-height:16px; font-weight:800;
+  text-align:center;
+  box-shadow:0 0 0 1px rgba(0,0,0,.15), inset 0 0 0 1px rgba(255,255,255,.12);
+}
 .f-W{background:#16a34a;color:#fff}
 .f-D{background:#e5e7eb;color:#111}
 .f-L{background:#dc2626;color:#fff}
+@media(max-width:680px){
+  .fpill{width:14px;height:14px;line-height:14px;font-size:9px}
+}
 
 /* Responsive tables */
 .table-desktop{display:block!important}
@@ -205,14 +221,14 @@ tbody tr:last-child td{box-shadow:inset 0 -1px 0 rgba(255,255,255,.12)}
 /* ===== CONFIG (Emerald) ===== */
 const SHEET_ID='1rD_03y276wGjjlukus6icgwq_FPcOgc70654dOOG6sg';
 const SHEET_TAB='Embed';
-const RANGE='A1:K11';              // your requested range
+const RANGE='A1:K11';
 
 /* cache-bucket bust every 5 minutes */
 const BUCKET_MS=5*60*1000;
 const CB=Math.floor(Date.now()/BUCKET_MS);
 
 /* Helpers */
-function isNumeric(v){return /^-?\\d+(\\.\\d+)?$/.test(String(v));}
+function isNumeric(v){return /^-?\d+(\.\d+)?$/.test(String(v));}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 function parseGviz(t){const a=t.indexOf('{'),b=t.lastIndexOf('}');if(a===-1||b===-1)throw new Error('Invalid GViz');return JSON.parse(t.slice(a,b+1));}
 
@@ -245,15 +261,24 @@ function checkForDeductions(){
   note.style.display=hasStar?'block':'none';
 }
 
+/* Normalised W/D/L pills */
 function renderFormLetters(s){
-  const raw=String(s||"").replace(/\\s+/g,"").slice(-5);
-  if(!raw)return'';
-  return '<span class="form">'+[...raw].map(ch=>{
-    const c=ch==='W'?'f-W':ch==='D'?'f-D':'f-L';
-    return `<span class="fpill ${c}">${ch}</span>`;
-  }).join('')+'</span>';
+  const raw = String(s ?? "")
+    .replace(/[,\s\-_/|.]+/g,"")
+    .toUpperCase()
+    .replace(/[^WDL]/g,"")
+    .slice(-5);
+  if(!raw) return '';
+  const aria = 'Form: ' + [...raw].join(' ');
+  return '<span class="form" aria-label="'+esc(aria)+'">'+
+    [...raw].map(ch=>{
+      const cls = ch==='W' ? 'f-W' : ch==='D' ? 'f-D' : 'f-L';
+      return `<span class="fpill ${cls}">${ch}</span>`;
+    }).join('')+
+  '</span>';
 }
 
+/* Try cached HTML first for instant paint */
 paintInstant('t','efpl:emerald:standings:full','sk-standings');
 paintInstant('t-compact','efpl:emerald:standings:mob','sk-standings');
 
@@ -261,26 +286,29 @@ async function loadStandings(){
   const statusEl=document.getElementById('updated');
   try{
     const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_TAB)}&range=${encodeURIComponent(RANGE)}&cachebust=${CB}`;
-    const res=await fetch(url);const text=await res.text();
-    if(!res.ok)throw new Error('HTTP '+res.status);
+    const res=await fetch(url);
+    const text=await res.text();
+    if(!res.ok) throw new Error('HTTP '+res.status);
     const json=parseGviz(text);
 
     const headers=json.table.cols.map(c=>c.label||'');
-    const rows=(json.table.rows||[]).map(r=>(r.c||[]).map(c=>c?c.v:''));
-    const iForm=headers.findIndex(h=>(h||'').toLowerCase().includes('form'));
+    /* IMPORTANT: prefer formatted value c.f (GViz often uses it for text) */
+    const rows=(json.table.rows||[]).map(r=>(r.c||[]).map(c=>c?(c.f ?? c.v ?? ''):''));
+    const iForm=headers.findIndex(h=>String(h||'').toLowerCase().trim().includes('form'));
 
     let html='<thead><tr>'+headers.map(h=>`<th>${esc(h)}</th>`).join('')+'</tr></thead><tbody>';
     for(let idx=0;idx<rows.length;idx++){
-      const r=rows[idx];if(!r||r.every(x=>String(x).trim()===''))continue;
+      const r=rows[idx]; if(!r || r.every(x=>String(x).trim()==='')) continue;
 
-      /* Bands by index (assumes header row not included in rows) */
       const posClass=(idx===0)?'pos-1':(idx>=1&&idx<=3)?'pos-2-4':(idx>=4&&idx<=7)?'pos-5-8':'pos-9-10';
-      const cutA=(idx===4)?'after-top4':'';const cutB=(idx===8)?'after-mid8':'';
+      const cutA=(idx===4)?'after-top4':''; const cutB=(idx===8)?'after-mid8':'';
       const rowClass=[posClass,cutA,cutB].filter(Boolean).join(' ');
 
       html+=`<tr class="${rowClass}">`;
       r.forEach((cell,i)=>{
-        const s=esc(cell??'');const right=isNumeric(s)?' right':'';const pts=(headers[i]||'').toLowerCase().includes('pts')?' points':'';
+        const s=esc(cell??'');
+        const right=isNumeric(s)?' right':'';
+        const pts=(headers[i]||'').toLowerCase().includes('pts')?' points':'';
         const val=(i===iForm)?renderFormLetters(cell):s;
         html+=`<td class="${right}${pts}">${val}</td>`;
       });
@@ -297,14 +325,17 @@ async function loadStandings(){
     document.getElementById('sk-standings').style.display='none';
     const d=new Date(),pad=n=>String(n).padStart(2,'0'),yy=String(d.getFullYear()).slice(-2);
     statusEl.textContent=`Updated ${pad(d.getDate())}/${pad(d.getMonth()+1)}/${yy}`;
-    checkForDeductions();setTableMode();
-  }catch(e){statusEl.textContent='Error — '+e.message;}
+    checkForDeductions(); setTableMode();
+  }catch(e){
+    statusEl.textContent='Error - '+e.message;
+  }
 }
 
 function buildCompact(headers,rows){
   function findCol(names){
     const lower=headers.map(h=>(h||'').toLowerCase());
-    for(const n of names){const i=lower.indexOf(n);if(i!==-1)return i;}return -1;
+    for(const n of names){const i=lower.indexOf(n); if(i!==-1) return i;}
+    return -1;
   }
   const iPos=findCol(['pos','#','position','rank']);
   const iTeam=findCol(['team','club','name']);
@@ -314,12 +345,12 @@ function buildCompact(headers,rows){
 
   let out='<thead><tr><th>POS</th><th>Team</th><th>P</th><th>PTS</th></tr></thead><tbody>';
   for(let idx=0;idx<rows.length;idx++){
-    const r=rows[idx];if(!r||r.every(x=>String(x).trim()===''))continue;
+    const r=rows[idx]; if(!r || r.every(x=>String(x).trim()==='')) continue;
 
-    const pos=r[cols[0]]??'',team=r[cols[1]]??'',p=r[cols[2]]??'',pts=r[cols[3]]??'';
+    const pos=r[cols[0]]??'', team=r[cols[1]]??'', p=r[cols[2]]??'', pts=r[cols[3]]??'';
 
     const posClass=(idx===0)?'pos-1':(idx>=1&&idx<=3)?'pos-2-4':(idx>=4&&idx<=7)?'pos-5-8':'pos-9-10';
-    const cutA=(idx===4)?'after-top4':'';const cutB=(idx===8)?'after-mid8':'';
+    const cutA=(idx===4)?'after-top4':''; const cutB=(idx===8)?'after-mid8':'';
     const rowClass=[posClass,cutA,cutB].filter(Boolean).join(' ');
 
     out+=`<tr class="${rowClass}">
@@ -332,6 +363,7 @@ function buildCompact(headers,rows){
   out+='</tbody>';
   document.getElementById('t-compact').innerHTML=out;
 }
+
 loadStandings();
 </script>
 </body>
