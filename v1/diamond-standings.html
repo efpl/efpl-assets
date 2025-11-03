@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>eFPL Diamond Standings</title>
+<title>eFPL Diamond Standings — Season 2</title>
 
 <link rel="preconnect" href="https://docs.google.com" crossorigin>
 <link rel="preconnect" href="https://www.google.com" crossorigin>
@@ -24,11 +24,30 @@
   .title{display:flex;justify-content:space-between;align-items:center;margin:0 0 12px;padding:12px}
   .title h1{font-size:20px;margin:0;color:var(--text);display:flex;align-items:center;gap:10px}
   .badge{background:var(--accent);color:#000;padding:4px 12px;border-radius:999px;font-weight:700}
-
   .title-sponsor-logo{height:26px;vertical-align:middle;transition:transform .2s}
   .title-sponsor-logo:hover{transform:scale(1.08)}
 
-  /* Tables */
+  /* ===== Legend ===== */
+  .legend{
+    display:flex;flex-wrap:wrap;gap:10px 14px;
+    align-items:center;padding:0 12px 8px;margin-top:-6px;
+  }
+  .leg-item{display:inline-flex;align-items:center;gap:8px;color:#cbd5e1;font-size:13px}
+  .leg-item .leg-text strong{color:#fff}
+  .swatch{
+    width:18px;height:14px;border-radius:4px;display:inline-block;
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.08);
+  }
+  .sw-top4{background:linear-gradient(90deg, rgba(249,215,28,.28), rgba(249,215,28,.10));}
+  .sw-mid8{background:var(--row2);border:1px solid rgba(249,215,28,.25);box-shadow:none;}
+  .sw-bot2{background:linear-gradient(90deg, rgba(255,255,255,.10), rgba(255,255,255,.04));}
+  @media (max-width:560px){
+    .legend{padding:0 12px 6px;gap:8px 12px;}
+    .leg-item{font-size:12px}
+    .swatch{width:16px;height:12px}
+  }
+
+  /* ===== Tables ===== */
   table{width:100%;border-collapse:collapse}
   thead th{
     background:var(--header-bg);color:var(--header-text);
@@ -43,27 +62,40 @@
   td.points{font-weight:800}
   td:first-child{font-weight:800}
 
-  /* #1 row highlight + crown */
+  /* Champion row */
   tbody tr.pos-1 td{
     background:linear-gradient(90deg, rgba(249,215,28,.18), rgba(249,215,28,.08)) !important;
-    color:var(--text); font-weight:800; position:relative;
+    color:var(--text);font-weight:800;position:relative;
   }
   tbody tr.pos-1 td:first-child::before{
-    content:""; position:absolute; left:0; top:0; bottom:0; width:5px;
-    background:var(--accent); border-top-left-radius:10px; border-bottom-left-radius:10px;
+    content:"";position:absolute;left:0;top:0;bottom:0;width:5px;
+    background:var(--accent);border-top-left-radius:10px;border-bottom-left-radius:10px;
   }
   tbody tr.pos-1 td:nth-child(2)::before{
-    content:"👑"; margin-right:8px; display:inline-block; transform:translateY(1px);
+    content:"👑";margin-right:8px;display:inline-block;transform:translateY(1px);
   }
 
-  /* #2–#5 subtle bar + dashed divider after 5th */
-  tbody tr.pos-2-5 td{ position:relative; background:var(--row1) !important; color:var(--text); }
-  tbody tr.pos-2-5 td:first-child::before{
-    content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--accent);
+  /* Top4 / Mid8 / Bottom2 bands */
+  tbody tr.pos-2-4 td{position:relative;background:var(--row1) !important;color:var(--text);}
+  tbody tr.pos-2-4 td:first-child::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);
   }
-  tbody tr.after-top5 td{ border-top:2px dashed var(--fx-border); }
+  tbody tr.pos-5-8 td{position:relative;background:var(--row2) !important;color:var(--text);}
+  tbody tr.pos-5-8 td:first-child::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--fx-border);
+  }
+  tbody tr.pos-9-10 td{
+    position:relative;
+    background:linear-gradient(90deg, rgba(255,255,255,.06), rgba(255,255,255,.02)) !important;
+    color:var(--text);
+  }
+  tbody tr.pos-9-10 td:first-child::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:rgba(255,255,255,.22);
+  }
+  tbody tr.after-top4 td{border-top:2px dashed var(--fx-border);}
+  tbody tr.after-mid8 td{border-top:2px dashed var(--fx-border);}
 
-  /* --- Form pills (desktop letters ONLY) --- */
+  /* Form pills */
   .form{display:inline-flex;gap:6px;align-items:center;justify-content:center}
   .fpill{display:inline-block;width:18px;height:18px;border-radius:999px;
          font-size:11px;line-height:18px;font-weight:900;text-align:center}
@@ -71,34 +103,29 @@
   .f-D{background:#e5e7eb;color:#111}
   .f-L{background:#dc2626;color:#fff}
 
-  /* One-table visibility (robust against host CSS) */
-  .table-desktop{ display:block !important; }
-  .table-mobile{  display:none  !important; }
-
-  /* Switch to compact at ≤680px.
-     (Desktop stays as small as it reasonably can; when this hits,
-      we show compact with NO form at all.) */
+  /* Responsive tables */
+  .table-desktop{display:block!important}
+  .table-mobile{display:none!important}
   @media (max-width:680px){
     .wrap{padding:12px}
     .card{border-radius:10px}
-    .table-desktop{ display:none  !important; }
-    .table-mobile{  display:block !important; }
+    .table-desktop{display:none!important}
+    .table-mobile{display:block!important}
     .table-mobile th,.table-mobile td{padding:10px;font-size:14px}
-    /* Never show any form in compact */
-    #t-compact .form{ display:none !important; }
+    #t-compact .form{display:none!important}
   }
 
-  /* Skeleton + fade-in */
+  /* Skeleton + fade */
   .skeleton{
     background:linear-gradient(90deg, rgba(255,255,255,.05), rgba(255,255,255,.12), rgba(255,255,255,.05));
-    background-size:200% 100%; animation:sk 1.1s infinite;
-    border-radius:12px; min-height:200px; margin:0 12px 16px;
+    background-size:200% 100%;animation:sk 1.1s infinite;
+    border-radius:12px;min-height:200px;margin:0 12px 16px;
   }
   @keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
   .fade-in{opacity:0;transition:opacity .18s ease}
   .fade-in.ready{opacity:1}
 
-  /* Sponsor footer */
+  /* Footer */
   .sponsor-footer{
     text-align:center;font-size:13px;color:#cbd5e1;opacity:.9;
     padding:10px;border-top:1px solid rgba(249,215,28,.25);line-height:1.6;
@@ -106,7 +133,6 @@
   .sponsor-footer .footer-logo{height:28px;vertical-align:middle;margin:0 6px;transition:transform .2s}
   .sponsor-footer a:hover .footer-logo{transform:scale(1.08)}
 
-  /* Mobile header wrap polish */
   @media (max-width:560px){
     .title{flex-wrap:wrap;gap:8px}
     .title h1{flex:1 1 100%;font-size:18px;line-height:1.2}
@@ -120,217 +146,203 @@
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
+<div class="wrap">
+  <div class="card">
 
-      <!-- Title / Updated -->
-      <div class="title">
-        <h1>
-          <a href="https://www.instant-gaming.com/?igr=eFPL"
-             target="_blank" rel="sponsored noopener noreferrer nofollow"
-             aria-label="Instant Gaming — save on games">
-            <img src="https://efpl-assets.pages.dev/img/instant-gaming.png"
-                 alt="Instant Gaming" class="title-sponsor-logo">
-          </a>
-          Diamond League | Season 1
-        </h1>
-        <span class="badge" id="updated">Loading…</span>
-      </div>
-
-      <!-- Skeleton -->
-      <div id="sk-standings" class="skeleton"></div>
-
-      <!-- Desktop -->
-      <div class="table-desktop fade-in">
-        <table id="t"></table>
-      </div>
-
-      <!-- Compact (phones & small tablets) -->
-      <div class="table-mobile fade-in">
-        <table id="t-compact"></table>
-      </div>
-
-      <!-- Footnote -->
-      <p id="deductions-note" style="display:none;color:#cbd5e1;font-size:13px;text-align:left;margin:8px 12px 0;opacity:.85">
-        * denotes points deduction
-      </p>
-
-      <!-- Sponsor footer -->
-      <div class="sponsor-footer">
-        This league is sponsored by
+    <!-- Title -->
+    <div class="title">
+      <h1>
         <a href="https://www.instant-gaming.com/?igr=eFPL"
            target="_blank" rel="sponsored noopener noreferrer nofollow"
            aria-label="Instant Gaming — save on games">
           <img src="https://efpl-assets.pages.dev/img/instant-gaming.png"
-               alt="Instant Gaming" class="footer-logo">
+               alt="Instant Gaming" class="title-sponsor-logo">
         </a>
-        Save up to <strong>90%</strong> on all digital games!
+        Diamond League | Season 2
+      </h1>
+      <span class="badge" id="updated">Loading…</span>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend" role="note" aria-label="League table legend">
+      <div class="leg-item">
+        <span class="swatch sw-top4"></span>
+        <span class="leg-text"><strong>1–4</strong> Champions Cup qualification</span>
+      </div>
+      <div class="leg-item">
+        <span class="swatch sw-mid8"></span>
+        <span class="leg-text"><strong>5–8</strong> Continental Cup qualification</span>
+      </div>
+      <div class="leg-item">
+        <span class="swatch sw-bot2"></span>
+        <span class="leg-text"><strong>9–10</strong> Conference Cup qualification</span>
       </div>
     </div>
+
+    <!-- Skeleton -->
+    <div id="sk-standings" class="skeleton"></div>
+
+    <!-- Desktop -->
+    <div class="table-desktop fade-in">
+      <table id="t"></table>
+    </div>
+
+    <!-- Compact -->
+    <div class="table-mobile fade-in">
+      <table id="t-compact"></table>
+    </div>
+
+    <!-- Footnote -->
+    <p id="deductions-note" style="display:none;color:#cbd5e1;font-size:13px;text-align:left;margin:8px 12px 0;opacity:.85">
+      * denotes points deduction
+    </p>
+
+    <!-- Sponsor footer -->
+    <div class="sponsor-footer">
+      This league is sponsored by
+      <a href="https://www.instant-gaming.com/?igr=eFPL"
+         target="_blank" rel="sponsored noopener noreferrer nofollow"
+         aria-label="Instant Gaming — save on games">
+        <img src="https://efpl-assets.pages.dev/img/instant-gaming.png"
+             alt="Instant Gaming" class="footer-logo">
+      </a>
+      Save up to <strong>90%</strong> on all digital games!
+    </div>
+
   </div>
+</div>
 
 <script>
 /* ===== CONFIG ===== */
 const SHEET_ID  = '17OW81tsw1w2dCeP4AzcJlxa7gr6eFE9ExXJbuovLNNQ';
 const SHEET_TAB = 'Standings';
-const RANGE     = 'P1:Z17'; // includes Form column (Z) for desktop
+const RANGE     = 'P1:Z17'; // includes Form column if present
 
-/* Cache bucket: 5 minutes */
 const BUCKET_MS = 5 * 60 * 1000;
 const CB = Math.floor(Date.now() / BUCKET_MS);
 
-function isNumeric(v){ return /^-?\d+(\.\d+)?$/.test(String(v)); }
+function isNumeric(v){ return /^-?\\d+(\\.\\d+)?$/.test(String(v)); }
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
-function parseGviz(text){
-  const a=text.indexOf('{'), b=text.lastIndexOf('}');
-  if(a===-1||b===-1) throw new Error('Could not find JSON object in GViz response.');
-  return JSON.parse(text.slice(a,b+1));
-}
+function parseGviz(text){ const a=text.indexOf('{'),b=text.lastIndexOf('}'); if(a===-1||b===-1) throw new Error('Invalid GViz'); return JSON.parse(text.slice(a,b+1)); }
 
-/* Safety net: enforce one table visible (helps inside Google Sites) */
 function setTableMode(){
-  const compact = window.matchMedia('(max-width:680px)').matches;
-  const d = document.querySelector('.table-desktop');
-  const m = document.querySelector('.table-mobile');
-  if(d) d.style.display = compact ? 'none'  : 'block';
-  if(m) m.style.display = compact ? 'block' : 'none';
+  const compact=window.matchMedia('(max-width:680px)').matches;
+  document.querySelector('.table-desktop').style.display=compact?'none':'block';
+  document.querySelector('.table-mobile').style.display=compact?'block':'none';
 }
-window.addEventListener('resize', setTableMode);
-window.addEventListener('orientationchange', setTableMode);
+window.addEventListener('resize',setTableMode);
+window.addEventListener('orientationchange',setTableMode);
 
-function paintInstant(elId, key, skId){
+function paintInstant(elId,key,skId){
   try{
-    const cached = localStorage.getItem(key);
+    const cached=localStorage.getItem(key);
     if(cached){
-      document.getElementById(elId).innerHTML = cached;
-      document.querySelectorAll('.fade-in').forEach(n => n.classList.add('ready'));
-      const sk = skId && document.getElementById(skId);
-      if(sk) sk.style.display = 'none';
-      checkForDeductions();
-      setTableMode();
+      document.getElementById(elId).innerHTML=cached;
+      document.querySelectorAll('.fade-in').forEach(n=>n.classList.add('ready'));
+      if(skId)document.getElementById(skId).style.display='none';
+      checkForDeductions();setTableMode();
     }
   }catch(e){}
 }
-function saveHTML(key, html){ try{ localStorage.setItem(key, html); }catch(e){} }
+function saveHTML(k,h){try{localStorage.setItem(k,h);}catch(e){}}
 
-/* Footnote appears if any * is present */
 function checkForDeductions(){
   const note=document.getElementById('deductions-note');
-  if(!note) return;
-  const t1=document.getElementById('t');
-  const t2=document.getElementById('t-compact');
-  const hasStar=(t1 && t1.textContent.includes('*'))||(t2 && t2.textContent.includes('*'));
-  note.style.display = hasStar ? 'block' : 'none';
+  if(!note)return;
+  const hasStar=(document.getElementById('t').textContent.includes('*')||
+                 document.getElementById('t-compact').textContent.includes('*'));
+  note.style.display=hasStar?'block':'none';
 }
 
-/* Desktop: render W/D/L as coloured letters */
 function renderFormLetters(s){
-  const raw=String(s||"").replace(/\s+/g,"").slice(-5);
-  if(!raw) return '';
-  return '<span class="form" aria-label="Recent form: '+raw+'">' + [...raw].map(ch=>{
-    const cls = ch==='W' ? 'f-W' : ch==='D' ? 'f-D' : 'f-L';
-    return `<span class="fpill ${cls}">${ch}</span>`;
-  }).join('') + '</span>';
+  const raw=String(s||"").replace(/\\s+/g,"").slice(-5);
+  if(!raw)return'';
+  return '<span class="form">'+[...raw].map(ch=>{
+    const c=ch==='W'?'f-W':ch==='D'?'f-D':'f-L';
+    return `<span class="fpill ${c}">${ch}</span>`;
+  }).join('')+'</span>';
 }
 
-/* Paint immediately if cached */
-paintInstant('t', 'efpl:standings:full', 'sk-standings');
-paintInstant('t-compact', 'efpl:standings:mob', 'sk-standings');
+paintInstant('t','efpl:standings:full','sk-standings');
+paintInstant('t-compact','efpl:standings:mob','sk-standings');
 
 async function loadStandings(){
-  const statusEl = document.getElementById('updated');
+  const statusEl=document.getElementById('updated');
   try{
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq`
-      + `?tqx=out:json&sheet=${encodeURIComponent(SHEET_TAB)}`
-      + `&range=${encodeURIComponent(RANGE)}&cachebust=${CB}`;
-    const res = await fetch(url);
-    const text = await res.text();
-    if(!res.ok) throw new Error('HTTP '+res.status+' — '+text.slice(0,200));
-    const json = parseGviz(text);
+    const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_TAB)}&range=${encodeURIComponent(RANGE)}&cachebust=${CB}`;
+    const res=await fetch(url);const text=await res.text();
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const json=parseGviz(text);
 
-    const headers = json.table.cols.map(c => c.label || '');
-    const rows = (json.table.rows || []).map(r => (r.c || []).map(c => c ? c.v : ''));
+    const headers=json.table.cols.map(c=>c.label||'');
+    const rows=(json.table.rows||[]).map(r=>(r.c||[]).map(c=>c?c.v:''));
+    const iForm=headers.findIndex(h=>(h||'').toLowerCase().includes('form'));
 
-    const iForm = headers.findIndex(h => (h||'').toString().toLowerCase().includes('form'));
+    let html='<thead><tr>'+headers.map(h=>`<th>${esc(h)}</th>`).join('')+'</tr></thead><tbody>';
+    for(let idx=0;idx<rows.length;idx++){
+      const r=rows[idx];if(!r||r.every(x=>String(x).trim()===''))continue;
 
-    /* Desktop render (includes Form) */
-    let html = '<thead><tr>'+headers.map(h=>`<th>${esc(h)}</th>`).join('')+'</tr></thead><tbody>';
-    for(let idx=0; idx<rows.length; idx++){
-      const r = rows[idx];
-      if(!r || r.every(x => String(x).trim()==='')) continue;
+      const posClass=(idx===0)?'pos-1':(idx>=1&&idx<=3)?'pos-2-4':(idx>=4&&idx<=7)?'pos-5-8':'pos-9-10';
+      const cutA=(idx===4)?'after-top4':'';const cutB=(idx===8)?'after-mid8':'';
+      const rowClass=[posClass,cutA,cutB].filter(Boolean).join(' ');
 
-      const posClass = (idx===0) ? 'pos-1' : (idx>=1 && idx<=4 ? 'pos-2-5' : '');
-      const cutClass = (idx===5) ? 'after-top5' : '';
-      const rowClass = [posClass, cutClass].filter(Boolean).join(' ');
-
-      html += `<tr class="${rowClass}">`;
+      html+=`<tr class="${rowClass}">`;
       r.forEach((cell,i)=>{
-        const s = esc(cell ?? '');
-        const right = isNumeric(s) ? ' right' : '';
-        const pointsCol = (headers[i] || '').toLowerCase().includes('pts') ? ' points' : '';
-        const value = (i === iForm) ? renderFormLetters(cell) : s;
-        html += `<td class="${right}${pointsCol}">${value}</td>`;
+        const s=esc(cell??'');const right=isNumeric(s)?' right':'';const pts=(headers[i]||'').toLowerCase().includes('pts')?' points':'';
+        const val=(i===iForm)?renderFormLetters(cell):s;
+        html+=`<td class="${right}${pts}">${val}</td>`;
       });
-      html += '</tr>';
+      html+='</tr>';
     }
-    html += '</tbody>';
-    document.getElementById('t').innerHTML = html;
-    saveHTML('efpl:standings:full', html);
+    html+='</tbody>';
+    document.getElementById('t').innerHTML=html;
+    saveHTML('efpl:standings:full',html);
 
-    /* Compact render (NO Form at all) */
-    buildCompact(headers, rows);
-    saveHTML('efpl:standings:mob', document.getElementById('t-compact').innerHTML);
+    buildCompact(headers,rows);
+    saveHTML('efpl:standings:mob',document.getElementById('t-compact').innerHTML);
 
-    document.querySelectorAll('.fade-in').forEach(n => n.classList.add('ready'));
+    document.querySelectorAll('.fade-in').forEach(n=>n.classList.add('ready'));
     document.getElementById('sk-standings').style.display='none';
-    const d=new Date(), pad=n=>String(n).padStart(2,'0'), yy=String(d.getFullYear()).slice(-2);
-    statusEl.textContent = `Updated ${pad(d.getDate())}/${pad(d.getMonth()+1)}/${yy}`;
-
-    checkForDeductions();
-    setTableMode();
-  }catch(err){
-    document.getElementById('t').innerHTML = '';
-    document.getElementById('t-compact').innerHTML = '';
-    statusEl.textContent = 'Error — ' + err.message;
-    console.error(err);
-  }
+    const d=new Date(),pad=n=>String(n).padStart(2,'0'),yy=String(d.getFullYear()).slice(-2);
+    statusEl.textContent=`Updated ${pad(d.getDate())}/${pad(d.getMonth()+1)}/${yy}`;
+    checkForDeductions();setTableMode();
+  }catch(e){statusEl.textContent='Error — '+e.message;}
 }
 
-function buildCompact(headers, rows){
+function buildCompact(headers,rows){
   function findCol(names){
-    const lower = headers.map(h => (h||'').toString().trim().toLowerCase());
-    for(const n of names){ const i = lower.indexOf(n); if(i !== -1) return i; }
-    return -1;
+    const lower=headers.map(h=>(h||'').toLowerCase());
+    for(const n of names){const i=lower.indexOf(n);if(i!==-1)return i;}return -1;
   }
-  const iPos  = findCol(['pos','#','position','rank']);
-  const iTeam = findCol(['team','club','name']);
-  const iP    = findCol(['p','pl','played']);
-  const iPts  = findCol(['pts','points']);
-  const cols = [iPos, iTeam, iP, iPts].map((i,k)=> i !== -1 ? i : k);
+  const iPos=findCol(['pos','#','position','rank']);
+  const iTeam=findCol(['team','club','name']);
+  const iP=findCol(['p','pl','played']);
+  const iPts=findCol(['pts','points']);
+  const cols=[iPos,iTeam,iP,iPts].map((i,k)=>i!==-1?i:k);
 
-  let out = '<thead><tr><th>POS</th><th>Team</th><th>P</th><th>PTS</th></tr></thead><tbody>';
-  for(let idx=0; idx<rows.length; idx++){
-    const r = rows[idx];
-    if(!r || r.every(x => String(x).trim()==='')) continue;
+  let out='<thead><tr><th>POS</th><th>Team</th><th>P</th><th>PTS</th></tr></thead><tbody>';
+  for(let idx=0;idx<rows.length;idx++){
+    const r=rows[idx]; if(!r||r.every(x=>String(x).trim()===''))continue;
 
     const pos  = r[cols[0]] ?? '';
     const team = r[cols[1]] ?? '';
     const p    = r[cols[2]] ?? '';
     const pts  = r[cols[3]] ?? '';
 
-    const posClass = (idx===0) ? 'pos-1' : (idx>=1 && idx<=4 ? 'pos-2-5' : '');
-    const cutClass = (idx===5) ? 'after-top5' : '';
-    const rowClass = [posClass, cutClass].filter(Boolean).join(' ');
+    const posClass=(idx===0)?'pos-1':(idx>=1&&idx<=3)?'pos-2-4':(idx>=4&&idx<=7)?'pos-5-8':'pos-9-10';
+    const cutA=(idx===4)?'after-top4':'';
+    const cutB=(idx===8)?'after-mid8':'';
+    const rowClass=[posClass,cutA,cutB].filter(Boolean).join(' ');
 
-    out += `<tr class="${rowClass}">
+    out+=`<tr class="${rowClass}">
       <td class="right">${esc(pos)}</td>
       <td>${esc(team)}</td>
       <td class="right">${esc(p)}</td>
       <td class="right points">${esc(pts)}</td>
     </tr>`;
   }
-  out += '</tbody>';
-  document.getElementById('t-compact').innerHTML = out;
+  out+='</tbody>';
+  document.getElementById('t-compact').innerHTML=out;
 }
 
 loadStandings();
