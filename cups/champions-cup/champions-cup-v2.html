@@ -10,7 +10,7 @@
     --accent:#f9d71c; --line:rgba(249,215,28,.45);
   }
   html,body{background:transparent}
-  body{margin:0;font:16px/1.5 system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink)}
+  body{margin:0;font:16px/1.45 system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink)}
   .wrap{max-width:1160px;margin:24px auto;padding:16px;background:var(--bg);border-radius:14px}
 
   /* Title */
@@ -25,84 +25,48 @@
   .side{display:grid;gap:12px}
   .group{display:grid;gap:10px}
   .group h3{
-    position:relative;
-    margin:0 0 6px;
-    font-size:12px;
-    letter-spacing:.12em;
-    text-transform:uppercase;
-    color:var(--muted);
-    text-align:center;
-    padding-bottom:8px;
+    position:relative;margin:0 0 6px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);text-align:center;padding-bottom:8px
   }
   .group h3::after{
-    content:"";
-    position:absolute;
-    left:50%;
-    transform:translateX(-50%);
-    bottom:0;
-    width:120px;
-    height:3px;
+    content:"";position:absolute;left:50%;transform:translateX(-50%);bottom:0;width:120px;height:3px;
     background:linear-gradient(90deg, rgba(249,215,28,0), var(--accent), rgba(249,215,28,0));
-    border-radius:999px;
-    opacity:.9;
+    border-radius:999px;opacity:.9
   }
 
   /* Match cards */
   .match{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:210px;box-shadow:0 2px 6px rgba(0,0,0,.2)}
   .fixture{
-    display:grid;
-    grid-template-columns:1fr auto 1fr;
-    align-items:center;
-    gap:8px;
-    font-weight:800;
+    display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;font-weight:800
   }
   .team{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .team.right{text-align:right}
-  .vs{opacity:.85;font-weight:900}
+  .vs{opacity:.9;font-weight:900}
 
-  /* Route caption */
-  .path{
-    margin-top:6px;
-    font-size:11px;
-    line-height:1.2;
-    color:var(--muted);
-    text-align:center;
-    letter-spacing:.02em;
-  }
+  /* Route caption + extra notes */
+  .path{margin-top:6px;font-size:11px;line-height:1.2;color:var(--muted);text-align:center;letter-spacing:.02em}
+  .fixture .path.extra{font-style:italic;margin-top:4px;opacity:.9;text-align:center}
 
-  /* Stepping toward center */
+  /* Step toward center */
   .left  .r16{margin-right:70px} .left  .qf{margin-right:35px} .left  .sf{margin-right:0}
-  .right .r16{margin-left:70px} .right .qf{margin-left:35px} .right .sf{margin-left:0}
+  .right .r16{margin-left:70px}  .right .qf{margin-left:35px}  .right .sf{margin-left:0}
 
-  /* Connector bars pointing inward */
+  /* Connector bars */
   .left  .match::after {content:"";display:block;height:0;border-top:2px solid var(--line);margin-left:auto;width:24px;transform:translateY(8px)}
   .left  .qf .match::after{width:34px} .left  .sf .match::after{width:44px}
   .right .match::before{content:"";display:block;height:0;border-top:2px solid var(--line);margin-right:auto;width:24px;transform:translateY(8px)}
   .right .qf .match::before{width:34px} .right .sf .match::before{width:44px}
 
-  /* Center column (trophy + final + champion) */
+  /* Center column */
   .center{display:flex;flex-direction:column;align-items:center;gap:14px;padding:8px 0}
   .center h3{
-    position:relative;
-    margin:0 0 6px;
-    font-size:12px;
-    letter-spacing:.12em;
-    text-transform:uppercase;
-    color:var(--muted);
-    text-align:center;
-    padding-bottom:8px;
+    position:relative;margin:0 0 6px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);text-align:center;padding-bottom:8px
   }
   .center h3::after{
-    content:"";
-    position:absolute;
-    left:50%;
-    transform:translateX(-50%);
-    bottom:0;
-    width:140px;
-    height:3px;
+    content:"";position:absolute;left:50%;transform:translateX(-50%);bottom:0;width:140px;height:3px;
     background:linear-gradient(90deg, rgba(249,215,28,0), var(--accent), rgba(249,215,28,0));
-    border-radius:999px;
-    opacity:.9;
+    border-radius:999px;opacity:.9
   }
   .trophy{width:min(240px,32vw);height:auto;object-fit:contain;filter:drop-shadow(0 10px 28px rgba(0,0,0,.45))}
   .final{background:var(--accent);color:#0b1b3d;font-weight:900;border-radius:12px;padding:12px 16px;text-align:center;min-width:240px;border:2px solid #fff}
@@ -110,7 +74,7 @@
   .champion .cup{font-size:22px;margin-right:6px}
   .note{color:#cbd5e1;font-size:12px;text-align:center}
 
-  /* Mobile */
+  /* Mobile tweaks */
   @media (max-width:860px){
     .wrap{padding:12px}
     .stage{grid-template-columns:1fr;gap:12px}
@@ -120,7 +84,17 @@
     .match{min-width:auto}
     .final{min-width:auto;width:100%}
     .champion{width:100%}
-    .stack h2{text-align:center;color:var(--accent);margin:12px 0 6px}
+
+    /* slightly smaller score text to avoid wrapping on narrow phones */
+    .fixture .vs span{font-size:.95em}
+    .fixture .path.extra{font-size:11px}
+  }
+
+  /* Ultra-narrow safeguard */
+  @media (max-width:420px){
+    body{font-size:15px}
+    .fixture{gap:6px}
+    .fixture .path.extra{font-size:10.5px}
   }
 </style>
 </head>
@@ -294,26 +268,30 @@
 
       const hasScore = done === true && hs !== "" && as !== "" && !isNaN(+hs) && !isNaN(+as);
 
-      // compact tag content
+      // Build sub-line tag
       let tag = "";
       if (method === "AET") {
         tag = "AET";
       } else if (method === "Pens") {
         const m = /(\d+)\s*-\s*(\d+)/i.exec(note || "");
-        tag = m ? `${m[1]}-${m[2]} pens` : "pens";
+        if (m && winner) {
+          tag = `${winner} win on penalties ${m[1]}-${m[2]}`;
+        } else {
+          tag = "Won on penalties";
+        }
       }
 
       if (elScore) {
         if (hasScore) {
-          const main = `${hs} - ${as}`;
-          const extra = tag ? `<div class="path" style="margin-top:2px;">${tag}</div>` : "";
+          const main = `<span class="vs"><span>${hs} - ${as}</span></span>`;
+          const extra = tag ? `<div class="path extra">${tag}</div>` : "";
           elScore.innerHTML = `<div>${main}</div>${extra}`;
         } else {
           elScore.textContent = "vs";
         }
       }
 
-      // Final + champion
+      // Final line + Champion
       if (key === "F1") {
         const h = home || "Winner S1";
         const a = away || "Winner S2";
@@ -324,7 +302,7 @@
     });
 
     const finalEl = document.getElementById("final-line");
-    if (finalEl) finalEl.textContent = finalText;
+    if (finalEl) finalText && (finalEl.textContent = finalText);
 
     const champEl = document.getElementById("champion");
     if (champEl) champEl.textContent = championText;
