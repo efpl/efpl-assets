@@ -109,6 +109,8 @@
   .champion{background:linear-gradient(180deg,var(--accent),#e8c617);color:#0b1b3d;font-weight:900;text-align:center;border-radius:14px;padding:16px 22px;border:2px solid #fff;box-shadow:0 8px 24px rgba(0,0,0,.35)}
   .champion .cup{font-size:22px;margin-right:6px}
   .note{color:#cbd5e1;font-size:12px;text-align:center}
+
+  /* Mobile */
   @media (max-width:860px){
     .wrap{padding:12px}
     .stage{grid-template-columns:1fr;gap:12px}
@@ -238,10 +240,12 @@
 <script>
 (function(){
   const SHEET_ID = "1l-JRipmpDXnQXK7XuJY8k3TLELfsSQ_Q-kcUJzy9du8"; // your sheet
-  const GID = "0"; // Cup Bracket tab
+  const SHEET_NAME = "Cup Bracket"; // use tab name instead of gid
   const tq = "select A,B,C,D,E,F,G,H,I,J where A is not null";
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${GID}&tqx=out:json&tq=`+
-              encodeURIComponent(tq)+`&cachebust=`+Date.now();
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=` +
+              encodeURIComponent(SHEET_NAME) +
+              `&tqx=out:json&tq=` + encodeURIComponent(tq) +
+              `&cachebust=` + Date.now();
 
   function keyByIndex(i){
     if (i >= 0 && i <= 7)  { const L=["A","B","C","D","E","F","G","H"]; return "R16"+L[i]; }
@@ -290,21 +294,19 @@
 
       const hasScore = done === true && hs !== "" && as !== "" && !isNaN(+hs) && !isNaN(+as);
 
-      // Build AET / pens tag
+      // Compact AET / pens tag
       let tag = "";
       if (method === "AET") {
         tag = " AET";
       } else if (method === "Pens") {
         const m = /(\d+)\s*-\s*(\d+)/i.exec(note || "");
-        if (m && winner) {
-          tag = ` (${winner} wins ${m[1]}-${m[2]} on pens)`;
-        } else {
-          tag = " (pens)";
-        }
+        tag = m ? ` (${m[1]}-${m[2]} pens)` : " (pens)";
       }
 
       if (elScore) {
-        elScore.textContent = hasScore ? `${hs} - ${as}${tag}` : "vs";
+        elScore.innerHTML = hasScore
+          ? `<span style="font-size:0.85em;">${hs} - ${as}${tag}</span>`
+          : "vs";
       }
 
       // Final line + Champion
@@ -316,11 +318,7 @@
           finalTag = " AET";
         } else if (method === "Pens") {
           const m = /(\d+)\s*-\s*(\d+)/i.exec(note || "");
-          if (m && winner) {
-            finalTag = ` (${winner} wins ${m[1]}-${m[2]} on pens)`;
-          } else {
-            finalTag = " (pens)";
-          }
+          finalTag = m ? ` (${m[1]}-${m[2]} pens)` : " (pens)";
         }
         finalText = hasScore ? `Final: ${h} ${hs} - ${as} ${a}${finalTag}` : `Final: ${h} vs ${a}`;
         if (hasScore && winner) championText = `🏆 Champion: ${winner}`;
