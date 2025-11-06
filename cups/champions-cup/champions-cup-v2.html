@@ -18,8 +18,10 @@
   .title h1{margin:0;font-size:clamp(22px,4.5vw,30px);font-weight:900}
   .eyebrow{background:var(--accent);color:#0b1b3d;padding:2px 10px;border-radius:999px;font-weight:900;font-size:12px}
 
-  /* Stage layout */
+  /* 3 columns: left / center / right */
   .stage{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:start}
+
+  /* Sides with stepped rounds */
   .side{display:grid;gap:12px}
   .group{display:grid;gap:10px}
   .group h3{
@@ -39,34 +41,34 @@
   }
   .team{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .team.right{text-align:right}
-
-  /* Center the score */
-  .fixture .vs {
+  
+  /* Center/stack the score and its extra note */
+  .fixture .vs{
     display:flex;
+    flex-direction:column;
     justify-content:center;
     align-items:center;
     text-align:center;
     width:100%;
   }
-  .fixture .vs span{
+  .fixture .scoreline{
     display:block;
-    width:100%;
     text-align:center;
   }
 
-  /* Route caption + extras */
+  /* Route caption + extra notes */
   .path{margin-top:6px;font-size:11px;line-height:1.2;color:var(--muted);text-align:center;letter-spacing:.02em}
   .fixture .path.extra{font-style:italic;margin-top:4px;opacity:.9;text-align:center}
 
-  /* Stepping toward center */
-  .left  .r16{margin-right:70px} .left  .qf{margin-right:35px}
-  .right .r16{margin-left:70px}  .right .qf{margin-left:35px}
+  /* Step toward center */
+  .left  .r16{margin-right:70px} .left  .qf{margin-right:35px} .left  .sf{margin-right:0}
+  .right .r16{margin-left:70px}  .right .qf{margin-left:35px}  .right .sf{margin-left:0}
 
   /* Connector bars */
-  .left  .match::after{content:"";display:block;height:0;border-top:2px solid var(--line);margin-left:auto;width:24px;transform:translateY(8px)}
-  .left  .qf .match::after{width:34px}
+  .left  .match::after {content:"";display:block;height:0;border-top:2px solid var(--line);margin-left:auto;width:24px;transform:translateY(8px)}
+  .left  .qf .match::after{width:34px} .left  .sf .match::after{width:44px}
   .right .match::before{content:"";display:block;height:0;border-top:2px solid var(--line);margin-right:auto;width:24px;transform:translateY(8px)}
-  .right .qf .match::before{width:34px}
+  .right .qf .match::before{width:34px} .right  .sf .match::before{width:44px}
 
   /* Center column */
   .center{display:flex;flex-direction:column;align-items:center;gap:14px;padding:8px 0}
@@ -90,16 +92,16 @@
     .wrap{padding:12px}
     .stage{grid-template-columns:1fr;gap:12px}
     .center{order:-1}
-    .left .r16,.left .qf,.right .r16,.right .qf{margin:0}
+    .left .r16,.left .qf,.left .sf,.right .r16,.right .qf,.right .sf{margin:0}
     .left .match::after,.right .match::before{display:none}
     .match{min-width:auto}
-    .final,.champion{width:100%;min-width:auto}
-    .fixture .vs span{font-size:.95em}
+    .final{min-width:auto;width:100%}
+    .champion{width:100%}
+    .fixture{gap:8px}
     .fixture .path.extra{font-size:11px}
   }
   @media (max-width:420px){
     body{font-size:15px}
-    .fixture{gap:8px}
     .fixture .path.extra{font-size:10.5px}
   }
 </style>
@@ -112,22 +114,26 @@
     </div>
 
     <div class="stage">
-      <!-- LEFT SIDE -->
+      <!-- LEFT -->
       <div class="side left">
         <div class="group r16">
           <h3>Round of 16</h3>
+
           <div class="match">
             <div class="fixture"><span class="team" id="R16A-home">Team 1</span><span class="vs" id="R16A-score">vs</span><span class="team right" id="R16A-away">Team 2</span></div>
             <div class="path">Match 1</div>
           </div>
+
           <div class="match">
             <div class="fixture"><span class="team" id="R16B-home">Team 3</span><span class="vs" id="R16B-score">vs</span><span class="team right" id="R16B-away">Team 4</span></div>
             <div class="path">Match 2</div>
           </div>
+
           <div class="match">
             <div class="fixture"><span class="team" id="R16C-home">Team 5</span><span class="vs" id="R16C-score">vs</span><span class="team right" id="R16C-away">Team 6</span></div>
             <div class="path">Match 3</div>
           </div>
+
           <div class="match">
             <div class="fixture"><span class="team" id="R16D-home">Team 7</span><span class="vs" id="R16D-score">vs</span><span class="team right" id="R16D-away">Team 8</span></div>
             <div class="path">Match 4</div>
@@ -164,7 +170,7 @@
         <div class="champion" id="champion"><span class="cup">🏆</span> Champion: TBD</div>
       </div>
 
-      <!-- RIGHT SIDE -->
+      <!-- RIGHT -->
       <div class="side right">
         <div class="group r16">
           <h3>Round of 16</h3>
@@ -285,9 +291,9 @@
 
       if (elScore) {
         if (hasScore) {
-          const main = `<span class="vs"><span>${hs} - ${as}</span></span>`;
+          const main  = `<div class="scoreline">${hs} - ${as}</div>`;
           const extra = tag ? `<div class="path extra">${tag}</div>` : "";
-          elScore.innerHTML = `<div>${main}</div>${extra}`;
+          elScore.innerHTML = main + extra;   // stacked, centered
         } else {
           elScore.textContent = "vs";
         }
