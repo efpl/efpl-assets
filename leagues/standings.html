@@ -6,12 +6,9 @@
 <title>eFPL Standings — All Leagues</title>
 <meta name="description" content="Browse eFPL standings by league across all regions. Tap a league card to view its live table." />
 <meta name="color-scheme" content="dark" />
-<link rel="preconnect" href="https://www.google.com" crossorigin>
-<link rel="preconnect" href="https://docs.google.com" crossorigin>
 <style>
   :root{
-    --bg:#00143b;
-    --ink:#ffffff;
+    --ink:#fff;
     --muted:#cbd5e1;
     --accent:#f9d71c;
     --card:#061f4d;
@@ -20,202 +17,111 @@
     --soft:rgba(255,255,255,.06);
   }
 
-  /* Cinematic layered background with slow drift */
-  html,body{height:100%}
+  html,body{height:100%;background:transparent}
   body{
     margin:0;color:var(--ink);font:16px/1.55 system-ui,Segoe UI,Roboto,Arial,sans-serif;
     background:
-      radial-gradient(1200px 700px at 12% -10%, rgba(31,86,255,.28), transparent 60%),
-      radial-gradient(900px 600px at 100% 0%, rgba(0,200,255,.18), transparent 60%),
-      radial-gradient(900px 600px at 0% 100%, rgba(249,215,28,.12), transparent 60%),
-      var(--bg);
-    background-attachment: fixed;
+      radial-gradient(900px 600px at 12% -10%, rgba(31,86,255,.25), transparent 60%),
+      radial-gradient(700px 500px at 100% 0%, rgba(0,200,255,.15), transparent 60%),
+      radial-gradient(800px 500px at 0% 100%, rgba(249,215,28,.10), transparent 60%);
+    background-attachment:fixed;
     animation:bg-pan 36s linear infinite;
   }
-  @keyframes bg-pan { 0%{background-position:0 0,0 0,0 0,0 0} 50%{background-position:5% -3%,2% 1%, -2% 4%,0 0} 100%{background-position:0 0,0 0,0 0,0 0} }
+  @keyframes bg-pan{0%{background-position:0 0,0 0,0 0}50%{background-position:5% -3%,2% 1%,-2% 4%}100%{background-position:0 0,0 0,0 0}}
 
   .wrap{max-width:1200px;margin:0 auto;padding:28px 16px}
-
-  /* HERO */
-  .hero{
-    position:relative;overflow:hidden;border-radius:18px;padding:26px 18px;margin-bottom:18px;
-    background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.00)), #07265a;
-    border:1px solid var(--line);
-  }
-  .hero::after{
-    content:"";position:absolute;inset:0;
-    background:linear-gradient(120deg, transparent 0%, rgba(255,255,255,.08) 30%, transparent 60%);
-    transform:translateX(-100%);animation:shine 7s linear infinite;pointer-events:none;
-  }
+  .hero{position:relative;overflow:hidden;border-radius:18px;padding:26px 18px;margin-bottom:18px;
+        background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0));
+        border:1px solid var(--line)}
+  .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,.08) 30%,transparent 60%);
+               transform:translateX(-100%);animation:shine 7s linear infinite;pointer-events:none}
   @keyframes shine{to{transform:translateX(100%)}}
+
   h1{margin:0;font-size:clamp(28px,5vw,44px);line-height:1.1}
   .sub{margin:6px 0 0;color:var(--muted);font-size:clamp(14px,2.2vw,16px)}
 
-  /* Sections */
   .section{margin-top:22px}
-  .eyebrow{
-    display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#0b1b3d;
-    padding:6px 12px;border-radius:999px;font-weight:900;font-size:12px;letter-spacing:.03em
-  }
-  .rule{height:1px;background:linear-gradient(90deg, transparent, var(--line), transparent);margin:10px 0 14px;border:0}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#0b1b3d;
+           padding:6px 12px;border-radius:999px;font-weight:900;font-size:12px;letter-spacing:.03em}
+  .rule{height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent);margin:10px 0 14px;border:0}
 
-  /* Grid */
   .grid{display:grid;gap:16px;margin-top:10px;grid-template-columns:repeat(2,minmax(0,1fr))}
-  @media (min-width:980px){ .grid{grid-template-columns:repeat(4,minmax(0,1fr));} }
+  @media(min-width:980px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 
-  /* Premium card */
-  .card{
-    position:relative;display:grid;grid-template-rows:auto 1fr auto;text-decoration:none;color:var(--ink);
-    padding:18px;border-radius:16px;min-height:230px;
-    background:linear-gradient(180deg,var(--cardTop),var(--card)) padding-box;
-    border:1px solid transparent;isolation:isolate;
-    transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
-  }
-  .card::before{
-    content:"";position:absolute;inset:0;border-radius:16px;padding:1px;
-    background:linear-gradient(160deg, rgba(249,215,28,.7), rgba(0,220,255,.45));
-    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-    -webkit-mask-composite:xor;mask-composite:exclude;
-  }
-  .card::after{
-    content:"";position:absolute;inset:-14px;border-radius:28px;opacity:0;filter:blur(28px);
-    background:radial-gradient(700px 280px at 20% 0%, rgba(249,215,28,.30), transparent 60%);
-    transition:opacity .18s ease;z-index:-1;
-  }
+  .card{position:relative;display:grid;grid-template-rows:auto 1fr auto;text-decoration:none;color:var(--ink);
+        padding:18px;border-radius:16px;min-height:230px;
+        background:linear-gradient(180deg,var(--cardTop),var(--card)) padding-box;
+        border:1px solid transparent;isolation:isolate;
+        transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}
+  .card::before{content:"";position:absolute;inset:0;border-radius:16px;padding:1px;
+        background:linear-gradient(160deg,rgba(249,215,28,.7),rgba(0,220,255,.45));
+        -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+        -webkit-mask-composite:xor;mask-composite:exclude}
+  .card::after{content:"";position:absolute;inset:-14px;border-radius:28px;opacity:0;filter:blur(28px);
+        background:radial-gradient(700px 280px at 20% 0%,rgba(249,215,28,.30),transparent 60%);
+        transition:opacity .18s ease;z-index:-1}
   .card:hover{transform:translateY(-4px) scale(1.01);box-shadow:0 20px 46px rgba(0,0,0,.5)}
   .card:hover::after{opacity:1}
 
-  /* WOW badges: big, floating, glowing, micro-tilt on hover */
-  .media{
-    position:relative;display:grid;place-items:center;height:150px;border-radius:12px;background:var(--soft);
-    border:1px solid var(--line);overflow:hidden;margin-bottom:10px;
-  }
-  .media::before{
-    /* aura pulse */
-    content:"";position:absolute;inset:-20%;border-radius:24px;filter:blur(24px);opacity:.0;
-    background:radial-gradient(240px 120px at 50% 35%, rgba(249,215,28,.45), transparent 60%);
-    animation:aura 4.5s ease-in-out infinite;
-  }
-  @keyframes aura{0%,100%{opacity:.10;transform:scale(.98)}50%{opacity:.28;transform:scale(1)}}
-
-  .media img{
-    width:134px;height:134px;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(0,0,0,.45));
-    animation:float 6s ease-in-out infinite;
-    transform-origin:50% 60%;
-    transition:transform .18s ease;
-  }
+  .media{position:relative;display:grid;place-items:center;height:150px;border-radius:12px;background:var(--soft);
+         border:1px solid var(--line);overflow:hidden;margin-bottom:10px}
+  .media::before{content:"";position:absolute;inset:-20%;border-radius:24px;filter:blur(24px);
+                 background:radial-gradient(240px 120px at 50% 35%,rgba(249,215,28,.45),transparent 60%);
+                 animation:aura 4.5s ease-in-out infinite;opacity:.2}
+  @keyframes aura{0%,100%{transform:scale(.98)}50%{transform:scale(1)}}
+  .media img{width:134px;height:134px;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(0,0,0,.45));
+             animation:float 6s ease-in-out infinite;transform-origin:50% 60%;transition:transform .18s ease}
   @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-  .card:hover .media img{ transform:translateY(-2px) rotate(-2deg) scale(1.04) }
+  .card:hover .media img{transform:translateY(-2px) rotate(-2deg) scale(1.04)}
 
   .title{margin:4px 0 6px;font-weight:900;font-size:22px;line-height:1.2}
   .meta{display:flex;gap:10px;align-items:center;color:var(--muted);font-weight:700}
-  .pill{display:inline-block;background:var(--accent);color:#0b1b3d;font-weight:900;padding:6px 12px;border-radius:999px;font-size:14px}
-
+  .pill{display:inline-block;background:var(--accent);color:#0b1b3d;font-weight:900;
+        padding:6px 12px;border-radius:999px;font-size:14px}
   .cta{margin-top:10px;display:inline-flex;align-items:center;gap:8px;font-weight:800}
-  .chev{display:inline-block;transform:translateX(0);transition:transform .14s ease}
+  .chev{transition:transform .14s ease}
   .card:hover .chev{transform:translateX(4px)}
 
-  /* Mobile */
-  @media (max-width:580px){
-    .grid{grid-template-columns:1fr}
-    .media{height:140px}
-    .media img{width:128px;height:128px}
-  }
-
-  /* Respect reduced motion */
-  @media (prefers-reduced-motion:reduce){
-    body{animation:none}
-    .hero::after,.media::before,.media img,.card,.chev{animation:none;transition:none}
-  }
+  @media(max-width:580px){.grid{grid-template-columns:1fr}.media{height:140px}.media img{width:128px;height:128px}}
+  @media(prefers-reduced-motion:reduce){body{animation:none}.hero::after,.media::before,.media img,.card,.chev{animation:none;transition:none}}
 </style>
 </head>
 <body>
-  <div class="wrap" role="main">
-    <section class="hero" aria-label="eFPL Standings">
+  <div class="wrap">
+    <section class="hero">
       <h1>Standings</h1>
       <p class="sub">Pick a league to open its live table. Updated instantly as results come in.</p>
     </section>
 
     <!-- EUROPE / AFRICA -->
-    <section class="section" aria-labelledby="region-eu">
-      <span id="region-eu" class="eyebrow">Europe / Africa</span>
-      <hr class="rule" aria-hidden="true">
-      <div class="grid" role="list">
-        <a class="card" role="listitem" href="https://www.efpl.gg/leagues/diamond-league/diamond-tables" rel="noopener">
-          <div class="media"><img src="https://efpl-assets.pages.dev/img/leagues/Diamond-League.png" alt="Diamond League badge"></div>
-          <h2 class="title">Diamond League</h2>
-          <div class="meta"><span class="pill">Live table</span></div>
-          <div class="cta">View standings <span class="chev">›</span></div>
-        </a>
-        <a class="card" role="listitem" href="https://www.efpl.gg/leagues/ruby-league/ruby-tables" rel="noopener">
-          <div class="media"><img src="https://efpl-assets.pages.dev/img/leagues/Ruby-League.png" alt="Ruby League badge"></div>
-          <h2 class="title">Ruby League</h2>
-          <div class="meta"><span class="pill">Live table</span></div>
-          <div class="cta">View standings <span class="chev">›</span></div>
-        </a>
-        <a class="card" role="listitem" href="https://www.efpl.gg/leagues/sapphire-league/sapphire-tables" rel="noopener">
-          <div class="media"><img src="https://efpl-assets.pages.dev/img/leagues/Sapphire-League.png" alt="Sapphire League badge"></div>
-          <h2 class="title">Sapphire League</h2>
-          <div class="meta"><span class="pill">Live table</span></div>
-          <div class="cta">View standings <span class="chev">›</span></div>
-        </a>
-        <a class="card" role="listitem" href="https://www.efpl.gg/leagues/crystal-league/crystal-standings" rel="noopener">
-          <div class="media"><img src="https://efpl-assets.pages.dev/img/leagues/Crystal-League.png" alt="Crystal League badge"></div>
-          <h2 class="title">Crystal League</h2>
-          <div class="meta"><span class="pill">Live table</span></div>
-          <div class="cta">View standings <span class="chev">›</span></div>
-        </a>
+    <section class="section">
+      <span class="eyebrow">Europe / Africa</span>
+      <hr class="rule">
+      <div class="grid">
+        <a class="card" href="https://www.efpl.gg/leagues/diamond-league/diamond-tables"><div class="media"><img src="https://efpl-assets.pages.dev/img/leagues/Diamond-League.png" alt="Diamond League badge"></div><h2 class="title">Diamond League</h2><div class="meta"><span class="pill">Live table</span></div><div class="cta">View standings <span class="chev">›</span></div></a>
+        <a class="card" href="https://www.efpl.gg/leagues/ruby-league/ruby-tables"><div class="media"><img src="https://efpl-assets.pages.dev/img/leagues/Ruby-League.png" alt="Ruby League badge"></div><h2 class="title">Ruby League</h2><div class="meta"><span class="pill">Live table</span></div><div class="cta">View standings <span class="chev">›</span></div></a>
+        <a class="card" href="https://www.efpl.gg/leagues/sapphire-league/sapphire-tables"><div class="media"><img src="https://efpl-assets.pages.dev/img/leagues/Sapphire-League.png" alt="Sapphire League badge"></div><h2 class="title">Sapphire League</h2><div class="meta"><span class="pill">Live table</span></div><div class="cta">View standings <span class="chev">›</span></div></a>
+        <a class="card" href="https://www.efpl.gg/leagues/crystal-league/crystal-standings"><div class="media"><img src="https://efpl-assets.pages.dev/img/leagues/Crystal-League.png" alt="Crystal League badge"></div><h2 class="title">Crystal League</h2><div class="meta"><span class="pill">Live table</span></div><div class="cta">View standings <span class="chev">›</span></div></a>
       </div>
     </section>
 
     <!-- AMERICAS -->
-    <section class="section" aria-labelledby="region-am">
-      <span id="region-am" class="eyebrow">Americas</span>
-      <hr class="rule" aria-hidden="true">
-      <div class="grid" role="list">
-        <a class="card" role="listitem" href="https://www.efpl.gg/leagues/gold-league/gold-tables" rel="noopener">
-          <div class="media"><img src="https://efpl-assets.pages.dev/img/leagues/Gold-League.png" alt="Gold League badge"></div>
-          <h2 class="title">Gold League</h2>
-          <div class="meta"><span class="pill">Live table</span></div>
-          <div class="cta">View standings <span class="chev">›</span></div>
-        </a>
+    <section class="section">
+      <span class="eyebrow">Americas</span>
+      <hr class="rule">
+      <div class="grid">
+        <a class="card" href="https://www.efpl.gg/leagues/gold-league/gold-tables"><div class="media"><img src="https://efpl-assets.pages.dev/img/leagues/Gold-League.png" alt="Gold League badge"></div><h2 class="title">Gold League</h2><div class="meta"><span class="pill">Live table</span></div><div class="cta">View standings <span class="chev">›</span></div></a>
       </div>
     </section>
 
     <!-- ASIA-PACIFIC -->
-    <section class="section" aria-labelledby="region-apac">
-      <span id="region-apac" class="eyebrow">Asia-Pacific</span>
-      <hr class="rule" aria-hidden="true">
-      <div class="grid" role="list">
-        <a class="card" role="listitem" href="https://www.efpl.gg/leagues/emerald-league/emerald-tables" rel="noopener">
-          <div class="media"><img src="https://efpl-assets.pages.dev/img/leagues/Emerald-League.png" alt="Emerald League badge"></div>
-          <h2 class="title">Emerald League</h2>
-          <div class="meta"><span class="pill">Live table</span></div>
-          <div class="cta">View standings <span class="chev">›</span></div>
-        </a>
+    <section class="section">
+      <span class="eyebrow">Asia-Pacific</span>
+      <hr class="rule">
+      <div class="grid">
+        <a class="card" href="https://www.efpl.gg/leagues/emerald-league/emerald-tables"><div class="media"><img src="https://efpl-assets.pages.dev/img/leagues/Emerald-League.png" alt="Emerald League badge"></div><h2 class="title">Emerald League</h2><div class="meta"><span class="pill">Live table</span></div><div class="cta">View standings <span class="chev">›</span></div></a>
       </div>
     </section>
-
-    <!-- Optional Cups row (uncomment when ready)
-    <section class="section" aria-labelledby="region-cups">
-      <span id="region-cups" class="eyebrow">Cups</span>
-      <hr class="rule" aria-hidden="true">
-      <div class="grid" role="list">
-        <a class="card" role="listitem" href="https://www.efpl.gg/cups/champions-cup" rel="noopener">
-          <div class="media"><img src="https://efpl-assets.pages.dev/img/leagues/Champions-Cup.png" alt="Champions Cup badge"></div>
-          <h2 class="title">Champions Cup</h2>
-          <div class="meta"><span class="pill">Bracket and results</span></div>
-          <div class="cta">Open <span class="chev">›</span></div>
-        </a>
-        <a class="card" role="listitem" href="https://www.efpl.gg/cups/continental-cup" rel="noopener">
-          <div class="media"><img src="https://efpl-assets.pages.dev/img/leagues/Continetal-Cup.png" alt="Continental Cup badge"></div>
-          <h2 class="title">Continental Cup</h2>
-          <div class="meta"><span class="pill">Bracket and results</span></div>
-          <div class="cta">Open <span class="chev">›</span></div>
-        </a>
-      </div>
-    </section>
-    -->
   </div>
 </body>
 </html>
