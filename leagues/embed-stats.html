@@ -10,156 +10,132 @@
 <link rel="preconnect" href="https://efpl-assets.pages.dev" crossorigin>
 
 <style>
-/* eFPL — Embed Stats (Optimized) */
-/* Palette */
+/* eFPL — Embed Stats (Final Compact CSS) */
+
+/* ---------- Palette / base ---------- */
 :root{
   --card:#0f1e49; --card2:#13265b;
   --ink:#fff; --muted:#b8c6e3; --accent:#f9d71c;
   --line:rgba(249,215,28,.3);
   --ok:#2fbf71; --mid:#9aa4b2; --away:#5aa4ff;
 }
-
-/* Base */
 *{box-sizing:border-box}
 html,body{
-  margin:0;
-  background:#00143b !important;     /* solid bg for Google Sites iframes */
-  color:var(--ink);
+  margin:0; color:var(--ink);
+  background:#00143b !important;             /* solid bg in Google Sites */
   font:15px/1.5 system-ui,Segoe UI,Roboto,Arial,sans-serif;
 }
-.wrap{width:100%;padding:0 0 24px}   /* bottom pad avoids last-card clipping */
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px}
+.wrap{width:100%; padding:0 0 24px}          /* avoid last-card clip */
+.card{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:10px}
 
-/* Badges */
+/* ---------- Badges / KPI / bars ---------- */
 .badges{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}
 .badge{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 10px;display:flex;align-items:center;gap:8px;cursor:pointer}
 .badge img{height:20px;width:auto;object-fit:contain}
 .badge.active{background:var(--accent);color:#0b1b3d;border-color:transparent}
 
-/* KPI rail */
 .rail{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:10px 0}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px}
 .kpi .t{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .kpi .v{font-weight:900;font-size:20px}
 
-/* Progress bars */
 .mini{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
 .bar{height:10px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden;border:1px solid var(--line);display:flex}
 .seg{height:100%}
 .home{background:var(--ok)} .draw{background:var(--mid)} .away{background:var(--away)}
 
-/* Layout blocks */
+/* ---------- Layout blocks ---------- */
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
-/* Tables */
+/* ---------- Tables (stable) ---------- */
 table{width:100%;border-collapse:collapse;table-layout:fixed}
 thead th{background:var(--accent);color:#0b1b3d;padding:8px;font-size:12px;text-transform:uppercase}
 tbody td{padding:9px 10px;font-weight:600;vertical-align:middle}
-tbody tr:nth-child(odd){background:var(--card)}
-tbody tr:nth-child(even){background:var(--card2)}
+tbody tr:nth-child(odd){background:var(--card)} tbody tr:nth-child(even){background:var(--card2)}
 .left{text-align:left} .right{text-align:right} .center{text-align:center}
 .numeric{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
 
-/* Team cell — one line with ellipsis, safe in flex */
+/* Team cell — one line with ellipsis, never wraps */
 .teamwrap{display:flex;align-items:center;gap:8px;min-width:0}
-.lg{height:22px;width:auto;flex:0 0 auto;object-fit:contain;filter:drop-shadow(0 0 3px rgba(0,0,0,.6))}
+.lg{height:22px;width:auto;object-fit:contain;flex:0 0 auto;filter:drop-shadow(0 0 3px rgba(0,0,0,.6))}
 .teamname{display:block;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.25}
 
-/* Highlights wrap normally */
+/* Highlights can wrap text normally */
 #tbl-hi td{white-space:normal;line-height:1.35}
 
-/* Per-league mini cards */
-.mini-card{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px}
-.mini-card img{height:20px;width:auto;object-fit:contain}
-.note{color:var(--muted);font-size:12px}
-
-/* --------- Column widths & stability --------- */
-#tbl-leader, #tbl-gf, #tbl-ga { table-layout:fixed; }
-
-/* Leaderboard fixed widths */
+/* Column widths (leaderboard + more tables) */
+#tbl-leader, #tbl-gf, #tbl-ga{table-layout:fixed}
 #tbl-leader col.c-rank{width:4.2ch}
-#tbl-leader col.c-team{width:auto} /* flexible */
-#tbl-leader col.c-gp,
-#tbl-leader col.c-w,
-#tbl-leader col.c-d,
-#tbl-leader col.c-l,
-#tbl-leader col.c-gf,
-#tbl-leader col.c-ga,
-#tbl-leader col.c-gd{width:4.6ch}
+#tbl-leader col.c-team{width:auto}
+#tbl-leader col.c-gp, #tbl-leader col.c-w, #tbl-leader col.c-d, #tbl-leader col.c-l,
+#tbl-leader col.c-gf, #tbl-leader col.c-ga, #tbl-leader col.c-gd{width:4.6ch}
 #tbl-leader col.c-pts{width:5.2ch}
-
-/* More tables fixed widths */
 #tbl-gf col.c-rank, #tbl-ga col.c-rank{width:4.2ch}
 #tbl-gf col.c-team, #tbl-ga col.c-team{width:auto}
-#tbl-gf col.c-gp,   #tbl-ga col.c-gp{width:5ch}
-#tbl-gf col.c-gf,   #tbl-ga col.c-ga{width:5ch}
-#tbl-gf col.c-gd,   #tbl-ga col.c-gd{width:5ch}
-#tbl-gf col.c-pts,  #tbl-ga col.c-pts{width:5.2ch}
-
-/* Names truncate, numerics never ellipsis */
-#tbl-gf .teamwrap, #tbl-ga .teamwrap{min-width:0}
-#tbl-gf .teamname, #tbl-ga .teamname{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#tbl-gf col.c-gp, #tbl-ga col.c-gp{width:5ch}
+#tbl-gf col.c-gf, #tbl-ga col.c-ga{width:5ch}
+#tbl-gf col.c-gd, #tbl-ga col.c-gd{width:5ch}
+#tbl-gf col.c-pts, #tbl-ga col.c-pts{width:5.2ch}
 #tbl-leader td.right, #tbl-gf td.right, #tbl-ga td.right{white-space:nowrap}
 
-/* --------- Responsive --------- */
+/* ---------- Responsive ---------- */
 
-/* <= 1100: stack the two secondary tables if needed */
-@media (max-width:1100px){
-  .mini-grid{grid-template-columns:1fr}
-}
-
-/* <= 900: stack columns, stack progress, simplify leaderboard (hide GA & GD) */
+/* Stack the right column + progress bars; simplify leaderboard */
 @media (max-width:900px){
   .two-col{grid-template-columns:1fr}
-  .mini{grid-template-columns:1fr}          /* stack result/complete bars */
+  .mini{grid-template-columns:1fr}                 /* stack split + completion */
   .rail{grid-template-columns:repeat(2,1fr)}
-  #tbl-leader th:nth-child(8), #tbl-leader td:nth-child(8), /* GA */
-  #tbl-leader th:nth-child(9), #tbl-leader td:nth-child(9){ /* GD */
-    display:none !important;
-  }
+  /* hide GA & GD to free space */
+  #tbl-leader th:nth-child(8), #tbl-leader td:nth-child(8),
+  #tbl-leader th:nth-child(9), #tbl-leader td:nth-child(9){display:none !important}
   #tbl-leader col.c-ga, #tbl-leader col.c-gd{display:none !important}
+  /* force the two “more tables” to stack */
+  .mini-grid{grid-template-columns:1fr !important}
 }
 
-/* <= 520: tougher mobile layout; grid map row so Pts stays visible */
+/* Tough tiny layout: remap rows to a grid so Pts never disappears */
 @media (max-width:520px){
   .rail{grid-template-columns:1fr}
   #tbl-leader thead{display:none !important}
 
-  /* hide GP (3), GF (7), GA (8) on tiny phones */
+  /* Hide GP (3), GF (7), GA (8); remove their widths */
   #tbl-leader td:nth-child(3),
   #tbl-leader td:nth-child(7),
   #tbl-leader td:nth-child(8){display:none !important}
   #tbl-leader col.c-gp, #tbl-leader col.c-gf, #tbl-leader col.c-ga{display:none !important}
 
-  /* re-show GD (9) even if hidden at 900px rule */
+  /* Ensure GD (9) is visible even if hidden earlier */
   #tbl-leader td:nth-child(9){display:block !important}
 
-  /* map: # | Team | W | D | L | GD | Pts */
+  /* Build: # | Team | W | D | L | GD | Pts (uniform alignment) */
   #tbl-leader tbody tr{
     display:grid !important;
     grid-template-columns:2.6ch minmax(0,1fr) 2.6ch 2.6ch 2.6ch 3.0ch 3.2ch;
     column-gap:8px; align-items:center;
   }
-  #tbl-leader td:nth-child(1){grid-column:1;justify-self:end;text-align:right}
-  #tbl-leader td:nth-child(2){grid-column:2;justify-self:start;text-align:left}
-  #tbl-leader td:nth-child(4){grid-column:3;justify-self:center;text-align:center} /* W */
-  #tbl-leader td:nth-child(5){grid-column:4;justify-self:center;text-align:center} /* D */
-  #tbl-leader td:nth-child(6){grid-column:5;justify-self:center;text-align:center} /* L */
-  #tbl-leader td:nth-child(9){grid-column:6;justify-self:center;text-align:center} /* GD */
-  #tbl-leader td:nth-child(10){grid-column:7;justify-self:end;text-align:right;font-weight:800} /* Pts */
+  #tbl-leader tbody td{
+    margin:0; padding:8px 8px; line-height:1.25; font-size:14px;
+    white-space:nowrap; font-variant-numeric:tabular-nums; font-feature-settings:"tnum" 1;
+  }
+  #tbl-leader td:nth-child(1){grid-column:1; justify-self:end;  text-align:right}   /* #   */
+  #tbl-leader td:nth-child(2){grid-column:2; justify-self:start;text-align:left}    /* Team*/
+  #tbl-leader td:nth-child(4){grid-column:3; justify-self:center;text-align:center} /* W   */
+  #tbl-leader td:nth-child(5){grid-column:4; justify-self:center;text-align:center} /* D   */
+  #tbl-leader td:nth-child(6){grid-column:5; justify-self:center;text-align:center} /* L   */
+  #tbl-leader td:nth-child(9){grid-column:6; justify-self:center;text-align:center} /* GD  */
+  #tbl-leader td:nth-child(10){grid-column:7;justify-self:end; text-align:right; font-weight:800} /* Pts */
 
-  /* compact team cell */
-  .teamwrap{gap:8px}
+  /* Compact team cell */
+  .teamwrap{gap:8px; min-width:0}
   .teamwrap .lg{height:18px}
-  .teamwrap .teamname{max-width:100%}
-  #tbl-leader tbody td{padding:8px 8px;font-size:14px}
+  .teamname{max-width:100%}
 }
 
-/* <= 360: tiny nudge so nothing crowds */
+/* Micro phones */
 @media (max-width:360px){
   #tbl-leader tbody td{font-size:13px}
-  #tbl-leader td:nth-child(10){font-size:14px} /* keep Pts readable */
+  #tbl-leader td:nth-child(10){font-size:14px}
 }
 </style>
 </head>
