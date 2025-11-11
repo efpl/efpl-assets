@@ -9,12 +9,12 @@
 
 <style>
   :root{
-    --bg:#0b1636;            /* page */
-    --card:#0f1e49;          /* cards */
-    --card2:#13265b;         /* alt */
-    --ink:#ffffff;           /* text */
-    --muted:#b8c6e3;         /* muted text */
-    --accent:#f9d71c;        /* brand yellow */
+    --bg:#0b1636;
+    --card:#0f1e49;
+    --card2:#13265b;
+    --ink:#ffffff;
+    --muted:#b8c6e3;
+    --accent:#f9d71c;
     --line:rgba(249,215,28,.3);
     --ok:#2fbf71; --mid:#9aa4b2; --away:#5aa4ff;
   }
@@ -42,9 +42,13 @@
   .kpi .t{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
   .kpi .v{font-weight:900;font-size:20px}
 
-  /* Bars */
-  .bar{height:10px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden;border:1px solid var(--line)}
-  .seg{height:100%;display:inline-block}
+  /* Bars (flex so segments render widths) */
+  .bar{
+    height:10px;border-radius:999px;background:rgba(255,255,255,.06);
+    overflow:hidden;border:1px solid var(--line);
+    display:flex;align-items:stretch
+  }
+  .seg{height:100%;display:block}
   .home{background:var(--ok)} .draw{background:var(--mid)} .away{background:var(--away)}
   .mini{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
   .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
@@ -57,6 +61,8 @@
   tbody tr:nth-child(even){background:var(--card2)}
   .left{text-align:left}.right{text-align:right}.center{text-align:center}
   .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .lg{height:16px;width:auto;vertical-align:middle;margin-right:6px;object-fit:contain}
+
   @media (max-width:900px){
     .rail{grid-template-columns:repeat(2,1fr)}
     .two-col{grid-template-columns:1fr}
@@ -273,7 +279,7 @@ async function loadAll(selectedKeys){
   return {matches, leagues, perLeague, scheduledTotal};
 }
 
-/* ====== Aggregation ====== */
+/* ====== Aggregation (now records league per team) ====== */
 function aggregate(matches){
   const played=matches.length;
   const goals=matches.reduce((s,m)=>s+m.hg+m.ag,0);
@@ -283,7 +289,7 @@ function aggregate(matches){
   let biggest=null, highest=null;
 
   const teams=new Map();
-  function add(name){ if(!teams.has(name)) teams.set(name,{team:name,gp:0,w:0,d:0,l:0,gf:0,ga:0,gd:0,pts:0,cs:0}); return teams.get(name); }
+  function add(name){ if(!teams.has(name)) teams.set(name,{team:name,league:null,gp:0,w:0,d:0,l:0,gf:0,ga:0,gd:0,pts:0,cs:0}); return teams.get(name); }
 
   matches.forEach(m=>{
     if(m.hg>m.ag) homeW++; else if(m.hg<m.ag) awayW++; else draw++;
@@ -299,6 +305,9 @@ function aggregate(matches){
     }
 
     const H=add(m.home), A=add(m.away);
+    if(!H.league) H.league = m.league;
+    if(!A.league) A.league = m.league;
+
     H.gp++; A.gp++;
     H.gf+=m.hg; H.ga+=m.ag;
     A.gf+=m.ag; A.ga+=m.hg;
@@ -335,13 +344,11 @@ function leagueAggregates(perLeague){
 /* ====== Render ====== */
 function renderBadges(){
   const host=byId('badges'); host.innerHTML='';
-  // "All" pill first
   const all=document.createElement('div');
   all.className='badge active'; all.dataset.key='All';
   all.innerHTML=`<img src="https://efpl-assets.pages.dev/img/logo.png" alt="All"><span>All</span>`;
   all.onclick=()=>selectLeague('All');
   host.appendChild(all);
-  // Leagues
   LEAGUES.filter(x=>x.id).forEach(lg=>{
     const div=document.createElement('div');
     div.className='badge'; div.dataset.key=lg.key;
@@ -372,6 +379,11 @@ function renderRails(agg, leagues, scheduledTotal){
   const up=byId('updated'); if(up) up.textContent='Updated '+new Date().toLocaleString();
 }
 
+function teamCell(t){
+  const lg = t.league || 'Diamond'; // fallback if needed
+  return `<img class="lg" src="${BADGE_BASE}${lg}-League.png" alt="${esc(lg)}"> ${esc(t.team)}`;
+}
+
 function renderLeaderboard(teams){
   const tbody = byId('tbl-leader').querySelector('tbody'); tbody.innerHTML='';
   const rows=[...teams].sort((a,b)=> b.pts-a.pts || (b.gd-a.gd) || (b.gf-a.gf) || a.team.localeCompare(b.team));
@@ -379,7 +391,7 @@ function renderLeaderboard(teams){
     const tr=document.createElement('tr');
     tr.innerHTML = `
       <td class="right">${i+1}</td>
-      <td class="left">${esc(t.team)}</td>
+      <td class="left">${teamCell(t)}</td>
       <td class="right">${t.gp}</td>
       <td class="right">${t.w}</td>
       <td class="right">${t.d}</td>
@@ -419,7 +431,7 @@ function renderTopTables(teams){
   const gfBody = byId('tbl-gf').querySelector('tbody'); gfBody.innerHTML='';
   gf.forEach((t,i)=>{
     const tr=document.createElement('tr');
-    tr.innerHTML = `<td class="right">${i+1}</td><td class="left">${esc(t.team)}</td><td class="right">${t.gp}</td><td class="right">${t.gf}</td><td class="right">${t.gd}</td><td class="right">${t.pts}</td>`;
+    tr.innerHTML = `<td class="right">${i+1}</td><td class="left">${teamCell(t)}</td><td class="right">${t.gp}</td><td class="right">${t.gf}</td><td class="right">${t.gd}</td><td class="right">${t.pts}</td>`;
     gfBody.appendChild(tr);
   });
 
@@ -428,7 +440,7 @@ function renderTopTables(teams){
   const gaBody = byId('tbl-ga').querySelector('tbody'); gaBody.innerHTML='';
   ga.forEach((t,i)=>{
     const tr=document.createElement('tr');
-    tr.innerHTML = `<td class="right">${i+1}</td><td class="left">${esc(t.team)}</td><td class="right">${t.gp}</td><td class="right">${t.ga}</td><td class="right">${t.gd}</td><td class="right">${t.pts}</td>`;
+    tr.innerHTML = `<td class="right">${i+1}</td><td class="left">${teamCell(t)}</td><td class="right">${t.gp}</td><td class="right">${t.ga}</td><td class="right">${t.gd}</td><td class="right">${t.pts}</td>`;
     gaBody.appendChild(tr);
   });
 }
@@ -444,7 +456,7 @@ async function run(selectedKeys){
   renderRails(agg, leagues, scheduledTotal);
   renderLeaderboard(agg.teams);
   renderHighlights(agg);
-  renderTopTables(agg.teams);     // <-- ensures "More tables" has data
+  renderTopTables(agg.teams);
   renderMini(minis);
 }
 
