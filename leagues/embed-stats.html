@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>eFPL Live Stats – Embed</title>
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="https://efpl-assets.pages.dev/img/e-avatar.jpg" />
+<link rel="preconnect" href="https://docs.google.com" crossorigin>
+<link rel="preconnect" href="https://efpl-assets.pages.dev" crossorigin>
+
+<style>
+:root{
+  --card:#0f1e49; --card2:#13265b;
+  --ink:#fff; --muted:#b8c6e3; --accent:#f9d71c;
+  --line:rgba(249,215,28,.3);
+  --ok:#2fbf71; --mid:#9aa4b2; --away:#5aa4ff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:transparent;color:var(--ink);
+  font:15px/1.5 system-ui,Segoe UI,Roboto,Arial,sans-serif;}
+.wrap{width:100%;padding:0;margin:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px}
+.badge img{height:20px;width:auto;vertical-align:middle}
+.badge{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:5px 8px;
+  display:flex;align-items:center;gap:6px;cursor:pointer}
+.badge.active{background:var(--accent);color:#0b1b3d;border-color:transparent}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 8px}
+
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+thead th{background:var(--accent);color:#0b1b3d;padding:8px;font-size:12px;text-transform:uppercase}
+tbody td{padding:8px;font-weight:600;white-space:nowrap}
+tbody tr:nth-child(odd){background:var(--card)}
+tbody tr:nth-child(even){background:var(--card2)}
+.left{text-align:left} .right{text-align:right;font-variant-numeric:tabular-nums}
+
+.teamname{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:inline-block;max-width:100%}
+.lg{height:22px;width:auto;vertical-align:middle;margin-right:6px;object-fit:contain}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bar{height:10px;border-radius:999px;background:rgba(255,255,255,.06);
+  overflow:hidden;border:1px solid var(--line);display:flex}
+.seg{height:100%}
+.home{background:var(--ok)} .draw{background:var(--mid)} .away{background:var(--away)}
+
+#tbl-hi td{white-space:normal;line-height:1.35;padding:8px}
+#tbl-hi td.right{text-align:right}
+.note{color:var(--muted);font-size:12px}
+
+@media (max-width:900px){
+  .two-col{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="badges" id="badges"></nav>
+
+  <div class="two-col">
+    <div class="card">
+      <strong style="display:block;margin-bottom:6px">Leaderboard</strong>
+      <table id="tbl-leader">
+        <thead><tr>
+          <th>#</th><th class="left">Team</th><th>GP</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <strong style="display:block;margin-bottom:6px">Highlights</strong>
+      <table id="tbl-hi"><tbody>
+        <tr><td class="left">Biggest win</td><td id="hi-big" class="right">-</td></tr>
+        <tr><td class="left">Highest scoring game</td><td id="hi-hsg" class="right">-</td></tr>
+        <tr><td class="left">Top scoring team</td><td id="hi-topgf" class="right">-</td></tr>
+        <tr><td class="left">Most conceded</td><td id="hi-mostga" class="right">-</td></tr>
+        <tr><td class="left">Most clean sheets</td><td id="hi-mostcs" class="right">-</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+</div>
+
+<script>
+const LEAGUES=[
+ {key:'All',name:'All',id:null,badge:null},
+ {key:'Diamond',id:'1vkDOFfwBJJnSHOPM0BFcrNyZd-2nIbiDKNnWGKT3OP0',badge:'Diamond-League.png'},
+ {key:'Ruby',id:'12Qg5yi3yQtsPSrd6EHxROkPNurVn5ylzELPvU4UOmGU',badge:'Ruby-League.png'},
+ {key:'Sapphire',id:'1qa03hOquzVg8ithFLdhrel2O3k3nTQCQZp81AWFvECg',badge:'Sapphire-League.png'},
+ {key:'Crystal',id:'1LqRM7ICWpENmsKH5tTuu7Bf7VQa7YoJ-9TAivruymvo',badge:'Crystal-League.png'},
+ {key:'Emerald',id:'1rD_03y276wGjjlukus6icgwq_FPcOgc70654dOOG6sg',badge:'Emerald-League.png'},
+ {key:'Gold',id:'1ACOQ3dffrjczk1LmBmPiC-wV37t9nQKEDwApOEEeFU8',badge:'Gold-League.png'}
+];
+const BADGE_BASE='https://efpl-assets.pages.dev/img/leagues/';
+const FX_TAB='Fixtures',FX_RANGE='C4:I94',EM_TAB='Embed',EM_RANGE='A15:C105';
+const CB=Math.floor(Date.now()/(5*60*1e3));
+const esc=s=>String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m]));
+const parse=t=>JSON.parse(t.slice(t.indexOf("{"),t.lastIndexOf("}")+1));
+const num=x=>Number.isFinite(+x)?+x:null;
+const truthy=v=>v===true||String(v).toLowerCase()==='true'||v==='☑';
+async function gv(id,s,r){
+ const u=`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&sheet=${s}&range=${r}&cachebust=${CB}`;
+ const res=await fetch(u);return parse(await res.text());
+}
+async function get(id){
+ try{
+  const f=await gv(id,FX_TAB,FX_RANGE);const rows=f.table.rows||[];
+  const items=rows.map(r=>{const c=r.c||[];return{h:c[0]?.v||'',hg:num(c[1]?.v),ag:num(c[3]?.v),a:c[4]?.v||'',done:truthy(c[5]?.v)}}).filter(m=>m.h&&m.a&&m.done);
+  return items.length?items:null;
+ }catch{return null;}
+}
+async function load(keys=['All']){
+ const sel=keys.includes('All')?LEAGUES.filter(x=>x.id):LEAGUES.filter(x=>keys.includes(x.key)&&x.id);
+ let matches=[];
+ for(const lg of sel){
+  const m=await get(lg.id);if(!m)continue;
+  matches.push(...m.map(x=>({...x,league:lg.key})));
+ }
+ return matches;
+}
+function calc(M){
+ const T=new Map();
+ const add=t=>T.get(t)||T.set(t,{t,lg:null,gp:0,w:0,d:0,l:0,gf:0,ga:0,gd:0,pts:0,cs:0}).get(t);
+ for(const m of M){
+  const H=add(m.h),A=add(m.a);
+  if(!H.lg)H.lg=m.league;if(!A.lg)A.lg=m.league;
+  H.gp++;A.gp++;H.gf+=m.hg;H.ga+=m.ag;A.gf+=m.ag;A.ga+=m.hg;
+  if(m.hg>m.ag){H.w++;H.pts+=3;A.l++;}else if(m.hg<m.ag){A.w++;A.pts+=3;H.l++;}else{H.d++;A.d++;H.pts++;A.pts++;}
+  if(m.ag===0)H.cs++;if(m.hg===0)A.cs++;
+ }
+ return [...T.values()].map(t=>(t.gd=t.gf-t.ga,t));
+}
+function teamCell(t){return `<img class="lg" src="${BADGE_BASE}${t.lg}-League.png" alt="${t.lg}"><span class="teamname">${esc(t.t)}</span>`}
+function drawTeams(list){
+ const b=document.querySelector('#tbl-leader tbody');b.innerHTML='';
+ list.sort((a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf||a.t.localeCompare(b.t))
+ .forEach((t,i)=>b.insertAdjacentHTML('beforeend',`<tr><td class="right">${i+1}</td><td class="left">${teamCell(t)}</td><td class="right">${t.gp}</td><td class="right">${t.w}</td><td class="right">${t.d}</td><td class="right">${t.l}</td><td class="right">${t.gf}</td><td class="right">${t.ga}</td><td class="right">${t.gd}</td><td class="right"><strong>${t.pts}</strong></td></tr>`));
+}
+function highlights(list){
+ const topGF=[...list].sort((a,b)=>b.gf-a.gf)[0];
+ const mostGA=[...list].sort((a,b)=>b.ga-a.ga)[0];
+ const mostCS=[...list].sort((a,b)=>b.cs-a.cs)[0];
+ document.getElementById('hi-topgf').textContent=`${topGF.t} - ${topGF.gf}`;
+ document.getElementById('hi-mostga').textContent=`${mostGA.t} - ${mostGA.ga}`;
+ document.getElementById('hi-mostcs').textContent=`${mostCS.t} - ${mostCS.cs}`;
+}
+function badges(){
+ const host=document.getElementById('badges');host.innerHTML='';
+ const mk=(k,h,a)=>{const d=document.createElement('div');d.className='badge'+(a?' active':'');d.dataset.key=k;d.innerHTML=h;d.onclick=()=>sel(k);host.appendChild(d);};
+ mk('All','<span>All</span>',true);
+ LEAGUES.filter(x=>x.id).forEach(l=>mk(l.key,`<img src="${BADGE_BASE}${l.badge}" alt="${l.key}"><span>${l.key}</span>`));
+}
+async function sel(k){
+ document.querySelectorAll('.badge').forEach(b=>b.classList.toggle('active',b.dataset.key===k));
+ const M=await load([k]);const teams=calc(M);drawTeams(teams);highlights(teams);
+}
+(async function init(){badges();const M=await load();const t=calc(M);drawTeams(t);highlights(t);})();
+</script>
+</body>
+</html>
