@@ -192,6 +192,38 @@ tbody tr:nth-child(odd){background:var(--card)} tbody tr:nth-child(even){backgro
 @media (max-width:900px){
   .mini-grid{ grid-template-columns: 1fr; }
 }
+/* ================================
+   eFPL Embed Fix Pack — Google Sites
+   ================================ */
+
+/* 1️⃣  Solid background fill (removes grey bottom in Google Sites) */
+html, body {
+  background-color: #00143b !important;   /* eFPL navy */
+}
+
+.wrap {
+  background-color: #00143b;              /* match the page tone */
+  padding-bottom: 24px;                   /* avoid clipping last card */
+}
+
+/* 2️⃣  Always stack "Top Scoring" and "Best Defence" vertically */
+.mini-grid {
+  display: grid;
+  grid-template-columns: 1fr;             /* one column only */
+  gap: 10px;                              /* spacing between the two */
+}
+
+/* Optional: if you want them side-by-side on wide screens, 
+   and stacked on narrower ones instead, use this instead:
+@media (max-width:1100px){
+  .mini-grid { grid-template-columns:1fr; }
+}
+*/
+
+/* 3️⃣  Ensure the cards stretch nicely full width */
+.mini-grid > .card {
+  width: 100%;
+}
 </style>
 </head>
 <body>
