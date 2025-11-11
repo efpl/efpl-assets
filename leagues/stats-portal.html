@@ -188,6 +188,52 @@ details[open] summary::after{content:"▴"}
 /* Remove CS everywhere on Leaderboard (safety) */
 #tbl-leader th:nth-child(11),
 #tbl-leader td:nth-child(11){ display:none !important; }
+/* --- Make the table truly fill its container on small screens --- */
+
+/* Base safety: tables should expand fully */
+#tbl-leader{ width:100%; }
+
+/* MEDIUM screens: keep # Team GP W D L GF Pts (hide GA & GD) */
+@media (max-width:900px){
+
+  /* Hide cells */
+  #tbl-leader th:nth-child(8), #tbl-leader td:nth-child(8),   /* GA */
+  #tbl-leader th:nth-child(9), #tbl-leader td:nth-child(9){   /* GD */
+    display:none !important;
+  }
+
+  /* Hide the *columns* too, so no ghost width remains */
+  #tbl-leader col.c-ga, 
+  #tbl-leader col.c-gd{ display:none !important; }
+
+  /* Let columns reflow to occupy full width */
+  #tbl-leader{ table-layout:auto; }
+  /* Keep only rank/team constrained; others auto-share */
+  #tbl-leader col.c-rank{ width:7% !important; }
+  #tbl-leader col.c-team{ width:50% !important; }
+  #tbl-leader col:not(.c-rank):not(.c-team):not(.c-ga):not(.c-gd){ width:auto !important; }
+}
+
+/* EXTRA-SMALL screens: show # Team W D L GD Pts (hide GP & GF as well) */
+@media (max-width:420px){
+
+  /* Hide cells */
+  #tbl-leader th:nth-child(3), #tbl-leader td:nth-child(3){ display:none !important; } /* GP */
+  #tbl-leader th:nth-child(7), #tbl-leader td:nth-child(7){ display:none !important; } /* GF */
+  /* GA was already hidden above; ensure GD visible */
+  #tbl-leader th:nth-child(9), #tbl-leader td:nth-child(9){ display:table-cell !important; }
+
+  /* Hide the matching <col> elements to kill reserved width */
+  #tbl-leader col.c-gp,
+  #tbl-leader col.c-gf{ display:none !important; }
+
+  /* Reflow to full width again */
+  #tbl-leader{ table-layout:auto; }
+  /* Tighten rank/team; let W/D/L/GD/Pts auto-fill */
+  #tbl-leader col.c-rank{ width:8% !important; }
+  #tbl-leader col.c-team{ width:52% !important; }
+  #tbl-leader col:not(.c-rank):not(.c-team):not(.c-gp):not(.c-gf):not(.c-ga):not(.c-gd){ width:auto !important; }
+}
 </style>
 </head>
 <body>
