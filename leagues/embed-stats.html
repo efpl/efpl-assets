@@ -103,6 +103,95 @@ tbody tr:nth-child(odd){background:var(--card)} tbody tr:nth-child(even){backgro
   #tbl-leader td:nth-child(9){grid-column:6;text-align:center}
   #tbl-leader td:nth-child(10){grid-column:7;text-align:right;font-weight:800}
 }
+/* ===== TABLE STABILITY FIXES (embed) ===== */
+
+/* Use fixed layout so <col> widths are respected */
+#tbl-leader, #tbl-gf, #tbl-ga { table-layout: fixed; }
+
+/* Leaderboard column widths */
+#tbl-leader col.c-rank { width: 4.2ch; }         /* position */
+#tbl-leader col.c-team { width: auto; }          /* flexible */
+#tbl-leader col.c-gp,
+#tbl-leader col.c-w,
+#tbl-leader col.c-d,
+#tbl-leader col.c-l,
+#tbl-leader col.c-gf,
+#tbl-leader col.c-ga,
+#tbl-leader col.c-gd { width: 4.6ch; }           /* compact numerics */
+#tbl-leader col.c-pts { width: 5.2ch; }          /* points stands out */
+
+/* Team cell: prevent overflow and keep to one line */
+.teamwrap{ display:flex; align-items:center; gap:8px; min-width:0; }
+.lg{ height:22px; width:auto; flex:0 0 auto; object-fit:contain; }
+.teamname{
+  display:block;
+  min-width:0;               /* allow shrinking inside flex */
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;    /* clean "…" */
+  line-height:1.25;
+}
+
+/* Right-align numerics; never wrap */
+.numeric, #tbl-leader td.right, #tbl-gf td.right, #tbl-ga td.right{
+  white-space:nowrap;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Row rhythm (slightly taller for readability) */
+#tbl-leader tbody td, #tbl-gf tbody td, #tbl-ga tbody td{ padding:9px 10px; }
+
+/* ===== Medium: hide GA & GD on leaderboard to free space ===== */
+@media (max-width:900px){
+  #tbl-leader th:nth-child(8), #tbl-leader td:nth-child(8),  /* GA */
+  #tbl-leader th:nth-child(9), #tbl-leader td:nth-child(9){  /* GD */
+    display:none !important;
+  }
+  /* remove their reserved width */
+  #tbl-leader col.c-ga, #tbl-leader col.c-gd{ display:none !important; }
+}
+
+/* ===== Extra-small: grid remap (keeps Pts visible), no overlaps ===== */
+@media (max-width:420px){
+  #tbl-leader thead{ display:none; }
+  /* also hide GP & GF on tiny screens (GA already hidden above) */
+  #tbl-leader td:nth-child(3),
+  #tbl-leader td:nth-child(7){ display:none !important; }
+  #tbl-leader col.c-gp, #tbl-leader col.c-gf{ display:none !important; }
+
+  #tbl-leader tbody tr{
+    display:grid;
+    grid-template-columns: 2.8ch 1fr 2.6ch 2.6ch 2.6ch 3.2ch 3.2ch; /* # | Team | W | D | L | GD | Pts */
+    column-gap:8px; align-items:center;
+  }
+  #tbl-leader td:nth-child(1){ grid-column:1; text-align:right; }
+  #tbl-leader td:nth-child(2){ grid-column:2; }       /* TEAM (flexes) */
+  #tbl-leader td:nth-child(4){ grid-column:3; text-align:center; } /* W */
+  #tbl-leader td:nth-child(5){ grid-column:4; text-align:center; } /* D */
+  #tbl-leader td:nth-child(6){ grid-column:5; text-align:center; } /* L */
+  #tbl-leader td:nth-child(9){ grid-column:6; text-align:center; } /* GD */
+  #tbl-leader td:nth-child(10){ grid-column:7; text-align:right; font-weight:800; } /* Pts */
+}
+
+/* ===== "More tables" (GF / GA lists) same stability rules ===== */
+#tbl-gf col.c-rank, #tbl-ga col.c-rank { width: 4.2ch; }
+#tbl-gf col.c-team, #tbl-ga col.c-team { width: auto; }
+#tbl-gf col.c-gp, #tbl-ga col.c-gp { width: 5ch; }
+#tbl-gf col.c-gf, #tbl-ga col.c-ga { width: 5ch; }
+#tbl-gf col.c-gd, #tbl-ga col.c-gd { width: 5ch; }
+#tbl-gf col.c-pts, #tbl-ga col.c-pts { width: 5.2ch; }
+
+/* team cell inside "more tables" obeys the same rules */
+#tbl-gf .teamwrap, #tbl-ga .teamwrap{ min-width:0; }
+#tbl-gf .teamname, #tbl-ga .teamname{
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+
+/* On very small widths, stack those two tables vertically */
+@media (max-width:900px){
+  .mini-grid{ grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
