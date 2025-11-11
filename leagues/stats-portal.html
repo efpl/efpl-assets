@@ -223,6 +223,33 @@ tbody td{
   tbody td{ padding:8px 10px; font-size:14px }
   .lg{ height:22px; margin-right:6px }  /* smaller badge on phones */
 }
+/* ===== Mobile optimization (under 600px) ===== */
+@media (max-width:600px){
+
+  /* Hide GF + GA columns completely */
+  #tbl-leader th:nth-child(7),
+  #tbl-leader th:nth-child(8),
+  #tbl-leader td:nth-child(7),
+  #tbl-leader td:nth-child(8) {
+    display:none;
+  }
+
+  /* Optional: also hide GF/GA in Top-10 tables for consistency */
+  #tbl-gf th:nth-child(4),
+  #tbl-gf td:nth-child(4),
+  #tbl-ga th:nth-child(4),
+  #tbl-ga td:nth-child(4) {
+    display:none;
+  }
+
+  /* Reduce padding + font a touch for cleaner fit */
+  tbody td{padding:8px 8px;font-size:14px;}
+  thead th{padding:8px;font-size:12px;}
+  .lg{height:22px;margin-right:6px;}
+
+  /* Allow table to shrink slightly without scrollbars */
+  .card{overflow-x:hidden;}
+}
 </style>
 </head>
 <body>
