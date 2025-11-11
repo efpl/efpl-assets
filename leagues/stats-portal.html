@@ -299,6 +299,59 @@ tbody td{
   thead th{ font-size:11.5px; }
   tbody td{ font-size:13px; }
 }
+/* ===== Leaderboard column map =====
+1 # | 2 Team | 3 GP | 4 W | 5 D | 6 L | 7 GF | 8 GA | 9 GD | 10 Pts | 11 CS
+*/
+
+/* Remove CS everywhere (column 11) */
+#tbl-leader th:nth-child(11),
+#tbl-leader td:nth-child(11){ display:none; }
+
+/* ---------- Medium screens (<900px) ----------
+   Show: # Team GP W D L GF Pts
+   Hide: GA(8), GD(9)
+------------------------------------------------ */
+@media (max-width:900px){
+  #tbl-leader th:nth-child(8),
+  #tbl-leader td:nth-child(8),   /* GA */
+  #tbl-leader th:nth-child(9),
+  #tbl-leader td:nth-child(9){   /* GD */
+    display:none;
+  }
+
+  /* rebalance widths so nothing clips */
+  #tbl-leader col.c-team{ width:50%; }
+  #tbl-leader col.c-rank{ width:7%; }
+  /* the remaining numeric cols share the rest */
+  thead th{ padding:8px; font-size:12px; }
+  tbody td{ padding:8px 8px; font-size:14px; }
+  .lg{ height:22px; margin-right:6px; }
+}
+
+/* ---------- Extra-small screens (<420px) ----------
+   Show: # Team W D L GD Pts
+   Hide: GP(3), GF(7) (GA/GD already hidden above, but we re-show GD here)
+   NOTE: CSS cannot reorder columns; order remains W D L.
+---------------------------------------------------- */
+@media (max-width:420px){
+  /* hide GP and GF */
+  #tbl-leader th:nth-child(3),
+  #tbl-leader td:nth-child(3){ display:none; }  /* GP */
+  #tbl-leader th:nth-child(7),
+  #tbl-leader td:nth-child(7){ display:none; }  /* GF */
+
+  /* ensure GD (9) is visible on this breakpoint (in case other rules override) */
+  #tbl-leader th:nth-child(9),
+  #tbl-leader td:nth-child(9){ display:table-cell; }
+
+  /* give team more room */
+  #tbl-leader col.c-team{ width:58%; }
+  #tbl-leader col.c-rank{ width:8%; }
+
+  thead th{ font-size:11.5px; }
+  tbody td{ font-size:13px; }
+}
+
 </style>
 </head>
 <body>
