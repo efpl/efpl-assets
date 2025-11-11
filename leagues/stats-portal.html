@@ -17,11 +17,12 @@
     --accent:#f9d71c;
     --line:rgba(249,215,28,.3);
     --ok:#2fbf71; --mid:#9aa4b2; --away:#5aa4ff;
+    --content:1320px;            /* wider canvas */
   }
   * { box-sizing:border-box }
   html,body{margin:0;background:var(--bg);color:var(--ink);font:15.5px/1.55 system-ui,Segoe UI,Roboto,Arial,sans-serif}
 
-  .wrap{max-width:1080px;margin:0 auto;padding:16px 16px 28px}
+  .wrap{max-width:var(--content);margin:0 auto;padding:16px 16px 28px}
 
   /* Header */
   .hdr{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0}
@@ -54,22 +55,23 @@
   .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
 
   /* Tables */
+  .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px}
   table{
     width:100%;
     border-collapse:collapse;
-    table-layout:fixed;
+    table-layout:fixed;               /* stable rows */
     word-break:keep-all;
   }
   thead th{
     background:var(--accent);
     color:#0b1b3d;
-    padding:8px;
+    padding:10px 10px;
     font-size:12px;
     text-transform:uppercase;
     letter-spacing:.03em;
   }
   tbody td{
-    padding:8px;
+    padding:10px;
     font-weight:600;
     white-space:nowrap;
     overflow:hidden;
@@ -82,19 +84,33 @@
   .center{text-align:center}
   .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
+  /* Team name: allow up to 2 lines (no “..”), keep row tidy */
+  .teamname{
+    display:-webkit-box;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:2;
+    white-space:normal;              /* overrides tbody td nowrap */
+    line-height:1.2;
+    max-height:2.4em;                /* ≈ two lines */
+    overflow:hidden;
+  }
+
+  /* Numbers: tabular digits so double-digits aren’t clipped and align */
+  .right{font-variant-numeric:tabular-nums; font-feature-settings:"tnum" 1}
+
   /* Larger badges */
   .lg{
     height:22px;
     width:auto;
     vertical-align:middle;
-    margin-right:8px;
+    margin-right:10px;
     object-fit:contain;
     filter:drop-shadow(0 0 2px rgba(0,0,0,.6));
   }
 
-  /* Column widths */
+  /* Column widths (roomier team column) */
   #tbl-leader col.c-rank { width:4% }
-  #tbl-leader col.c-team { width:34% }
+  #tbl-leader col.c-team { width:40% }          /* was 34% */
   #tbl-leader col.c-gp,
   #tbl-leader col.c-w,
   #tbl-leader col.c-d,
@@ -103,22 +119,20 @@
   #tbl-leader col.c-ga,
   #tbl-leader col.c-gd,
   #tbl-leader col.c-cs  { width:7% }
-  #tbl-leader col.c-pts { width:8% }
+  #tbl-leader col.c-pts { width:9% }
 
   #tbl-gf col.c-rank,
   #tbl-ga col.c-rank { width:6% }
   #tbl-gf col.c-team,
-  #tbl-ga col.c-team { width:44% }
+  #tbl-ga col.c-team { width:50% }              /* more space for names */
   #tbl-gf col.c-gp,
-  #tbl-ga col.c-gp   { width:10% }
+  #tbl-ga col.c-gp   { width:9% }
   #tbl-gf col.c-gf,
   #tbl-ga col.c-ga,
   #tbl-gf col.c-gd,
   #tbl-ga col.c-gd,
   #tbl-gf col.c-pts,
-  #tbl-ga col.c-pts  { width:10% }
-
-  .left span { display:inline-block; max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+  #tbl-ga col.c-pts  { width:9% }
 
   @media (max-width:900px){
     .rail{grid-template-columns:repeat(2,1fr)}
@@ -182,17 +196,19 @@
     <section class="two-col" style="margin-top:10px">
       <div class="card">
         <h3 style="margin:0 0 8px">Leaderboard</h3>
-        <table id="tbl-leader">
-          <colgroup>
-            <col class="c-rank"><col class="c-team">
-            <col class="c-gp"><col class="c-w"><col class="c-d"><col class="c-l">
-            <col class="c-gf"><col class="c-ga"><col class="c-gd"><col class="c-pts"><col class="c-cs">
-          </colgroup>
-          <thead><tr>
-            <th>#</th><th class="left">Team</th><th>GP</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th><th>CS</th>
-          </tr></thead>
-          <tbody></tbody>
-        </table>
+        <div class="table-wrap">
+          <table id="tbl-leader">
+            <colgroup>
+              <col class="c-rank"><col class="c-team">
+              <col class="c-gp"><col class="c-w"><col class="c-d"><col class="c-l">
+              <col class="c-gf"><col class="c-ga"><col class="c-gd"><col class="c-pts"><col class="c-cs">
+            </colgroup>
+            <thead><tr>
+              <th>#</th><th class="left">Team</th><th>GP</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th><th>CS</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
       </div>
 
       <div class="card">
@@ -212,25 +228,29 @@
           <div style="margin-top:8px">
             <div class="card" style="margin-bottom:8px">
               <strong>Top scoring teams (Top 10)</strong>
-              <table id="tbl-gf" style="margin-top:6px">
-                <colgroup>
-                  <col class="c-rank"><col class="c-team">
-                  <col class="c-gp"><col class="c-gf"><col class="c-gd"><col class="c-pts">
-                </colgroup>
-                <thead><tr><th>#</th><th class="left">Team</th><th>GP</th><th>GF</th><th>GD</th><th>Pts</th></tr></thead>
-                <tbody></tbody>
-              </table>
+              <div class="table-wrap">
+                <table id="tbl-gf" style="margin-top:6px">
+                  <colgroup>
+                    <col class="c-rank"><col class="c-team">
+                    <col class="c-gp"><col class="c-gf"><col class="c-gd"><col class="c-pts">
+                  </colgroup>
+                  <thead><tr><th>#</th><th class="left">Team</th><th>GP</th><th>GF</th><th>GD</th><th>Pts</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
             </div>
             <div class="card">
               <strong>Best defence (Top 10)</strong>
-              <table id="tbl-ga" style="margin-top:6px">
-                <colgroup>
-                  <col class="c-rank"><col class="c-team">
-                  <col class="c-gp"><col class="c-ga"><col class="c-gd"><col class="c-pts">
-                </colgroup>
-                <thead><tr><th>#</th><th class="left">Team</th><th>GP</th><th>GA</th><th>GD</th><th>Pts</th></tr></thead>
-                <tbody></tbody>
-              </table>
+              <div class="table-wrap">
+                <table id="tbl-ga" style="margin-top:6px">
+                  <colgroup>
+                    <col class="c-rank"><col class="c-team">
+                    <col class="c-gp"><col class="c-ga"><col class="c-gd"><col class="c-pts">
+                  </colgroup>
+                  <thead><tr><th>#</th><th class="left">Team</th><th>GP</th><th>GA</th><th>GD</th><th>Pts</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
             </div>
           </div>
         </details>
@@ -443,7 +463,7 @@ function renderRails(agg, leagues, scheduledTotal){
 
 function teamCell(t){
   const lg = t.league || 'Diamond'; // fallback
-  return `<img class="lg" src="${BADGE_BASE}${lg}-League.png" alt="${esc(lg)}"><span title="${esc(t.team)}">${esc(t.team)}</span>`;
+  return `<img class="lg" src="${BADGE_BASE}${lg}-League.png" alt="${esc(lg)}"><span class="teamname" title="${esc(t.team)}">${esc(t.team)}</span>`;
 }
 
 function renderLeaderboard(teams){
