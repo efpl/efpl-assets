@@ -124,12 +124,12 @@ tbody tr:nth-child(even){background:var(--card2)}
 
 /* League badges next to names */
 .lg{
-  height:22px;
+  height:28px;
   width:auto;
   vertical-align:middle;
   margin-right:8px;
   object-fit:contain;
-  filter:drop-shadow(0 0 2px rgba(0,0,0,.6));
+  filter:drop-shadow(0 0 3px rgba(0,0,0,.6));
 }
 
 /* === Column widths (tweaked for double-digit positions) === */
@@ -188,6 +188,40 @@ details[open] summary::after{content:"▴"}
   margin-top:14px;
   color:var(--muted);
   font-size:12.5px;
+}
+/* 1) Never wrap names (desktop + mobile) */
+.teamname{
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;   /* shows Rubberduck... if needed */
+  display:inline-block;
+  max-width:100%;
+}
+
+/* 2) Remove ellipsis from number cells (fixes 1.. / 6.. in Chrome) */
+tbody td{
+  padding:10px 12px;
+  font-weight:600;
+  white-space:nowrap;
+  overflow:visible;
+  text-overflow:clip;
+}
+.right{
+  text-align:right;
+  font-variant-numeric:tabular-nums;
+  font-feature-settings:"tnum" 1;
+  overflow:visible;
+  text-overflow:clip;
+}
+
+/* 3) Keep tables readable on small screens without wrapping names:
+      - enable horizontal scroll
+      - slightly reduce font + badge size */
+@media (max-width:600px){
+  .card{ overflow-x:auto }          /* allows sideways scroll if needed */
+  table{ min-width:780px }          /* prevents squish that causes "..." */
+  tbody td{ padding:8px 10px; font-size:14px }
+  .lg{ height:22px; margin-right:6px }  /* smaller badge on phones */
 }
 </style>
 </head>
