@@ -255,6 +255,64 @@ details[open] summary::after{content:"▴"}
   padding:10px 12px;            /* match table rhythm */
 }
 #tbl-hi td.right{ text-align:right; }
+/* =========================
+   MORE TABLES (GF / GA lists)
+   Desktop: # Team GP GF/GA GD Pts
+   Medium (<900): # Team GF/GA Pts
+   Extra-small (<420): # Team GF/GA Pts (roomier widths)
+   ========================= */
+
+/* Desktop base widths */
+#tbl-gf, #tbl-ga { width:100%; table-layout:fixed; }
+#tbl-gf col.c-rank, #tbl-ga col.c-rank { width:6%; }
+#tbl-gf col.c-team, #tbl-ga col.c-team { width:46%; }
+#tbl-gf col.c-gp,   #tbl-ga col.c-gp   { width:10%; }
+#tbl-gf col.c-gf,   #tbl-ga col.c-ga   { width:12%; }   /* GF for tbl-gf, GA for tbl-ga */
+#tbl-gf col.c-gd,   #tbl-ga col.c-gd   { width:12%; }
+#tbl-gf col.c-pts,  #tbl-ga col.c-pts  { width:14%; }
+
+/* Prevent number cells from getting ellipsis; names can still truncate */
+#tbl-gf td, #tbl-ga td { overflow:visible; text-overflow:clip; }
+#tbl-gf td.left .teamname, #tbl-ga td.left .teamname {
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:inline-block; max-width:100%;
+}
+
+/* ===== Medium screens: keep only the key stats =====
+   Top Scoring: # Team GF Pts  (hide GP + GD)
+   Best Defence: # Team GA Pts (hide GP + GD)
+*/
+@media (max-width:900px){
+
+  /* Hide columns in Top Scoring (tbl-gf): GP (3), GD (5) */
+  #tbl-gf th:nth-child(3), #tbl-gf td:nth-child(3),
+  #tbl-gf th:nth-child(5), #tbl-gf td:nth-child(5) { display:none !important; }
+  /* Hide the matching <col> so no ghost width remains */
+  #tbl-gf col.c-gp, #tbl-gf col.c-gd { display:none !important; }
+
+  /* Hide columns in Best Defence (tbl-ga): GP (3), GD (5) */
+  #tbl-ga th:nth-child(3), #tbl-ga td:nth-child(3),
+  #tbl-ga th:nth-child(5), #tbl-ga td:nth-child(5) { display:none !important; }
+  #tbl-ga col.c-gp, #tbl-ga col.c-gd { display:none !important; }
+
+  /* Let remaining columns fill the card cleanly */
+  #tbl-gf, #tbl-ga { table-layout:auto; }
+  #tbl-gf col.c-rank, #tbl-ga col.c-rank { width:8% !important; }
+  #tbl-gf col.c-team, #tbl-ga col.c-team { width:58% !important; }
+  /* Remaining numeric columns auto-share */
+
+  /* Slightly tighter rhythm on phones */
+  #tbl-gf thead th, #tbl-ga thead th { padding:8px; font-size:12px; }
+  #tbl-gf tbody td, #tbl-ga tbody td { padding:8px 8px; font-size:14px; }
+  .lg{ height:22px; margin-right:6px; }
+}
+
+/* ===== Extra-small phones: give team column more room ===== */
+@media (max-width:420px){
+  /* Keep: # Team GF Pts  /  # Team GA Pts */
+  #tbl-gf col.c-rank, #tbl-ga col.c-rank { width:8% !important; }
+  #tbl-gf col.c-team, #tbl-ga col.c-team { width:64% !important; }
+  /* numeric cols auto-share the rest; no scrollbars */
+}
 </style>
 </head>
 <body>
