@@ -23,17 +23,17 @@
 
   .wrap{max-width:1080px;margin:0 auto;padding:16px 16px 28px}
 
-  /* Header */
+  /* Header (keep aspect ratio) */
   .hdr{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0}
   .brand{display:flex;align-items:center;gap:10px}
-  .brand img{width:36px;height:36px;border-radius:8px}
+  .brand img{height:36px;width:auto;border-radius:8px;object-fit:contain}
   .brand h1{margin:0;font-size:18px;letter-spacing:.4px}
   .eyebrow{display:inline-block;background:var(--accent);color:#0b1b3d;padding:2px 8px;border-radius:999px;font-weight:900;font-size:11px}
 
-  /* League badges filter */
+  /* League badges filter (keep aspect ratio) */
   .badges{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0 12px}
   .badge{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px 10px;display:flex;align-items:center;gap:8px;cursor:pointer}
-  .badge img{width:22px;height:22px;display:block}
+  .badge img{height:22px;width:auto;display:block;object-fit:contain}
   .badge.active{background:var(--accent);color:#0b1b3d;border-color:transparent}
 
   /* KPI rail */
@@ -85,7 +85,7 @@
           <h1>eFPL Live Stats (Compact)</h1>
         </div>
       </div>
-      <div id="updated" class="eyebrow">Loading…</div>
+      <div id="updated" class="eyebrow">Loading...</div>
     </header>
 
     <!-- League badge filter -->
@@ -93,10 +93,10 @@
 
     <!-- KPI rail -->
     <section class="rail" aria-label="Key metrics">
-      <div class="kpi"><div class="t">Matches</div><div class="v" id="kpi-matches">—</div></div>
-      <div class="kpi"><div class="t">Goals</div><div class="v" id="kpi-goals">—</div></div>
-      <div class="kpi"><div class="t">Avg / match</div><div class="v" id="kpi-avg">—</div></div>
-      <div class="kpi"><div class="t">Leagues</div><div class="v" id="kpi-leagues">—</div></div>
+      <div class="kpi"><div class="t">Matches</div><div class="v" id="kpi-matches">-</div></div>
+      <div class="kpi"><div class="t">Goals</div><div class="v" id="kpi-goals">-</div></div>
+      <div class="kpi"><div class="t">Avg / match</div><div class="v" id="kpi-avg">-</div></div>
+      <div class="kpi"><div class="t">Leagues</div><div class="v" id="kpi-leagues">-</div></div>
     </section>
 
     <!-- Result + Progress bars -->
@@ -104,7 +104,7 @@
       <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
           <strong>Result split</strong>
-          <span id="split-text" class="note">—</span>
+          <span id="split-text" class="note">-</span>
         </div>
         <div class="bar" title="Home / Draw / Away">
           <span id="seg-home" class="seg home" style="width:0%"></span>
@@ -115,7 +115,7 @@
       <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
           <strong>Completion</strong>
-          <span id="prog-text" class="note">—</span>
+          <span id="prog-text" class="note">-</span>
         </div>
         <div class="bar" title="Completed / Scheduled">
           <span id="seg-prog" class="seg" style="width:0%;background:linear-gradient(90deg,#ffd03b,#f9d71c)"></span>
@@ -139,11 +139,11 @@
         <h3 style="margin:0 0 8px">Highlights</h3>
         <table id="tbl-hi">
           <tbody>
-            <tr><td class="left">Biggest win</td><td id="hi-big" class="right">—</td></tr>
-            <tr><td class="left">Highest scoring game</td><td id="hi-hsg" class="right">—</td></tr>
-            <tr><td class="left">Top scoring team</td><td id="hi-topgf" class="right">—</td></tr>
-            <tr><td class="left">Most conceded</td><td id="hi-mostga" class="right">—</td></tr>
-            <tr><td class="left">Most clean sheets</td><td id="hi-mostcs" class="right">—</td></tr>
+            <tr><td class="left">Biggest win</td><td id="hi-big" class="right">-</td></tr>
+            <tr><td class="left">Highest scoring game</td><td id="hi-hsg" class="right">-</td></tr>
+            <tr><td class="left">Top scoring team</td><td id="hi-topgf" class="right">-</td></tr>
+            <tr><td class="left">Most conceded</td><td id="hi-mostga" class="right">-</td></tr>
+            <tr><td class="left">Most clean sheets</td><td id="hi-mostcs" class="right">-</td></tr>
           </tbody>
         </table>
 
@@ -176,11 +176,8 @@
       <div class="note">Each card: Avg goals • Home/Draw/Away % • Completion %.</div>
     </section>
 
-    <!-- Optional: timeline + form are omitted here for maximal compactness.
-         (Say the word if you want them back as collapsibles.) -->
-
     <footer class="foot">
-      <span>Live from Google Sheets (Fixtures & Embed).</span>
+      <span>All statistics are compiled and produced by eFPL.</span>
       <span id="foot-scope">Scope: All Leagues</span>
     </footer>
   </div>
@@ -354,11 +351,8 @@ function renderBadges(){
   });
 }
 function selectLeague(key){
-  // toggle UI
   [...document.querySelectorAll('.badge')].forEach(b=>b.classList.toggle('active', b.dataset.key===key));
-  // run
   run([key]);
-  // footer scope
   set('foot-scope','Scope: '+ (key==='All'?'All Leagues':key));
 }
 
@@ -367,14 +361,14 @@ function renderRails(agg, leagues, scheduledTotal){
   set('kpi-goals', fmt(agg.goals));
   set('kpi-avg', agg.avg.toFixed(2));
   set('kpi-leagues', leagues.length);
-  // result text + bar
-  byId('split-text').textContent = `${fmt(agg.homeW)} H • ${fmt(agg.draw)} D • ${fmt(agg.awayW)} A — ${pct(agg.homeW,agg.played)} / ${pct(agg.draw,agg.played)} / ${pct(agg.awayW,agg.played)}`;
+  byId('split-text').textContent = `${fmt(agg.homeW)} H • ${fmt(agg.draw)} D • ${fmt(agg.awayW)} A • ${pct(agg.homeW,agg.played)} / ${pct(agg.draw,agg.played)} / ${pct(agg.awayW,agg.played)}`;
   byId('seg-home').style.width = (agg.played?agg.homeW*100/agg.played:0) + '%';
   byId('seg-draw').style.width = (agg.played?agg.draw*100/agg.played:0) + '%';
   byId('seg-away').style.width = (agg.played?agg.awayW*100/agg.played:0) + '%';
-  // completion
-  byId('prog-text').textContent = scheduledTotal ? `${fmt(agg.played)} / ${fmt(scheduledTotal)} • ${pct(agg.played,scheduledTotal)}` : '—';
+
+  byId('prog-text').textContent = scheduledTotal ? `${fmt(agg.played)} / ${fmt(scheduledTotal)} • ${pct(agg.played,scheduledTotal)}` : '0 / 0 • 0.0%';
   byId('seg-prog').style.width = scheduledTotal ? (agg.played*100/scheduledTotal)+'%' : '0%';
+
   const up=byId('updated'); if(up) up.textContent='Updated '+new Date().toLocaleString();
 }
 
@@ -400,11 +394,11 @@ function renderLeaderboard(teams){
 }
 
 function renderHighlights(agg){
-  set('hi-big', agg.biggest ? `${agg.biggest.text} (${agg.biggest.sub})` : '—');
-  set('hi-hsg', agg.highest ? `${agg.highest.text} (${agg.highest.total} goals • ${agg.highest.sub})` : '—');
-  set('hi-topgf', agg.topGF ? `${agg.topGF.team} — ${agg.topGF.gf}` : '—');
-  set('hi-mostga', agg.mostGA ? `${agg.mostGA.team} — ${agg.mostGA.ga}` : '—');
-  set('hi-mostcs', agg.mostCS ? `${agg.mostCS.team} — ${agg.mostCS.cs}` : '—');
+  set('hi-big', agg.biggest ? `${agg.biggest.text} (${agg.biggest.sub})` : '-');
+  set('hi-hsg', agg.highest ? `${agg.highest.text} (${agg.highest.total} goals • ${agg.highest.sub})` : '-');
+  set('hi-topgf', agg.topGF ? `${agg.topGF.team} - ${agg.topGF.gf}` : '-');
+  set('hi-mostga', agg.mostGA ? `${agg.mostGA.team} - ${agg.mostGA.ga}` : '-');
+  set('hi-mostcs', agg.mostCS ? `${agg.mostCS.team} - ${agg.mostCS.cs}` : '-');
 }
 
 function renderMini(minis){
@@ -412,8 +406,7 @@ function renderMini(minis){
   minis.forEach(m=>{
     const line = `${m.played?m.avg.toFixed(2):'0.00'} avg • ${pct(m.homeW,m.played)} / ${pct(m.draw,m.played)} / ${pct(m.awayW,m.played)} • ${pct(m.played,m.scheduled||0)}`;
     const div=document.createElement('div');
-    div.className='badge'; // reuse compact style
-    div.style.width='100%';
+    div.className='badge'; div.style.width='100%';
     div.innerHTML = `<img src="${BADGE_BASE}${m.league}-League.png" alt="${esc(m.league)}">
       <div><div><strong>${esc(m.league)}</strong></div><div class="note">${line}</div></div>`;
     host.appendChild(div);
@@ -429,6 +422,7 @@ function renderTopTables(teams){
     tr.innerHTML = `<td class="right">${i+1}</td><td class="left">${esc(t.team)}</td><td class="right">${t.gp}</td><td class="right">${t.gf}</td><td class="right">${t.gd}</td><td class="right">${t.pts}</td>`;
     gfBody.appendChild(tr);
   });
+
   // Best defence
   const ga = [...teams].sort((a,b)=> a.ga-b.ga || a.team.localeCompare(b.team)).slice(0,10);
   const gaBody = byId('tbl-ga').querySelector('tbody'); gaBody.innerHTML='';
@@ -450,6 +444,7 @@ async function run(selectedKeys){
   renderRails(agg, leagues, scheduledTotal);
   renderLeaderboard(agg.teams);
   renderHighlights(agg);
+  renderTopTables(agg.teams);     // <-- ensures "More tables" has data
   renderMini(minis);
 }
 
