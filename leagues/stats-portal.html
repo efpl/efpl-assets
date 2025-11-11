@@ -8,110 +8,187 @@
 <link rel="icon" href="https://efpl-assets.pages.dev/img/logo.png" />
 
 <style>
-  :root{
-    --bg:#0b1636;
-    --card:#0f1e49;
-    --card2:#13265b;
-    --ink:#ffffff;
-    --muted:#b8c6e3;
-    --accent:#f9d71c;
-    --line:rgba(249,215,28,.3);
-    --ok:#2fbf71; --mid:#9aa4b2; --away:#5aa4ff;
-  }
-  * { box-sizing:border-box }
-  html,body{margin:0;background:var(--bg);color:var(--ink);font:15.5px/1.55 system-ui,Segoe UI,Roboto,Arial,sans-serif}
+ :root{
+  --bg:#0b1636;
+  --card:#0f1e49;
+  --card2:#13265b;
+  --ink:#ffffff;
+  --muted:#b8c6e3;
+  --accent:#f9d71c;
+  --line:rgba(249,215,28,.3);
+  --ok:#2fbf71; --mid:#9aa4b2; --away:#5aa4ff;
+}
+* { box-sizing:border-box }
+html,body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font:15.5px/1.55 system-ui,Segoe UI,Roboto,Arial,sans-serif;
+}
 
-  .wrap{max-width:1220px;margin:0 auto;padding:16px 16px 28px}
+.wrap{max-width:1220px;margin:0 auto;padding:16px 16px 28px}
 
-  /* Header */
-  .hdr{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0}
-  .brand{display:flex;align-items:center;gap:10px}
-  .brand img{height:36px;width:auto;border-radius:8px;object-fit:contain}
-  .brand h1{margin:0;font-size:18px;letter-spacing:.4px}
-  .eyebrow{display:inline-block;background:var(--accent);color:#0b1b3d;padding:2px 8px;border-radius:999px;font-weight:900;font-size:11px}
+/* Header */
+.hdr{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0}
+.brand{display:flex;align-items:center;gap:10px}
+.brand img{height:36px;width:auto;border-radius:8px;object-fit:contain}
+.brand h1{margin:0;font-size:18px;letter-spacing:.4px}
+.eyebrow{display:inline-block;background:var(--accent);color:#0b1b3d;padding:2px 8px;border-radius:999px;font-weight:900;font-size:11px}
 
-  /* League badges filter */
-  .badges{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0 12px}
-  .badge{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px 10px;display:flex;align-items:center;gap:8px;cursor:pointer}
-  .badge img{height:22px;width:auto;display:block;object-fit:contain}
-  .badge.active{background:var(--accent);color:#0b1b3d;border-color:transparent}
+/* League badges filter */
+.badges{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0 12px}
+.badge{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:6px 10px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  cursor:pointer;
+}
+.badge img{height:22px;width:auto;display:block;object-fit:contain}
+.badge.active{background:var(--accent);color:#0b1b3d;border-color:transparent}
 
-  /* KPI rail */
-  .rail{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-  .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px}
-  .kpi .t{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
-  .kpi .v{font-weight:900;font-size:20px}
+/* KPI rail */
+.rail{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.kpi{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:10px;
+}
+.kpi .t{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.kpi .v{font-weight:900;font-size:20px}
 
-  /* Bars */
-  .bar{height:10px;border-radius:999px;background:rgba(255,255,255,.06);
-    overflow:hidden;border:1px solid var(--line);
-    display:flex;align-items:stretch}
-  .seg{height:100%;display:block}
-  .home{background:var(--ok)} .draw{background:var(--mid)} .away{background:var(--away)}
-  .mini{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+/* Bars */
+.bar{
+  height:10px;
+  border-radius:999px;
+  background:rgba(255,255,255,.06);
+  overflow:hidden;
+  border:1px solid var(--line);
+  display:flex;
+  align-items:stretch;
+}
+.seg{height:100%;display:block}
+.home{background:var(--ok)} .draw{background:var(--mid)} .away{background:var(--away)}
+.mini{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:12px;
+}
 
-  /* Tables */
-  table{width:100%;border-collapse:collapse;table-layout:fixed}
-  thead th{background:var(--accent);color:#0b1b3d;padding:10px;font-size:12px;text-transform:uppercase;letter-spacing:.03em}
-  tbody td{padding:10px 12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  tbody tr:nth-child(odd){background:var(--card)}
-  tbody tr:nth-child(even){background:var(--card2)}
-  .left{text-align:left;}
-  .right{text-align:right;font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
-  .center{text-align:center}
-  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+/* Tables */
+table{
+  width:100%;
+  border-collapse:collapse;
+  table-layout:fixed;
+}
+thead th{
+  background:var(--accent);
+  color:#0b1b3d;
+  padding:10px;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.03em;
+}
+tbody td{
+  padding:10px 12px;
+  font-weight:600;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+tbody tr:nth-child(odd){background:var(--card)}
+tbody tr:nth-child(even){background:var(--card2)}
+.left{text-align:left;}
+.right{
+  text-align:right;
+  font-variant-numeric:tabular-nums;
+  font-feature-settings:"tnum" 1;
+}
+.center{text-align:center}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
-  /* Team name single line + ellipsis */
-  .teamname{
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    display:inline-block;
-    max-width:100%;
-  }
+/* Team name: one line, ellipsis */
+.teamname{
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  display:inline-block;
+  max-width:100%;
+}
 
-  /* Larger league badges */
-  .lg{height:22px;width:auto;vertical-align:middle;margin-right:8px;object-fit:contain;filter:drop-shadow(0 0 2px rgba(0,0,0,.6));}
+/* League badges next to names */
+.lg{
+  height:22px;
+  width:auto;
+  vertical-align:middle;
+  margin-right:8px;
+  object-fit:contain;
+  filter:drop-shadow(0 0 2px rgba(0,0,0,.6));
+}
 
-  /* Column widths */
-  #tbl-leader col.c-rank { width:4% }
-  #tbl-leader col.c-team { width:42% }
-  #tbl-leader col.c-gp,
-  #tbl-leader col.c-w,
-  #tbl-leader col.c-d,
-  #tbl-leader col.c-l   { width:5.5% }
-  #tbl-leader col.c-gf,
-  #tbl-leader col.c-ga,
-  #tbl-leader col.c-gd,
-  #tbl-leader col.c-cs  { width:6.5% }
-  #tbl-leader col.c-pts { width:8% }
+/* === Column widths (tweaked for double-digit positions) === */
+#tbl-leader col.c-rank { width:6% }       /* was 4% */
+#tbl-leader col.c-team { width:41% }
+#tbl-leader col.c-gp,
+#tbl-leader col.c-w,
+#tbl-leader col.c-d,
+#tbl-leader col.c-l   { width:5.2% }
+#tbl-leader col.c-gf,
+#tbl-leader col.c-ga,
+#tbl-leader col.c-gd,
+#tbl-leader col.c-cs  { width:6.3% }
+#tbl-leader col.c-pts { width:8% }
 
-  #tbl-gf col.c-rank,
-  #tbl-ga col.c-rank { width:6% }
-  #tbl-gf col.c-team,
-  #tbl-ga col.c-team { width:52% }
-  #tbl-gf col.c-gp,
-  #tbl-ga col.c-gp   { width:9% }
-  #tbl-gf col.c-gf,
-  #tbl-ga col.c-ga,
-  #tbl-gf col.c-gd,
-  #tbl-ga col.c-gd,
-  #tbl-gf col.c-pts,
-  #tbl-ga col.c-pts  { width:9% }
+/* Add extra padding after rank number for legibility */
+#tbl-leader td.right:first-child { padding-right:14px; }
 
-  @media (max-width:900px){
-    .rail{grid-template-columns:repeat(2,1fr)}
-    .two-col{grid-template-columns:1fr}
-  }
+/* Top scoring / Best defence tables */
+#tbl-gf col.c-rank,
+#tbl-ga col.c-rank { width:6% }
+#tbl-gf col.c-team,
+#tbl-ga col.c-team { width:52% }
+#tbl-gf col.c-gp,
+#tbl-ga col.c-gp   { width:9% }
+#tbl-gf col.c-gf,
+#tbl-ga col.c-ga,
+#tbl-gf col.c-gd,
+#tbl-ga col.c-gd,
+#tbl-gf col.c-pts,
+#tbl-ga col.c-pts  { width:9% }
 
-  details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px}
-  summary{cursor:pointer;font-weight:900}
-  summary::marker{content:""}
-  summary::after{content:"▾";margin-left:6px}
-  details[open] summary::after{content:"▴"}
-  .note{color:var(--muted);font-size:12.5px}
-  .foot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:14px;color:var(--muted);font-size:12.5px}
+/* Responsive layout */
+@media (max-width:900px){
+  .rail{grid-template-columns:repeat(2,1fr)}
+  .two-col{grid-template-columns:1fr}
+}
+
+details{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:10px;
+}
+summary{cursor:pointer;font-weight:900}
+summary::marker{content:""}
+summary::after{content:"▾";margin-left:6px}
+details[open] summary::after{content:"▴"}
+.note{color:var(--muted);font-size:12.5px}
+
+.foot{
+  display:flex;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:14px;
+  color:var(--muted);
+  font-size:12.5px;
+}
 </style>
 </head>
 <body>
