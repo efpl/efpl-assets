@@ -224,6 +224,73 @@ html, body {
 .mini-grid > .card {
   width: 100%;
 }
+/* ============================
+   eFPL EMBED — MOBILE ULTRA FIX
+   Makes the leaderboard clean at the smallest widths
+   ============================ */
+
+/* Trigger a stricter mobile layout a bit wider than 420px
+   (covers Chrome UI zoom / small Androids / iOS Safari toolbars) */
+@media (max-width: 520px){
+
+  /* Hide the header row (labels smash the layout on tiny screens) */
+  #tbl-leader thead{ display:none !important; }
+
+  /* Hide columns we don't want on tiny screens:
+     GP (3) and GF (7). GA (8) will be hidden below too. */
+  #tbl-leader td:nth-child(3),
+  #tbl-leader td:nth-child(7){ display:none !important; }
+
+  /* Also hide GA (8) if it’s still visible from higher breakpoints */
+  #tbl-leader td:nth-child(8){ display:none !important; }
+
+  /* Remove any reserved width from those columns */
+  #tbl-leader col.c-gp,
+  #tbl-leader col.c-gf,
+  #tbl-leader col.c-ga{ display:none !important; }
+
+  /* Turn each data row into a neat 7-column grid:
+     # | Team | W | D | L | GD | Pts
+     (GD is col 9 in the original table; Pts is col 10) */
+  #tbl-leader tbody tr{
+    display:grid !important;
+    grid-template-columns: 2.8ch 1fr 2.6ch 2.6ch 2.6ch 3.2ch 3.2ch;
+    column-gap: 8px;
+    align-items: center;
+  }
+
+  /* Map original cells into the grid columns */
+  #tbl-leader td:nth-child(1){ grid-column:1; text-align:right; }
+  #tbl-leader td:nth-child(2){ grid-column:2; }                 /* Team */
+  #tbl-leader td:nth-child(4){ grid-column:3; text-align:center; } /* W */
+  #tbl-leader td:nth-child(5){ grid-column:4; text-align:center; } /* D */
+  #tbl-leader td:nth-child(6){ grid-column:5; text-align:center; } /* L */
+  #tbl-leader td:nth-child(9){ grid-column:6; text-align:center; } /* GD */
+  #tbl-leader td:nth-child(10){grid-column:7; text-align:right; font-weight:800;}
+
+  /* Typography + spacing for tiny screens */
+  #tbl-leader tbody td{ padding:8px 8px; font-size:14px; }
+  #tbl-leader td.right{ white-space:nowrap; font-variant-numeric:tabular-nums; font-feature-settings:"tnum" 1; }
+
+  /* Make badges + names compact and non-wrapping (no overlaps) */
+  .teamwrap{ min-width:0; gap:8px; }
+  .teamwrap .lg{ height:18px; width:auto; flex:0 0 auto; }
+  .teamwrap .teamname{
+    display:block;
+    min-width:0;
+    max-width: 100%;
+    white-space: nowrap;       /* one line only */
+    overflow: hidden;
+    text-overflow: ellipsis;   /* clean "…" */
+    line-height: 1.25;
+  }
+}
+
+/* Slightly smaller numerics on extra-tiny widths to avoid crowding */
+@media (max-width: 360px){
+  #tbl-leader tbody td{ font-size:13px; }
+  #tbl-leader td:nth-child(10){ font-size:14px; } /* keep Pts readable */
+}
 </style>
 </head>
 <body>
