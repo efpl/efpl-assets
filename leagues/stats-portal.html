@@ -8,7 +8,7 @@
 <link rel="icon" href="https://efpl-assets.pages.dev/img/logo.png" />
 
 <style>
- :root{
+:root{
   --bg:#0b1636;
   --card:#0f1e49;
   --card2:#13265b;
@@ -18,7 +18,7 @@
   --line:rgba(249,215,28,.3);
   --ok:#2fbf71; --mid:#9aa4b2; --away:#5aa4ff;
 }
-* { box-sizing:border-box }
+*{box-sizing:border-box}
 html,body{
   margin:0;
   background:var(--bg);
@@ -26,332 +26,111 @@ html,body{
   font:15.5px/1.55 system-ui,Segoe UI,Roboto,Arial,sans-serif;
 }
 
-.wrap{max-width:1220px;margin:0 auto;padding:16px 16px 28px}
-
-/* Header */
+/* Layout containers always fill parent width */
+.wrap{max-width:1220px;margin:0 auto;padding:16px 16px 28px;width:100%}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;width:100%}
 .hdr{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0}
 .brand{display:flex;align-items:center;gap:10px}
 .brand img{height:36px;width:auto;border-radius:8px;object-fit:contain}
 .brand h1{margin:0;font-size:18px;letter-spacing:.4px}
 .eyebrow{display:inline-block;background:var(--accent);color:#0b1b3d;padding:2px 8px;border-radius:999px;font-weight:900;font-size:11px}
 
-/* League badges filter */
 .badges{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0 12px}
-.badge{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:6px 10px;
-  display:flex;
-  align-items:center;
-  gap:8px;
-  cursor:pointer;
-}
+.badge{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px 10px;display:flex;align-items:center;gap:8px;cursor:pointer}
 .badge img{height:22px;width:auto;display:block;object-fit:contain}
 .badge.active{background:var(--accent);color:#0b1b3d;border-color:transparent}
 
-/* KPI rail */
 .rail{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.kpi{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:10px;
-}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px}
 .kpi .t{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .kpi .v{font-weight:900;font-size:20px}
 
 /* Bars */
-.bar{
-  height:10px;
-  border-radius:999px;
-  background:rgba(255,255,255,.06);
-  overflow:hidden;
-  border:1px solid var(--line);
-  display:flex;
-  align-items:stretch;
-}
+.bar{height:10px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden;border:1px solid var(--line);display:flex;align-items:stretch}
 .seg{height:100%;display:block}
 .home{background:var(--ok)} .draw{background:var(--mid)} .away{background:var(--away)}
 .mini{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
-.card{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:12px;
-}
-
-/* Tables */
-table{
-  width:100%;
-  border-collapse:collapse;
-  table-layout:fixed;
-}
-thead th{
-  background:var(--accent);
-  color:#0b1b3d;
-  padding:10px;
-  font-size:12px;
-  text-transform:uppercase;
-  letter-spacing:.03em;
-}
-tbody td{
-  padding:10px 12px;
-  font-weight:600;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-tbody tr:nth-child(odd){background:var(--card)}
-tbody tr:nth-child(even){background:var(--card2)}
-.left{text-align:left;}
-.right{
-  text-align:right;
-  font-variant-numeric:tabular-nums;
-  font-feature-settings:"tnum" 1;
-}
-.center{text-align:center}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
-/* Team name: one line, ellipsis */
-.teamname{
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  display:inline-block;
-  max-width:100%;
-}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+thead th{background:var(--accent);color:#0b1b3d;padding:10px;font-size:12px;text-transform:uppercase;letter-spacing:.03em}
+tbody td{padding:10px 12px;font-weight:600;white-space:nowrap;overflow:visible;text-overflow:clip}
+tbody tr:nth-child(odd){background:var(--card)}
+tbody tr:nth-child(even){background:var(--card2)}
+.left{text-align:left}
+.right{text-align:right;font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+.center{text-align:center}
 
-/* League badges next to names */
-.lg{
-  height:28px;
-  width:auto;
-  vertical-align:middle;
-  margin-right:8px;
-  object-fit:contain;
-  filter:drop-shadow(0 0 3px rgba(0,0,0,.6));
-}
+/* Team name: one line + ellipsis, with bigger league badge */
+.teamname{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:inline-block;max-width:100%}
+.lg{height:28px;width:auto;vertical-align:middle;margin-right:8px;object-fit:contain;filter:drop-shadow(0 0 3px rgba(0,0,0,.6))}
 
-/* === Column widths (tweaked for double-digit positions) === */
-#tbl-leader col.c-rank { width:6% }       /* was 4% */
-#tbl-leader col.c-team { width:41% }
-#tbl-leader col.c-gp,
-#tbl-leader col.c-w,
-#tbl-leader col.c-d,
-#tbl-leader col.c-l   { width:5.2% }
-#tbl-leader col.c-gf,
-#tbl-leader col.c-ga,
-#tbl-leader col.c-gd,
-#tbl-leader col.c-cs  { width:6.3% }
-#tbl-leader col.c-pts { width:8% }
+/* ===== Desktop Leaderboard widths (full set) =====
+   Columns: 1 # | 2 Team | 3 GP | 4 W | 5 D | 6 L | 7 GF | 8 GA | 9 GD | 10 Pts | 11 CS
+*/
+#tbl-leader col.c-rank{width:6%}
+#tbl-leader col.c-team{width:42%}
+#tbl-leader col.c-gp{width:6%}
+#tbl-leader col.c-w{width:6%}
+#tbl-leader col.c-d{width:6%}
+#tbl-leader col.c-l{width:6%}
+#tbl-leader col.c-gf{width:7%}
+#tbl-leader col.c-ga{width:7%}
+#tbl-leader col.c-gd{width:7%}
+#tbl-leader col.c-pts{width:7%}
 
-/* Add extra padding after rank number for legibility */
-#tbl-leader td.right:first-child { padding-right:14px; }
+/* Remove CS everywhere on Leaderboard */
+#tbl-leader th:nth-child(11),
+#tbl-leader td:nth-child(11){display:none}
 
-/* Top scoring / Best defence tables */
-#tbl-gf col.c-rank,
-#tbl-ga col.c-rank { width:6% }
-#tbl-gf col.c-team,
-#tbl-ga col.c-team { width:52% }
-#tbl-gf col.c-gp,
-#tbl-ga col.c-gp   { width:9% }
-#tbl-gf col.c-gf,
-#tbl-ga col.c-ga,
-#tbl-gf col.c-gd,
-#tbl-ga col.c-gd,
-#tbl-gf col.c-pts,
-#tbl-ga col.c-pts  { width:9% }
+/* Extra legibility on rank cell */
+#tbl-leader td.right:first-child{padding-right:14px}
 
-/* Responsive layout */
+/* ===== Medium screens (<900px): show # Team GP W D L GF Pts (hide GA & GD) ===== */
 @media (max-width:900px){
-  .rail{grid-template-columns:repeat(2,1fr)}
-  .two-col{grid-template-columns:1fr}
+  /* hide GA (8) and GD (9) */
+  #tbl-leader th:nth-child(8), #tbl-leader td:nth-child(8),
+  #tbl-leader th:nth-child(9), #tbl-leader td:nth-child(9){display:none}
+
+  /* rebalance widths */
+  #tbl-leader col.c-team{width:50%}
+  #tbl-leader col.c-rank{width:7%}
+  #tbl-leader col.c-gp{width:7%}
+  #tbl-leader col.c-w,
+  #tbl-leader col.c-d,
+  #tbl-leader col.c-l,
+  #tbl-leader col.c-gf,
+  #tbl-leader col.c-pts{width:auto}
+
+  thead th{padding:8px;font-size:12px}
+  tbody td{padding:8px 8px;font-size:14px}
+  .lg{height:22px;margin-right:6px}
 }
 
-details{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:10px;
+/* ===== Extra-small (<420px): show # Team W D L GD Pts (hide GP & GF; GA already hidden above; ensure GD visible) ===== */
+@media (max-width:420px){
+  /* hide GP (3) & GF (7) */
+  #tbl-leader th:nth-child(3), #tbl-leader td:nth-child(3){display:none}
+  #tbl-leader th:nth-child(7), #tbl-leader td:nth-child(7){display:none}
+  /* re-show GD (9) to match spec */
+  #tbl-leader th:nth-child(9), #tbl-leader td:nth-child(9){display:table-cell}
+
+  /* tighter layout */
+  #tbl-leader col.c-team{width:52%}
+  #tbl-leader col.c-rank{width:8%}
+
+  thead th{font-size:11.5px}
+  tbody td{font-size:13px}
 }
+
+/* Footer / notes */
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px}
 summary{cursor:pointer;font-weight:900}
 summary::marker{content:""}
 summary::after{content:"▾";margin-left:6px}
 details[open] summary::after{content:"▴"}
 .note{color:var(--muted);font-size:12.5px}
-
-.foot{
-  display:flex;
-  justify-content:space-between;
-  flex-wrap:wrap;
-  gap:8px;
-  margin-top:14px;
-  color:var(--muted);
-  font-size:12.5px;
-}
-/* 1) Never wrap names (desktop + mobile) */
-.teamname{
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;   /* shows Rubberduck... if needed */
-  display:inline-block;
-  max-width:100%;
-}
-
-/* 2) Remove ellipsis from number cells (fixes 1.. / 6.. in Chrome) */
-tbody td{
-  padding:10px 12px;
-  font-weight:600;
-  white-space:nowrap;
-  overflow:visible;
-  text-overflow:clip;
-}
-.right{
-  text-align:right;
-  font-variant-numeric:tabular-nums;
-  font-feature-settings:"tnum" 1;
-  overflow:visible;
-  text-overflow:clip;
-}
-
-/* 3) Keep tables readable on small screens without wrapping names:
-      - enable horizontal scroll
-      - slightly reduce font + badge size */
-@media (max-width:600px){
-  .card{ overflow-x:auto }          /* allows sideways scroll if needed */
-  table{ min-width:780px }          /* prevents squish that causes "..." */
-  tbody td{ padding:8px 10px; font-size:14px }
-  .lg{ height:22px; margin-right:6px }  /* smaller badge on phones */
-}
-/* ===== Mobile optimization (under 600px) ===== */
-@media (max-width:600px){
-
-  /* Hide GF + GA columns completely */
-  #tbl-leader th:nth-child(7),
-  #tbl-leader th:nth-child(8),
-  #tbl-leader td:nth-child(7),
-  #tbl-leader td:nth-child(8) {
-    display:none;
-  }
-
-  /* Optional: also hide GF/GA in Top-10 tables for consistency */
-  #tbl-gf th:nth-child(4),
-  #tbl-gf td:nth-child(4),
-  #tbl-ga th:nth-child(4),
-  #tbl-ga td:nth-child(4) {
-    display:none;
-  }
-
-  /* Reduce padding + font a touch for cleaner fit */
-  tbody td{padding:8px 8px;font-size:14px;}
-  thead th{padding:8px;font-size:12px;}
-  .lg{height:22px;margin-right:6px;}
-
-  /* Allow table to shrink slightly without scrollbars */
-  .card{overflow-x:hidden;}
-}
-/* ===== Mobile optimization (phones under 600px) ===== */
-@media (max-width:600px){
-
-  /* Hide GF + GA on phones to save space */
-  #tbl-leader th:nth-child(7),
-  #tbl-leader td:nth-child(7),
-  #tbl-leader th:nth-child(8),
-  #tbl-leader td:nth-child(8){
-    display:none;
-  }
-
-  /* Optional: also hide GF/GA in Top-10 tables for consistency */
-  #tbl-gf th:nth-child(4),
-  #tbl-gf td:nth-child(4),
-  #tbl-ga th:nth-child(4),
-  #tbl-ga td:nth-child(4){
-    display:none;
-  }
-
-  /* Adjust padding, font, and badge size for small screens */
-  thead th{ padding:8px; font-size:12px; }
-  tbody td{ padding:8px 8px; font-size:14px; }
-  .lg{ height:22px; margin-right:6px; }
-
-  /* Re-balance column widths so nothing cuts off */
-  #tbl-leader col.c-team{ width:50%; }
-  #tbl-leader col.c-rank{ width:7%; }
-
-  /* Prevent horizontal scrollbars */
-  .card{ overflow-x:hidden; }
-}
-
-/* ===== Extra-small phones (under 420px) ===== */
-@media (max-width:420px){
-
-  /* Hide GP column as well on the tiniest screens */
-  #tbl-leader th:nth-child(3),
-  #tbl-leader td:nth-child(3){
-    display:none;
-  }
-
-  /* Re-balance widths for visible columns */
-  #tbl-leader col.c-team{ width:56%; }
-  #tbl-leader col.c-rank{ width:8%; }
-
-  /* Slightly smaller fonts for ultra-compact layout */
-  thead th{ font-size:11.5px; }
-  tbody td{ font-size:13px; }
-}
-/* ===== Leaderboard column map =====
-1 # | 2 Team | 3 GP | 4 W | 5 D | 6 L | 7 GF | 8 GA | 9 GD | 10 Pts | 11 CS
-*/
-
-/* Remove CS everywhere (column 11) */
-#tbl-leader th:nth-child(11),
-#tbl-leader td:nth-child(11){ display:none; }
-
-/* ---------- Medium screens (<900px) ----------
-   Show: # Team GP W D L GF Pts
-   Hide: GA(8), GD(9)
------------------------------------------------- */
-@media (max-width:900px){
-  #tbl-leader th:nth-child(8),
-  #tbl-leader td:nth-child(8),   /* GA */
-  #tbl-leader th:nth-child(9),
-  #tbl-leader td:nth-child(9){   /* GD */
-    display:none;
-  }
-
-  /* rebalance widths so nothing clips */
-  #tbl-leader col.c-team{ width:50%; }
-  #tbl-leader col.c-rank{ width:7%; }
-  /* the remaining numeric cols share the rest */
-  thead th{ padding:8px; font-size:12px; }
-  tbody td{ padding:8px 8px; font-size:14px; }
-  .lg{ height:22px; margin-right:6px; }
-}
-
-/* ---------- Extra-small screens (<420px) ----------
-   Show: # Team W D L GD Pts
-   Hide: GP(3), GF(7) (GA/GD already hidden above, but we re-show GD here)
-   NOTE: CSS cannot reorder columns; order remains W D L.
----------------------------------------------------- */
-@media (max-width:420px){
-  /* hide GP and GF */
-  #tbl-leader th:nth-child(3),
-  #tbl-leader td:nth-child(3){ display:none; }  /* GP */
-  #tbl-leader th:nth-child(7),
-  #tbl-leader td:nth-child(7){ display:none; }  /* GF */
-
-  /* ensure GD (9) is visible on this breakpoint (in case other rules override) */
-  #tbl-leader th:nth-child(9),
-  #tbl-leader td:nth-child(9){ display:table-cell; }
-
-  /* give team more room */
-  #tbl-leader col.c-team{ width:58%; }
-  #tbl-leader col.c-rank{ width:8%; }
-
-  thead th{ font-size:11.5px; }
-  tbody td{ font-size:13px; }
-}
-
+.foot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:14px;color:var(--muted);font-size:12.5px}
 </style>
 </head>
 <body>
