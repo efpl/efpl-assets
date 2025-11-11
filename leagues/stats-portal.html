@@ -131,6 +131,63 @@ summary::after{content:"▾";margin-left:6px}
 details[open] summary::after{content:"▴"}
 .note{color:var(--muted);font-size:12.5px}
 .foot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:14px;color:var(--muted);font-size:12.5px}
+/* ===== Robust extra-small layout (≤420px) ===== */
+/* 1) Hide the header row to avoid smashed labels */
+@media (max-width:420px){
+  #tbl-leader thead{ display:none; }
+
+  /* 2) Keep only: # Team W D L GD Pts
+        (we already removed CS globally) */
+  /* Hide GP (3), GF (7), GA (8) */
+  #tbl-leader td:nth-child(3),
+  #tbl-leader td:nth-child(7),
+  #tbl-leader td:nth-child(8){ display:none !important; }
+
+  /* 3) Turn each data row into a tidy grid */
+  #tbl-leader tbody tr{
+    display:grid;
+    grid-template-columns: 2.8ch 1fr 2.6ch 2.6ch 2.6ch 3.2ch 3.2ch; /* # | Team | W | D | L | GD | Pts */
+    column-gap:10px;
+    align-items:center;
+  }
+
+  /* Map cells to the grid columns (by original order): 
+     1:#  2:Team  4:W  5:D  6:L  9:GD  10:Pts */
+  #tbl-leader td:nth-child(1){ grid-column:1; text-align:right; padding-right:6px; }
+  #tbl-leader td:nth-child(2){ grid-column:2; }
+  #tbl-leader td:nth-child(4){ grid-column:3; text-align:center; }
+  #tbl-leader td:nth-child(5){ grid-column:4; text-align:center; }
+  #tbl-leader td:nth-child(6){ grid-column:5; text-align:center; }
+  #tbl-leader td:nth-child(9){ grid-column:6; text-align:center; }
+  #tbl-leader td:nth-child(10){ grid-column:7; text-align:right; font-weight:800; }
+
+  /* 4) Tighter typography + badge for tiny screens */
+  #tbl-leader tbody td{ font-size:13px; padding:8px 8px; }
+  .lg{ height:20px; margin-right:6px; }
+  .teamname{ max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+  /* 5) Make sure the table fills its card without horizontal scroll */
+  .card{ overflow-x:hidden; }
+  #tbl-leader{ width:100%; table-layout:fixed; }
+}
+
+/* ===== Medium screens (≤900px) cleanup ===== */
+/* Keep: # Team GP W D L GF Pts  (hide GA & GD) */
+@media (max-width:900px){
+  #tbl-leader th:nth-child(8), #tbl-leader td:nth-child(8),  /* GA */
+  #tbl-leader th:nth-child(9), #tbl-leader td:nth-child(9) { /* GD */
+    display:none !important;
+  }
+  #tbl-leader col.c-team{ width:50%; }
+  #tbl-leader col.c-rank{ width:7%; }
+  thead th{ padding:8px; font-size:12px; }
+  #tbl-leader tbody td{ padding:8px 8px; font-size:14px; }
+  .lg{ height:22px; margin-right:6px; }
+}
+
+/* Remove CS everywhere on Leaderboard (safety) */
+#tbl-leader th:nth-child(11),
+#tbl-leader td:nth-child(11){ display:none !important; }
 </style>
 </head>
 <body>
