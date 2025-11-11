@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>eFPL Live Stats — Embed (Stable)</title>
+<title>eFPL Live Stats — Embed (Stable + GD)</title>
 <meta name="description" content="Live eFPL Season 2 stats across Diamond, Ruby, Sapphire, Crystal, Gold, and Emerald leagues." />
 <style>
 /* ========= Base / Palette ========= */
@@ -37,7 +37,8 @@ img{max-width:100%;height:auto;display:inline-block}
 .home{background:var(--ok)} .draw{background:var(--mid)} .away{background:var(--away)}
 
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.mini-grid{display:grid;grid-template-columns:1fr;gap:10px} /* stacked by default for embed */
+/* Stacked by default for embed to avoid tight squeezes */
+.mini-grid{display:grid;grid-template-columns:1fr;gap:10px}
 
 /* ========= Tables (stable + readable) ========= */
 table{width:100%;border-collapse:collapse;table-layout:auto}
@@ -48,14 +49,15 @@ tbody tr:nth-child(even){background:var(--card2)}
 .left{text-align:left}.right{text-align:right}.center{text-align:center}
 .numeric{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
 
-/* Leaderboard — simplified columns */
+/* Leaderboard — simplified columns incl. GD */
 #tbl-leader col.c-rank{width:4.2ch}
 #tbl-leader col.c-team{width:auto} /* flexible */
 #tbl-leader col.c-p,
 #tbl-leader col.c-w,
 #tbl-leader col.c-d,
-#tbl-leader col.c-l{width:4.6ch}
-#tbl-leader col.c-pts{width:5.2ch}
+#tbl-leader col.c-l,
+#tbl-leader col.c-gd{width:4.8ch}
+#tbl-leader col.c-pts{width:5.4ch}
 
 /* Team cell: wrap (no ellipsis), so names never show ".." */
 .teamwrap{display:flex;align-items:flex-start;gap:8px;min-width:0}
@@ -130,10 +132,13 @@ tbody tr:nth-child(even){background:var(--card2)}
         <table id="tbl-leader">
           <colgroup>
             <col class="c-rank"><col class="c-team">
-            <col class="c-p"><col class="c-w"><col class="c-d"><col class="c-l"><col class="c-pts">
+            <col class="c-p"><col class="c-w"><col class="c-d"><col class="c-l"><col class="c-gd"><col class="c-pts">
           </colgroup>
           <thead>
-            <tr><th>#</th><th class="left">Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>PTS</th></tr>
+            <tr>
+              <th>#</th><th class="left">Team</th>
+              <th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>PTS</th>
+            </tr>
           </thead>
           <tbody></tbody>
         </table>
@@ -388,6 +393,7 @@ function renderLeaderboard(teams){
       <td class="right numeric">${t.w}</td>
       <td class="right numeric">${t.d}</td>
       <td class="right numeric">${t.l}</td>
+      <td class="right numeric">${t.gd}</td>
       <td class="right numeric"><strong>${t.pts}</strong></td>`;
     tbody.appendChild(tr);
   });
