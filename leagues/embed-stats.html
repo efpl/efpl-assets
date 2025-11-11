@@ -17,50 +17,132 @@
   --ok:#2fbf71; --mid:#9aa4b2; --away:#5aa4ff;
 }
 *{box-sizing:border-box}
-html,body{margin:0;background:transparent;color:var(--ink);
-  font:15px/1.5 system-ui,Segoe UI,Roboto,Arial,sans-serif;}
+html,body{
+  margin:0;background:transparent;color:var(--ink);
+  font:15px/1.5 system-ui,Segoe UI,Roboto,Arial,sans-serif;
+}
 .wrap{width:100%;padding:0;margin:0}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px}
-.badge img{height:20px;width:auto;vertical-align:middle}
-.badge{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:5px 8px;
-  display:flex;align-items:center;gap:6px;cursor:pointer}
+
+/* badges */
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}
+.badge{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 10px;display:flex;align-items:center;gap:8px;cursor:pointer}
+.badge img{height:20px;width:auto;vertical-align:middle;object-fit:contain}
 .badge.active{background:var(--accent);color:#0b1b3d;border-color:transparent}
-.badges{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 8px}
 
-table{width:100%;border-collapse:collapse;table-layout:fixed}
-thead th{background:var(--accent);color:#0b1b3d;padding:8px;font-size:12px;text-transform:uppercase}
-tbody td{padding:8px;font-weight:600;white-space:nowrap}
-tbody tr:nth-child(odd){background:var(--card)}
-tbody tr:nth-child(even){background:var(--card2)}
-.left{text-align:left} .right{text-align:right;font-variant-numeric:tabular-nums}
+/* kpi rail */
+.rail{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:10px 0}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px}
+.kpi .t{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.kpi .v{font-weight:900;font-size:20px}
 
-.teamname{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:inline-block;max-width:100%}
-.lg{height:22px;width:auto;vertical-align:middle;margin-right:6px;object-fit:contain}
-
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+/* progress bars */
+.mini{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
 .bar{height:10px;border-radius:999px;background:rgba(255,255,255,.06);
-  overflow:hidden;border:1px solid var(--line);display:flex}
+     overflow:hidden;border:1px solid var(--line);display:flex}
 .seg{height:100%}
 .home{background:var(--ok)} .draw{background:var(--mid)} .away{background:var(--away)}
 
-#tbl-hi td{white-space:normal;line-height:1.35;padding:8px}
-#tbl-hi td.right{text-align:right}
+/* layout blocks */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* tables (embed-friendly) */
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+thead th{background:var(--accent);color:#0b1b3d;padding:8px;font-size:12px;text-transform:uppercase}
+tbody td{padding:8px;font-weight:600;vertical-align:middle}
+tbody tr:nth-child(odd){background:var(--card)} tbody tr:nth-child(even){background:var(--card2)}
+.left{text-align:left} .right{text-align:right} .center{text-align:center}
+.numeric{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+
+/* team cell: allow wrapping (NO ellipsis) in embed for full names */
+.teamwrap{display:flex;align-items:center;gap:8px}
+.lg{height:22px;width:auto;object-fit:contain;flex:0 0 auto;filter:drop-shadow(0 0 3px rgba(0,0,0,.6))}
+.teamname{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.25}
+
+/* highlights wrap cleanly */
+#tbl-hi td{white-space:normal;line-height:1.35}
+
+/* per-league mini cards */
+.mini-card{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px}
+.mini-card img{height:20px;width:auto;object-fit:contain}
 .note{color:var(--muted);font-size:12px}
 
+/* ------- responsive ------- */
 @media (max-width:900px){
   .two-col{grid-template-columns:1fr}
+  .mini{grid-template-columns:1fr} /* stack progress bars */
+  .rail{grid-template-columns:repeat(2,1fr)}
+  /* simplify leaderboard: hide GA+GD; also hide matching cols to avoid ghost width */
+  #tbl-leader th:nth-child(8), #tbl-leader td:nth-child(8),
+  #tbl-leader th:nth-child(9), #tbl-leader td:nth-child(9){display:none !important}
+  #tbl-leader col.c-ga, #tbl-leader col.c-gd{display:none !important}
+  #tbl-leader{table-layout:auto}
+}
+@media (max-width:520px){
+  .rail{grid-template-columns:1fr}
+  .mini-grid{grid-template-columns:1fr}
+}
+
+/* extra-small leaderboard: drop header and remap rows to grid so Pts stays visible */
+@media (max-width:420px){
+  #tbl-leader thead{display:none}
+  /* hide GP & GF (GA already hidden above) */
+  #tbl-leader td:nth-child(3), #tbl-leader td:nth-child(7){display:none !important}
+  #tbl-leader col.c-gp, #tbl-leader col.c-gf{display:none !important}
+  #tbl-leader tbody tr{
+    display:grid;
+    grid-template-columns:2.8ch 1fr 2.6ch 2.6ch 2.6ch 3.2ch 3.2ch; /* # | Team | W | D | L | GD | Pts */
+    column-gap:8px;align-items:center
+  }
+  #tbl-leader td:nth-child(1){grid-column:1;text-align:right}
+  #tbl-leader td:nth-child(2){grid-column:2}
+  #tbl-leader td:nth-child(4){grid-column:3;text-align:center}
+  #tbl-leader td:nth-child(5){grid-column:4;text-align:center}
+  #tbl-leader td:nth-child(6){grid-column:5;text-align:center}
+  #tbl-leader td:nth-child(9){grid-column:6;text-align:center}
+  #tbl-leader td:nth-child(10){grid-column:7;text-align:right;font-weight:800}
 }
 </style>
 </head>
 <body>
 <div class="wrap">
 
+  <!-- League filter -->
   <nav class="badges" id="badges"></nav>
 
-  <div class="two-col">
+  <!-- KPIs -->
+  <section class="rail" aria-label="Key metrics">
+    <div class="kpi"><div class="t">Matches</div><div class="v" id="kpi-matches">-</div></div>
+    <div class="kpi"><div class="t">Goals</div><div class="v" id="kpi-goals">-</div></div>
+    <div class="kpi"><div class="t">Avg / match</div><div class="v" id="kpi-avg">-</div></div>
+    <div class="kpi"><div class="t">Leagues</div><div class="v" id="kpi-leagues">-</div></div>
+  </section>
+
+  <!-- Result split + Completion (stack on small) -->
+  <section class="mini" aria-label="Progress bars">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <strong>Result split</strong><span id="split-text" class="note">-</span>
+      </div>
+      <div class="bar"><span id="seg-home" class="seg home" style="width:0%"></span><span id="seg-draw" class="seg draw" style="width:0%"></span><span id="seg-away" class="seg away" style="width:0%"></span></div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <strong>Completion</strong><span id="prog-text" class="note">-</span>
+      </div>
+      <div class="bar"><span id="seg-prog" class="seg" style="width:0%;background:linear-gradient(90deg,#ffd03b,#f9d71c)"></span></div>
+    </div>
+  </section>
+
+  <!-- Leaderboard + Highlights (with More tables) -->
+  <section class="two-col">
     <div class="card">
       <strong style="display:block;margin-bottom:6px">Leaderboard</strong>
-      <table id="tbl-leader">
+      <table id="tbl-leader" aria-label="Leaderboard">
+        <colgroup>
+          <col class="c-rank"><col class="c-team"><col class="c-gp"><col class="c-w"><col class="c-d"><col class="c-l"><col class="c-gf"><col class="c-ga"><col class="c-gd"><col class="c-pts">
+        </colgroup>
         <thead><tr>
           <th>#</th><th class="left">Team</th><th>GP</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th>
         </tr></thead>
@@ -70,18 +152,49 @@ tbody tr:nth-child(even){background:var(--card2)}
 
     <div class="card">
       <strong style="display:block;margin-bottom:6px">Highlights</strong>
-      <table id="tbl-hi"><tbody>
+      <table id="tbl-hi" aria-label="Highlights"><tbody>
         <tr><td class="left">Biggest win</td><td id="hi-big" class="right">-</td></tr>
         <tr><td class="left">Highest scoring game</td><td id="hi-hsg" class="right">-</td></tr>
         <tr><td class="left">Top scoring team</td><td id="hi-topgf" class="right">-</td></tr>
         <tr><td class="left">Most conceded</td><td id="hi-mostga" class="right">-</td></tr>
         <tr><td class="left">Most clean sheets</td><td id="hi-mostcs" class="right">-</td></tr>
       </tbody></table>
+
+      <details style="margin-top:10px">
+        <summary>More tables</summary>
+        <div class="mini-grid" style="margin-top:8px">
+          <div class="card">
+            <strong>Top scoring teams (Top 10)</strong>
+            <table id="tbl-gf" style="margin-top:6px" aria-label="Top scoring">
+              <colgroup><col class="c-rank"><col class="c-team"><col class="c-gp"><col class="c-gf"><col class="c-gd"><col class="c-pts"></colgroup>
+              <thead><tr><th>#</th><th class="left">Team</th><th>GP</th><th>GF</th><th>GD</th><th>Pts</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="card">
+            <strong>Best defence (Top 10)</strong>
+            <table id="tbl-ga" style="margin-top:6px" aria-label="Best defence">
+              <colgroup><col class="c-rank"><col class="c-team"><col class="c-gp"><col class="c-ga"><col class="c-gd"><col class="c-pts"></colgroup>
+              <thead><tr><th>#</th><th class="left">Team</th><th>GP</th><th>GA</th><th>GD</th><th>Pts</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </details>
     </div>
-  </div>
+  </section>
+
+  <!-- Per-league comparison -->
+  <section class="card" style="margin-top:10px">
+    <strong style="display:block;margin-bottom:6px">Per-league comparison</strong>
+    <div id="league-mini" class="mini-grid"></div>
+    <div class="note" style="margin-top:6px">Each card: Avg goals • Home/Draw/Away % • Completion %.</div>
+  </section>
+
 </div>
 
 <script>
+/* ===== config ===== */
 const LEAGUES=[
  {key:'All',name:'All',id:null,badge:null},
  {key:'Diamond',id:'1vkDOFfwBJJnSHOPM0BFcrNyZd-2nIbiDKNnWGKT3OP0',badge:'Diamond-League.png'},
@@ -92,69 +205,204 @@ const LEAGUES=[
  {key:'Gold',id:'1ACOQ3dffrjczk1LmBmPiC-wV37t9nQKEDwApOEEeFU8',badge:'Gold-League.png'}
 ];
 const BADGE_BASE='https://efpl-assets.pages.dev/img/leagues/';
-const FX_TAB='Fixtures',FX_RANGE='C4:I94',EM_TAB='Embed',EM_RANGE='A15:C105';
+const FX_TAB='Fixtures',FX_RANGE='C4:I94';
+const EM_TAB='Embed',EM_RANGE='A15:C105';
 const CB=Math.floor(Date.now()/(5*60*1e3));
+
+/* ===== utils ===== */
 const esc=s=>String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m]));
 const parse=t=>JSON.parse(t.slice(t.indexOf("{"),t.lastIndexOf("}")+1));
 const num=x=>Number.isFinite(+x)?+x:null;
 const truthy=v=>v===true||String(v).toLowerCase()==='true'||v==='☑';
+const pct=(p,t)=>t?((p*100/t).toFixed(1)+'%'):'0.0%';
+const fmt=n=>Number.isFinite(n)?n.toLocaleString():'0';
+const byId=id=>document.getElementById(id);
+
 async function gv(id,s,r){
- const u=`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&sheet=${s}&range=${r}&cachebust=${CB}`;
- const res=await fetch(u);return parse(await res.text());
+  const u=`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(s)}&range=${encodeURIComponent(r)}&cachebust=${CB}`;
+  const res=await fetch(u); return parse(await res.text());
 }
-async function get(id){
- try{
-  const f=await gv(id,FX_TAB,FX_RANGE);const rows=f.table.rows||[];
-  const items=rows.map(r=>{const c=r.c||[];return{h:c[0]?.v||'',hg:num(c[1]?.v),ag:num(c[3]?.v),a:c[4]?.v||'',done:truthy(c[5]?.v)}}).filter(m=>m.h&&m.a&&m.done);
-  return items.length?items:null;
- }catch{return null;}
+
+/* prefer Fixtures, fallback to Embed if no completed scores found */
+async function fetchLeague(lg){
+  let items=[], scheduled=0;
+  try{
+    const f=await gv(lg.id,FX_TAB,FX_RANGE);
+    const rows=f.table.rows||[];
+    for(const r of rows){
+      const c=r.c||[];
+      const home=c[0]?.v||'', hg=num(c[1]?.v), ag=num(c[3]?.v), away=c[4]?.v||'', done=truthy(c[5]?.v);
+      if(home&&away) scheduled++;
+      if(done && Number.isFinite(hg) && Number.isFinite(ag)){
+        items.push({league:lg.key,home,away,hg,ag});
+      }
+    }
+    if(items.length) return {items, scheduled};
+  }catch(_){}
+  try{
+    const e=await gv(lg.id,EM_TAB,EM_RANGE);
+    const rows=e.table.rows||[];
+    for(const r of rows){
+      const c=r.c||[]; const home=c[0]?.v||'', mid=c[1]?.v||'', away=c[2]?.v||'';
+      if(home&&away) scheduled++;
+      const m=String(mid).replace(/[^0-9\-]/g,'').trim().match(/^(\d+)\s*-\s*(\d+)$/);
+      if(m){ items.push({league:lg.key,home,away,hg:+m[1],ag:+m[2]}); }
+    }
+  }catch(_){}
+  return {items, scheduled};
 }
-async function load(keys=['All']){
- const sel=keys.includes('All')?LEAGUES.filter(x=>x.id):LEAGUES.filter(x=>keys.includes(x.key)&&x.id);
- let matches=[];
- for(const lg of sel){
-  const m=await get(lg.id);if(!m)continue;
-  matches.push(...m.map(x=>({...x,league:lg.key})));
- }
- return matches;
+
+async function load(selected=['All']){
+  const sel=selected.includes('All')?LEAGUES.filter(x=>x.id):LEAGUES.filter(x=>x.id && selected.includes(x.key));
+  const all=[], per={}, leagues=[];
+  let scheduledTotal=0;
+
+  for(const lg of sel){
+    const {items,scheduled}=await fetchLeague(lg);
+    leagues.push(lg.key);
+    per[lg.key]={matches:items,scheduled};
+    scheduledTotal+=scheduled;
+    all.push(...items);
+  }
+  return {matches:all, leagues, per, scheduledTotal};
 }
-function calc(M){
- const T=new Map();
- const add=t=>T.get(t)||T.set(t,{t,lg:null,gp:0,w:0,d:0,l:0,gf:0,ga:0,gd:0,pts:0,cs:0}).get(t);
- for(const m of M){
-  const H=add(m.h),A=add(m.a);
-  if(!H.lg)H.lg=m.league;if(!A.lg)A.lg=m.league;
-  H.gp++;A.gp++;H.gf+=m.hg;H.ga+=m.ag;A.gf+=m.ag;A.ga+=m.hg;
-  if(m.hg>m.ag){H.w++;H.pts+=3;A.l++;}else if(m.hg<m.ag){A.w++;A.pts+=3;H.l++;}else{H.d++;A.d++;H.pts++;A.pts++;}
-  if(m.ag===0)H.cs++;if(m.hg===0)A.cs++;
- }
- return [...T.values()].map(t=>(t.gd=t.gf-t.ga,t));
+
+/* aggregate */
+function aggregate(M){
+  const teams=new Map(); let goals=0, homeW=0, draw=0, awayW=0, biggest=null, highest=null;
+  const add=t=>teams.get(t)||teams.set(t,{team:t,league:null,gp:0,w:0,d:0,l:0,gf:0,ga:0,gd:0,pts:0,cs:0}).get(t);
+
+  for(const m of M){
+    goals+=m.hg+m.ag;
+    if(m.hg>m.ag) homeW++; else if(m.hg<m.ag) awayW++; else draw++;
+
+    const diff=Math.abs(m.hg-m.ag);
+    if(!biggest || diff>biggest.diff){
+      biggest={diff,text:(m.hg>=m.ag?`${m.home} ${m.hg}-${m.ag} ${m.away}`:`${m.away} ${m.ag}-${m.hg} ${m.home}`),sub:m.league};
+    }
+    const total=m.hg+m.ag;
+    if(!highest || total>highest.total){ highest={total,text:`${m.home} ${m.hg}-${m.ag} ${m.away}`,sub:m.league}; }
+
+    const H=add(m.home), A=add(m.away);
+    if(!H.league) H.league=m.league; if(!A.league) A.league=m.league;
+    H.gp++; A.gp++; H.gf+=m.hg; H.ga+=m.ag; A.gf+=m.ag; A.ga+=m.hg;
+    if(m.hg>m.ag){ H.w++; H.pts+=3; A.l++; }
+    else if(m.hg<m.ag){ A.w++; A.pts+=3; H.l++; }
+    else { H.d++; A.d++; H.pts++; A.pts++; }
+    if(m.ag===0) H.cs++; if(m.hg===0) A.cs++;
+  }
+  const list=[...teams.values()].map(t=>(t.gd=t.gf-t.ga,t));
+  const topGF=list.length?[...list].sort((a,b)=>b.gf-a.gf||a.team.localeCompare(b.team))[0]:null;
+  const mostGA=list.length?[...list].sort((a,b)=>b.ga-a.ga||a.team.localeCompare(b.team))[0]:null;
+  const mostCS=list.length?[...list].sort((a,b)=>b.cs-a.cs||a.team.localeCompare(b.team))[0]:null;
+
+  return {played:M.length,goals,avg:M.length?goals/M.length:0,homeW,draw,awayW,teams:list,biggest,highest,topGF,mostGA,mostCS};
 }
-function teamCell(t){return `<img class="lg" src="${BADGE_BASE}${t.lg}-League.png" alt="${t.lg}"><span class="teamname">${esc(t.t)}</span>`}
-function drawTeams(list){
- const b=document.querySelector('#tbl-leader tbody');b.innerHTML='';
- list.sort((a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf||a.t.localeCompare(b.t))
- .forEach((t,i)=>b.insertAdjacentHTML('beforeend',`<tr><td class="right">${i+1}</td><td class="left">${teamCell(t)}</td><td class="right">${t.gp}</td><td class="right">${t.w}</td><td class="right">${t.d}</td><td class="right">${t.l}</td><td class="right">${t.gf}</td><td class="right">${t.ga}</td><td class="right">${t.gd}</td><td class="right"><strong>${t.pts}</strong></td></tr>`));
+function perLeague(per){
+  const out=[];
+  for(const k in per){
+    const ms=per[k].matches, scheduled=per[k].scheduled;
+    const played=ms.length;
+    const goals=ms.reduce((s,m)=>s+m.hg+m.ag,0);
+    const avg=played?goals/played:0;
+    const homeW=ms.filter(m=>m.hg>m.ag).length;
+    const draw =ms.filter(m=>m.hg===m.ag).length;
+    const awayW=ms.filter(m=>m.hg<m.ag).length;
+    out.push({league:k,played,scheduled,avg,homeW,draw,awayW});
+  }
+  return out.sort((a,b)=>a.league.localeCompare(b.league));
 }
-function highlights(list){
- const topGF=[...list].sort((a,b)=>b.gf-a.gf)[0];
- const mostGA=[...list].sort((a,b)=>b.ga-a.ga)[0];
- const mostCS=[...list].sort((a,b)=>b.cs-a.cs)[0];
- document.getElementById('hi-topgf').textContent=`${topGF.t} - ${topGF.gf}`;
- document.getElementById('hi-mostga').textContent=`${mostGA.t} - ${mostGA.ga}`;
- document.getElementById('hi-mostcs').textContent=`${mostCS.t} - ${mostCS.cs}`;
+
+/* render */
+function teamCell(t){return `<div class="teamwrap"><img class="lg" src="${BADGE_BASE}${t.league}-League.png" alt="${t.league}"><div class="teamname">${esc(t.team)}</div></div>`;}
+function renderBadges(){
+  const host=byId('badges'); host.innerHTML='';
+  const mk=(k,html,active)=>{const d=document.createElement('div'); d.className='badge'+(active?' active':''); d.dataset.key=k; d.innerHTML=html; d.onclick=()=>selectLeague(k); host.appendChild(d);};
+  mk('All', `<span>All</span>`, true);
+  LEAGUES.filter(x=>x.id).forEach(l=> mk(l.key, `<img src="${BADGE_BASE}${l.badge}" alt="${l.key}"><span>${l.key}</span>`, false));
 }
-function badges(){
- const host=document.getElementById('badges');host.innerHTML='';
- const mk=(k,h,a)=>{const d=document.createElement('div');d.className='badge'+(a?' active':'');d.dataset.key=k;d.innerHTML=h;d.onclick=()=>sel(k);host.appendChild(d);};
- mk('All','<span>All</span>',true);
- LEAGUES.filter(x=>x.id).forEach(l=>mk(l.key,`<img src="${BADGE_BASE}${l.badge}" alt="${l.key}"><span>${l.key}</span>`));
+function renderRails(agg, leagues, scheduledTotal){
+  byId('kpi-matches').textContent=fmt(agg.played);
+  byId('kpi-goals').textContent=fmt(agg.goals);
+  byId('kpi-avg').textContent=agg.avg.toFixed(2);
+  byId('kpi-leagues').textContent=leagues.length;
+  byId('split-text').textContent=`${fmt(agg.homeW)} H • ${fmt(agg.draw)} D • ${fmt(agg.awayW)} A • ${pct(agg.homeW,agg.played)} / ${pct(agg.draw,agg.played)} / ${pct(agg.awayW,agg.played)}`;
+  byId('seg-home').style.width=(agg.played?agg.homeW*100/agg.played:0)+'%';
+  byId('seg-draw').style.width=(agg.played?agg.draw*100/agg.played:0)+'%';
+  byId('seg-away').style.width=(agg.played?agg.awayW*100/agg.played:0)+'%';
+  byId('prog-text').textContent=scheduledTotal?`${fmt(agg.played)} / ${fmt(scheduledTotal)} • ${pct(agg.played,scheduledTotal)}`:'0 / 0 • 0.0%';
+  byId('seg-prog').style.width=scheduledTotal?(agg.played*100/scheduledTotal)+'%':'0%';
 }
-async function sel(k){
- document.querySelectorAll('.badge').forEach(b=>b.classList.toggle('active',b.dataset.key===k));
- const M=await load([k]);const teams=calc(M);drawTeams(teams);highlights(teams);
+function renderLeaderboard(teams){
+  const tbody=document.querySelector('#tbl-leader tbody'); tbody.innerHTML='';
+  const rows=[...teams].sort((a,b)=> b.pts-a.pts || b.gd-a.gd || b.gf-a.gf || a.team.localeCompare(b.team));
+  rows.forEach((t,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td class="right numeric">${i+1}</td>
+      <td class="left">${teamCell(t)}</td>
+      <td class="right numeric">${t.gp}</td>
+      <td class="right numeric">${t.w}</td>
+      <td class="right numeric">${t.d}</td>
+      <td class="right numeric">${t.l}</td>
+      <td class="right numeric">${t.gf}</td>
+      <td class="right numeric">${t.ga}</td>
+      <td class="right numeric">${t.gd}</td>
+      <td class="right numeric"><strong>${t.pts}</strong></td>`;
+    tbody.appendChild(tr);
+  });
 }
-(async function init(){badges();const M=await load();const t=calc(M);drawTeams(t);highlights(t);})();
+function renderHighlights(agg){
+  document.getElementById('hi-big').textContent   = agg.biggest ? `${agg.biggest.text} (${agg.biggest.sub})` : '-';
+  document.getElementById('hi-hsg').textContent   = agg.highest ? `${agg.highest.text} (${agg.highest.total} goals • ${agg.highest.sub})` : '-';
+  document.getElementById('hi-topgf').textContent = agg.topGF ? `${agg.topGF.team} - ${agg.topGF.gf}` : '-';
+  document.getElementById('hi-mostga').textContent= agg.mostGA ? `${agg.mostGA.team} - ${agg.mostGA.ga}` : '-';
+  document.getElementById('hi-mostcs').textContent= agg.mostCS ? `${agg.mostCS.team} - ${agg.mostCS.cs}` : '-';
+}
+function renderTopTables(teams){
+  const gf=[...teams].sort((a,b)=> b.gf-a.gf || a.team.localeCompare(b.team)).slice(0,10);
+  const ga=[...teams].sort((a,b)=> a.ga-b.ga || a.team.localeCompare(b.team)).slice(0,10);
+  const gfBody=document.querySelector('#tbl-gf tbody'); gfBody.innerHTML='';
+  const gaBody=document.querySelector('#tbl-ga tbody'); gaBody.innerHTML='';
+  gf.forEach((t,i)=>gfBody.insertAdjacentHTML('beforeend',`<tr>
+    <td class="right numeric">${i+1}</td><td class="left">${teamCell(t)}</td>
+    <td class="right numeric">${t.gp}</td><td class="right numeric">${t.gf}</td>
+    <td class="right numeric">${t.gd}</td><td class="right numeric">${t.pts}</td></tr>`));
+  ga.forEach((t,i)=>gaBody.insertAdjacentHTML('beforeend',`<tr>
+    <td class="right numeric">${i+1}</td><td class="left">${teamCell(t)}</td>
+    <td class="right numeric">${t.gp}</td><td class="right numeric">${t.ga}</td>
+    <td class="right numeric">${t.gd}</td><td class="right numeric">${t.pts}</td></tr>`));
+}
+function renderPerLeague(minis){
+  const host=byId('league-mini'); host.innerHTML='';
+  minis.forEach(m=>{
+    const line=`${m.played?m.avg.toFixed(2):'0.00'} avg • ${pct(m.homeW,m.played)} / ${pct(m.draw,m.played)} / ${pct(m.awayW,m.played)} • ${pct(m.played,m.scheduled||0)}`;
+    host.insertAdjacentHTML('beforeend',`<div class="mini-card"><img src="${BADGE_BASE}${m.league}-League.png" alt="${m.league}"><div><div><strong>${m.league}</strong></div><div class="note">${line}</div></div></div>`);
+  });
+}
+
+/* controller */
+async function run(keys=['All']){
+  const {matches, leagues, per, scheduledTotal}=await load(keys);
+  const agg=aggregate(matches);
+  renderRails(agg, leagues, scheduledTotal);
+  renderLeaderboard(agg.teams);
+  renderHighlights(agg);
+  renderTopTables(agg.teams);
+  renderPerLeague(perLeague(per));
+}
+function badges(){ /* already defined as renderBadges, but nicer name in embed */
+  renderBadges();
+}
+async function selectLeague(key){
+  document.querySelectorAll('.badge').forEach(b=>b.classList.toggle('active',b.dataset.key===key));
+  await run([key]);
+}
+
+/* init */
+(async function init(){
+  badges();
+  await run(['All']);
+})();
 </script>
 </body>
 </html>
