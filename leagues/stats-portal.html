@@ -250,6 +250,55 @@ tbody td{
   /* Allow table to shrink slightly without scrollbars */
   .card{overflow-x:hidden;}
 }
+/* ===== Mobile optimization (phones under 600px) ===== */
+@media (max-width:600px){
+
+  /* Hide GF + GA on phones to save space */
+  #tbl-leader th:nth-child(7),
+  #tbl-leader td:nth-child(7),
+  #tbl-leader th:nth-child(8),
+  #tbl-leader td:nth-child(8){
+    display:none;
+  }
+
+  /* Optional: also hide GF/GA in Top-10 tables for consistency */
+  #tbl-gf th:nth-child(4),
+  #tbl-gf td:nth-child(4),
+  #tbl-ga th:nth-child(4),
+  #tbl-ga td:nth-child(4){
+    display:none;
+  }
+
+  /* Adjust padding, font, and badge size for small screens */
+  thead th{ padding:8px; font-size:12px; }
+  tbody td{ padding:8px 8px; font-size:14px; }
+  .lg{ height:22px; margin-right:6px; }
+
+  /* Re-balance column widths so nothing cuts off */
+  #tbl-leader col.c-team{ width:50%; }
+  #tbl-leader col.c-rank{ width:7%; }
+
+  /* Prevent horizontal scrollbars */
+  .card{ overflow-x:hidden; }
+}
+
+/* ===== Extra-small phones (under 420px) ===== */
+@media (max-width:420px){
+
+  /* Hide GP column as well on the tiniest screens */
+  #tbl-leader th:nth-child(3),
+  #tbl-leader td:nth-child(3){
+    display:none;
+  }
+
+  /* Re-balance widths for visible columns */
+  #tbl-leader col.c-team{ width:56%; }
+  #tbl-leader col.c-rank{ width:8%; }
+
+  /* Slightly smaller fonts for ultra-compact layout */
+  thead th{ font-size:11.5px; }
+  tbody td{ font-size:13px; }
+}
 </style>
 </head>
 <body>
