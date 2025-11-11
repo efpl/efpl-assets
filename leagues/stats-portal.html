@@ -21,7 +21,7 @@
   * { box-sizing:border-box }
   html,body{margin:0;background:var(--bg);color:var(--ink);font:15.5px/1.55 system-ui,Segoe UI,Roboto,Arial,sans-serif}
 
-  .wrap{max-width:1080px;margin:0 auto;padding:16px 16px 28px}
+  .wrap{max-width:1220px;margin:0 auto;padding:16px 16px 28px}
 
   /* Header */
   .hdr{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0}
@@ -43,82 +43,62 @@
   .kpi .v{font-weight:900;font-size:20px}
 
   /* Bars */
-  .bar{
-    height:10px;border-radius:999px;background:rgba(255,255,255,.06);
+  .bar{height:10px;border-radius:999px;background:rgba(255,255,255,.06);
     overflow:hidden;border:1px solid var(--line);
-    display:flex;align-items:stretch
-  }
+    display:flex;align-items:stretch}
   .seg{height:100%;display:block}
   .home{background:var(--ok)} .draw{background:var(--mid)} .away{background:var(--away)}
   .mini{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
   .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
 
   /* Tables */
-  table{
-    width:100%;
-    border-collapse:collapse;
-    table-layout:fixed;
-    word-break:keep-all;
-  }
-  thead th{
-    background:var(--accent);
-    color:#0b1b3d;
-    padding:8px;
-    font-size:12px;
-    text-transform:uppercase;
-    letter-spacing:.03em;
-  }
-  tbody td{
-    padding:8px;
-    font-weight:600;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
+  table{width:100%;border-collapse:collapse;table-layout:fixed}
+  thead th{background:var(--accent);color:#0b1b3d;padding:10px;font-size:12px;text-transform:uppercase;letter-spacing:.03em}
+  tbody td{padding:10px 12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   tbody tr:nth-child(odd){background:var(--card)}
   tbody tr:nth-child(even){background:var(--card2)}
   .left{text-align:left;}
-  .right{text-align:right}
+  .right{text-align:right;font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
   .center{text-align:center}
   .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
-  /* Larger badges */
-  .lg{
-    height:22px;
-    width:auto;
-    vertical-align:middle;
-    margin-right:8px;
-    object-fit:contain;
-    filter:drop-shadow(0 0 2px rgba(0,0,0,.6));
+  /* Team name single line + ellipsis */
+  .teamname{
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    display:inline-block;
+    max-width:100%;
   }
+
+  /* Larger league badges */
+  .lg{height:22px;width:auto;vertical-align:middle;margin-right:8px;object-fit:contain;filter:drop-shadow(0 0 2px rgba(0,0,0,.6));}
 
   /* Column widths */
   #tbl-leader col.c-rank { width:4% }
-  #tbl-leader col.c-team { width:34% }
+  #tbl-leader col.c-team { width:42% }
   #tbl-leader col.c-gp,
   #tbl-leader col.c-w,
   #tbl-leader col.c-d,
-  #tbl-leader col.c-l   { width:6% }
+  #tbl-leader col.c-l   { width:5.5% }
   #tbl-leader col.c-gf,
   #tbl-leader col.c-ga,
   #tbl-leader col.c-gd,
-  #tbl-leader col.c-cs  { width:7% }
+  #tbl-leader col.c-cs  { width:6.5% }
   #tbl-leader col.c-pts { width:8% }
 
   #tbl-gf col.c-rank,
   #tbl-ga col.c-rank { width:6% }
   #tbl-gf col.c-team,
-  #tbl-ga col.c-team { width:44% }
+  #tbl-ga col.c-team { width:52% }
   #tbl-gf col.c-gp,
-  #tbl-ga col.c-gp   { width:10% }
+  #tbl-ga col.c-gp   { width:9% }
   #tbl-gf col.c-gf,
   #tbl-ga col.c-ga,
   #tbl-gf col.c-gd,
   #tbl-ga col.c-gd,
   #tbl-gf col.c-pts,
-  #tbl-ga col.c-pts  { width:10% }
-
-  .left span { display:inline-block; max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+  #tbl-ga col.c-pts  { width:9% }
 
   @media (max-width:900px){
     .rail{grid-template-columns:repeat(2,1fr)}
@@ -252,7 +232,7 @@
 <script>
 /* ====== CONFIG ====== */
 const LEAGUES = [
-  { key:'All',      name:'All Leagues', badge:null, id:null }, // synthetic
+  { key:'All',      name:'All Leagues', badge:null, id:null },
   { key:'Diamond',  name:'Diamond',  badge:'Diamond-League.png',  id:'1vkDOFfwBJJnSHOPM0BFcrNyZd-2nIbiDKNnWGKT3OP0' },
   { key:'Ruby',     name:'Ruby',     badge:'Ruby-League.png',     id:'12Qg5yi3yQtsPSrd6EHxROkPNurVn5ylzELPvU4UOmGU' },
   { key:'Sapphire', name:'Sapphire', badge:'Sapphire-League.png', id:'1qa03hOquzVg8ithFLdhrel2O3k3nTQCQZp81AWFvECg' },
@@ -262,8 +242,8 @@ const LEAGUES = [
 ];
 const BADGE_BASE = 'https://efpl-assets.pages.dev/img/leagues/';
 
-const FX_TAB = 'Fixtures', FX_RANGE='C4:I94'; // Home|HG|-|AG|Away|Completed|Completed On
-const EM_TAB = 'Embed',    EM_RANGE='A15:C105'; // Home|mid|Away
+const FX_TAB = 'Fixtures', FX_RANGE='C4:I94'; 
+const EM_TAB = 'Embed',    EM_RANGE='A15:C105'; 
 const BUCKET_MS = 5*60*1000, CB = Math.floor(Date.now()/BUCKET_MS);
 
 /* ====== Utils ====== */
@@ -284,6 +264,7 @@ async function fetchRange(id, sheet, range){
   if(!res.ok) throw new Error(res.status+' '+txt.slice(0,160));
   return parseGviz(txt);
 }
+
 async function loadFromFixtures(id){
   const data=await fetchRange(id, FX_TAB, FX_RANGE);
   const rows=(data.table.rows||[]).map(r=>(r.c||[]).map(c=>c?c.v:''));
@@ -295,6 +276,7 @@ async function loadFromFixtures(id){
   });
   return {items, scheduled};
 }
+
 async function loadFromEmbed(id){
   const data=await fetchRange(id, EM_TAB, EM_RANGE);
   const rows=(data.table.rows||[]).map(r=>(r.c||[]).map(c=>c?c.v:'')).filter(r=>r && !r.every(x=>String(x).trim()===''));
@@ -306,6 +288,7 @@ async function loadFromEmbed(id){
   });
   return {items, scheduled};
 }
+
 async function loadAll(selectedKeys){
   const selected = selectedKeys.includes('All')
     ? LEAGUES.filter(x=>x.id)
@@ -341,7 +324,7 @@ async function loadAll(selectedKeys){
   return {matches, leagues, perLeague, scheduledTotal};
 }
 
-/* ====== Aggregation (records league per team) ====== */
+/* ====== Aggregation ====== */
 function aggregate(matches){
   const played=matches.length;
   const goals=matches.reduce((s,m)=>s+m.hg+m.ag,0);
@@ -419,6 +402,7 @@ function renderBadges(){
     host.appendChild(div);
   });
 }
+
 function selectLeague(key){
   [...document.querySelectorAll('.badge')].forEach(b=>b.classList.toggle('active', b.dataset.key===key));
   run([key]);
@@ -437,13 +421,12 @@ function renderRails(agg, leagues, scheduledTotal){
 
   byId('prog-text').textContent = scheduledTotal ? `${fmt(agg.played)} / ${fmt(scheduledTotal)} • ${pct(agg.played,scheduledTotal)}` : '0 / 0 • 0.0%';
   byId('seg-prog').style.width = scheduledTotal ? (agg.played*100/scheduledTotal)+'%' : '0%';
-
   const up=byId('updated'); if(up) up.textContent='Updated '+new Date().toLocaleString();
 }
 
 function teamCell(t){
-  const lg = t.league || 'Diamond'; // fallback
-  return `<img class="lg" src="${BADGE_BASE}${lg}-League.png" alt="${esc(lg)}"><span title="${esc(t.team)}">${esc(t.team)}</span>`;
+  const lg = t.league || 'Diamond';
+  return `<img class="lg" src="${BADGE_BASE}${lg}-League.png" alt="${esc(lg)}"><span class="teamname" title="${esc(t.team)}">${esc(t.team)}</span>`;
 }
 
 function renderLeaderboard(teams){
@@ -488,7 +471,6 @@ function renderMini(minis){
 }
 
 function renderTopTables(teams){
-  // Top GF
   const gf = [...teams].sort((a,b)=> b.gf-a.gf || a.team.localeCompare(b.team)).slice(0,10);
   const gfBody = byId('tbl-gf').querySelector('tbody'); gfBody.innerHTML='';
   gf.forEach((t,i)=>{
@@ -497,7 +479,6 @@ function renderTopTables(teams){
     gfBody.appendChild(tr);
   });
 
-  // Best defence
   const ga = [...teams].sort((a,b)=> a.ga-b.ga || a.team.localeCompare(b.team)).slice(0,10);
   const gaBody = byId('tbl-ga').querySelector('tbody'); gaBody.innerHTML='';
   ga.forEach((t,i)=>{
@@ -510,11 +491,9 @@ function renderTopTables(teams){
 /* ====== Controller ====== */
 async function run(selectedKeys){
   if(!selectedKeys||!selectedKeys.length) selectedKeys=['All'];
-
   const {matches, leagues, perLeague, scheduledTotal} = await loadAll(selectedKeys);
   const agg = aggregate(matches);
   const minis = leagueAggregates(perLeague);
-
   renderRails(agg, leagues, scheduledTotal);
   renderLeaderboard(agg.teams);
   renderHighlights(agg);
