@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>eFPL — Season 2 Master Stats</title>
+
+<!-- Brand vars + transparent background -->
+<style>
+  :root{
+    --bg: transparent;
+    --card:#00143b; --card2:#05225a;
+    --row1:#001a4d; --row2:#002060; --hover:#002b80;
+    --ink:#ffffff; --muted:#cbd5e1; --accent:#f9d71c; --ink-dark:#0b1b3d;
+    --line:rgba(249,215,28,.35);
+  }
+  html,body{background:var(--bg);margin:0;color:var(--ink);font:16px/1.55 system-ui,Segoe UI,Roboto,Arial,sans-serif}
+
+  .wrap{max-width:1160px;margin:24px auto;padding:16px}
+  .title{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .headline{margin:0;font-size:clamp(24px,4.5vw,34px);font-weight:900}
+  .eyebrow{background:var(--accent);color:var(--ink-dark);padding:4px 10px;border-radius:999px;font-weight:900;font-size:12px}
+
+  /* Filter chips */
+  .filters{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 16px}
+  .chip{border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-weight:800;background:rgba(255,255,255,.06);cursor:pointer;user-select:none}
+  .chip.active{background:var(--accent);color:var(--ink-dark);border-color:transparent}
+
+  /* Cards */
+  .grid{display:grid;gap:12px}
+  @media (min-width:820px){ .grid{grid-template-columns:repeat(12,1fr)} }
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .kpi{grid-column:span 6}
+  .kpi.big{grid-column:span 6}
+  .kpi h3{margin:0 0 6px;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+  .kpi .val{font-size:clamp(24px,4.5vw,32px);font-weight:900}
+  .kpi .sub{color:var(--muted);font-weight:700}
+  @media (min-width:820px){
+    .kpi{grid-column:span 3}
+    .kpi.big{grid-column:span 6}
+  }
+
+  /* Tables */
+  table{width:100%;border-collapse:collapse}
+  thead th{
+    background:var(--accent);color:var(--ink-dark);
+    font-size:13px;text-transform:uppercase;letter-spacing:.03em;
+    padding:10px;text-align:center;
+  }
+  tbody td{padding:10px;text-align:center;font-weight:500}
+  tbody tr:nth-child(odd){background:var(--row1)}
+  tbody tr:nth-child(even){background:var(--row2)}
+  tbody tr:hover{background:var(--hover)}
+  .tbl-card{grid-column:1/-1}
+  .tbl-card h2{margin:0 0 10px;font-size:18px}
+  .right{text-align:right}
+
+  /* Skeleton + fade-in */
+  .skeleton{background:linear-gradient(90deg, rgba(255,255,255,.05), rgba(255,255,255,.12), rgba(255,255,255,.05));
+    background-size:200% 100%;animation:sk 1.1s infinite;border-radius:12px;min-height:140px}
+  @keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+  .fade{opacity:0;transition:opacity .18s ease}
+  .fade.ready{opacity:1}
+
+  /* Note */
+  .note{color:var(--muted);font-size:13px;margin-top:6px}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="title">
+      <div>
+        <span class="eyebrow">Season 2</span>
+        <h1 class="headline">Master Stats Dashboard</h1>
+      </div>
+      <div id="updated" class="eyebrow">Loading…</div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters" id="filters"></div>
+
+    <!-- KPIs -->
+    <div class="grid" id="kpi-grid">
+      <div class="card kpi"><h3>Matches played</h3><div class="val" id="kpi-matches">—</div></div>
+      <div class="card kpi"><h3>Total goals</h3><div class="val" id="kpi-goals">—</div></div>
+      <div class="card kpi"><h3>Avg goals per match</h3><div class="val" id="kpi-avg">—</div></div>
+      <div class="card kpi"><h3>Leagues included</h3><div class="val" id="kpi-leagues">—</div></div>
+
+      <div class="card kpi big">
+        <h3>Results split</h3>
+        <div class="val" id="kpi-split">—</div>
+        <div class="sub" id="kpi-split-sub"></div>
+      </div>
+      <div class="card kpi big">
+        <h3>Last update</h3>
+        <div class="val" id="kpi-time">—</div>
+        <div class="sub">Auto loads from Google Sheets</div>
+      </div>
+    </div>
+
+    <!-- Tables -->
+    <div class="grid" style="margin-top:12px">
+      <div class="card tbl-card fade" id="leaderboard-card">
+        <h2>Team leaderboard</h2>
+        <div class="skeleton" id="sk-leader"></div>
+        <table id="tbl-leader" style="display:none"></table>
+        <div class="note">Points computed 3-1-0 from recorded results.</div>
+      </div>
+
+      <div class="card tbl-card fade" id="homeaway-card">
+        <h2>Home vs Away split</h2>
+        <div class="skeleton" id="sk-ha"></div>
+        <table id="tbl-ha" style="display:none"></table>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ========= CONFIG ========= */
+const LEAGUES = [
+  { key:'All',      name:'All Leagues', id:null }, // synthetic
+  { key:'Diamond',  name:'Diamond', id:'1vkDOFfwBJJnSHOPM0BFcrNyZd-2nIbiDKNnWGKT3OP0' },
+  { key:'Ruby',     name:'Ruby',    id:'12Qg5yi3yQtsPSrd6EHxROkPNurVn5ylzELPvU4UOmGU' },
+  { key:'Sapphire', name:'Sapphire',id:'1qa03hOquzVg8ithFLdhrel2O3k3nTQCQZp81AWFvECg' },
+  { key:'Crystal',  name:'Crystal', id:'1LqRM7ICWpENmsKH5tTuu7Bf7VQa7YoJ-9TAivruymvo' },
+  { key:'Emerald',  name:'Emerald', id:'1rD_03y276wGjjlukus6icgwq_FPcOgc70654dOOG6sg' },
+  { key:'Gold',     name:'Gold',    id:'1ACOQ3dffrjczk1LmBmPiC-wV37t9nQKEDwApOEEeFU8' },
+];
+
+// Primary: explicit columns from Fixtures (C,D,E,F,G,H,I)
+const FX_TAB_NAME = 'Fixtures';
+const FX_RANGE    = 'C4:I94';   // Home | HG | - | AG | Away | Completed | Completed On
+
+// Fallback: simple embed (Home | mid | Away)
+const EM_TAB_NAME = 'Embed';
+const EM_RANGE    = 'A15:C105';
+
+const BUCKET_MS = 5 * 60 * 1000;
+const CB = Math.floor(Date.now() / BUCKET_MS);
+
+/* ========= Helpers ========= */
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+function parseGviz(txt){const a=txt.indexOf('{'),b=txt.lastIndexOf('}');if(a===-1||b===-1)throw new Error('Bad GViz');return JSON.parse(txt.slice(a,b+1))}
+function num(x){const n=Number(x);return Number.isFinite(n)?n:null}
+function truthyBox(v){ return v===true || String(v).toLowerCase()==='true' || v==='☑' }
+
+/* ========= Fetchers ========= */
+async function fetchRange(id, sheet, range){
+  const url=`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheet)}&range=${encodeURIComponent(range)}&cachebust=${CB}`;
+  const res=await fetch(url); const txt=await res.text();
+  if(!res.ok) throw new Error(res.status+' '+txt.slice(0,180));
+  return parseGviz(txt);
+}
+
+async function loadFromFixtures(id){
+  // Expect columns: C home, D HG, E '-', F AG, G away, H completed, I time
+  const data = await fetchRange(id, FX_TAB_NAME, FX_RANGE);
+  const rows = (data.table.rows||[]).map(r => (r.c||[]).map(c => c?c.v:''));
+  // map to {home, away, hg, ag, completed}
+  return rows
+    .map(c => ({
+      home: c[0] ?? '', 
+      hg:   num(c[1]),
+      // c[2] is the dash
+      ag:   num(c[3]),
+      away: c[4] ?? '',
+      completed: truthyBox(c[5])
+    }))
+    .filter(x => (x.home||x.away));
+}
+
+async function loadFromEmbed(id){
+  const data = await fetchRange(id, EM_TAB_NAME, EM_RANGE);
+  const rows = (data.table.rows||[]).map(r => (r.c||[]).map(c => c?c.v:''))
+               .filter(r => r && !r.every(x => String(x).trim()===''));
+  return rows.map(r => ({home:r[0]??'', mid:r[1]??'', away:r[2]??''}));
+}
+
+/* ========= Score parsing (fallback) ========= */
+function parseScoreText(mid){
+  if(!mid) return null;
+  const clean = String(mid).replace(/[^0-9\-]/g,'').trim();
+  const m = clean.match(/^(\d+)\s*-\s*(\d+)$/);
+  return m ? {hg:Number(m[1]), ag:Number(m[2])} : null;
+}
+
+/* ========= Load all for selection ========= */
+async function loadAll(selectedKeys){
+  const selected = selectedKeys.includes('All')
+    ? LEAGUES.filter(x=>x.id)
+    : LEAGUES.filter(x=>x.id && selectedKeys.includes(x.key));
+
+  const matches = [];
+  for(const lg of selected){
+    // Try explicit Fixtures first
+    let fx = [];
+    try{
+      const rows = await loadFromFixtures(lg.id);
+      // Only count rows marked completed and with numeric goals
+      rows.forEach(r=>{
+        if(r.completed && Number.isFinite(r.hg) && Number.isFinite(r.ag)){
+          matches.push({league:lg.key, home:r.home, away:r.away, hg:r.hg, ag:r.ag});
+        }
+      });
+      // If we got at least one, skip fallback
+      if(rows.some(r => r.completed && Number.isFinite(r.hg) && Number.isFinite(r.ag))) continue;
+    }catch(e){/* fall through to Embed */ }
+
+    // Fallback to Embed (A15:C105)
+    try{
+      const rowsE = await loadFromEmbed(lg.id);
+      rowsE.forEach(r=>{
+        const sc = parseScoreText(r.mid);
+        if(sc){ matches.push({league:lg.key, home:r.home, away:r.away, hg:sc.hg, ag:sc.ag}); }
+      });
+    }catch(e){ /* ignore */ }
+  }
+  return {matches, leagues:selected.map(x=>x.key)};
+}
+
+/* ========= Aggregate ========= */
+function aggregate(matches){
+  const played = matches.length;
+  const goals = matches.reduce((s,m)=>s+m.hg+m.ag,0);
+  const avg = played ? goals/played : 0;
+
+  let homeW=0, draw=0, awayW=0;
+  matches.forEach(m=>{
+    if(m.hg>m.ag) homeW++; else if(m.hg<m.ag) awayW++; else draw++;
+  });
+
+  // Team table
+  const T = new Map();
+  function addTeam(name){
+    if(!T.has(name)) T.set(name,{team:name,gp:0,w:0,d:0,l:0,gf:0,ga:0,gd:0,pts:0});
+    return T.get(name);
+  }
+  matches.forEach(m=>{
+    const H=addTeam(m.home), A=addTeam(m.away);
+    H.gp++; A.gp++;
+    H.gf+=m.hg; H.ga+=m.ag;
+    A.gf+=m.ag; A.ga+=m.hg;
+    if(m.hg>m.ag){ H.w++; H.pts+=3; A.l++; }
+    else if(m.hg<m.ag){ A.w++; A.pts+=3; H.l++; }
+    else { H.d++; A.d++; H.pts++; A.pts++; }
+  });
+  const teams = Array.from(T.values()).map(t=>({...t, gd:t.gf - t.ga}));
+
+  // Home/away totals
+  const home = {gp:played, w:homeW, d:draw, l:awayW, gf:matches.reduce((s,m)=>s+m.hg,0), ga:matches.reduce((s,m)=>s+m.ag,0)};
+  const away = {gp:played, w:awayW, d:draw, l:homeW, gf:matches.reduce((s,m)=>s+m.ag,0), ga:matches.reduce((s,m)=>s+m.hg,0)};
+
+  return {played, goals, avg, homeW, draw, awayW, teams, home, away};
+}
+
+/* ========= Render helpers (unchanged) ========= */
+function fmt(n){return Number.isFinite(n)?n.toLocaleString():'0'}
+function pct(p,t){return t?((p*100/t).toFixed(1)+'%'):'0.0%'}
+function set(id,txt){const el=document.getElementById(id); if(el) el.textContent=txt;}
+
+function renderKPIs(agg, leagues){
+  set('kpi-matches', fmt(agg.played));
+  set('kpi-goals', fmt(agg.goals));
+  set('kpi-avg', agg.avg.toFixed(2));
+  set('kpi-leagues', leagues.length);
+  set('kpi-split', `${fmt(agg.homeW)} home • ${fmt(agg.draw)} draws • ${fmt(agg.awayW)} away`);
+  set('kpi-split-sub', `${pct(agg.homeW,agg.played)} • ${pct(agg.draw,agg.played)} • ${pct(agg.awayW,agg.played)}`);
+  set('kpi-time', new Date().toLocaleString());
+  const up=document.getElementById('updated'); if(up) up.textContent='Updated '+new Date().toLocaleString();
+}
+
+function renderLeader(teams){
+  const sk=document.getElementById('sk-leader'); if(sk) sk.style.display='none';
+  const tbl=document.getElementById('tbl-leader');
+  if(!teams.length){ tbl.style.display='none'; return; }
+  teams.sort((a,b)=> b.pts-a.pts || (b.gd-a.gd) || (b.gf-a.gf) || a.team.localeCompare(b.team));
+  let h='<thead><tr><th>#</th><th style="text-align:left">Team</th><th>GP</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th></tr></thead><tbody>';
+  teams.forEach((t,i)=>{
+    h+=`<tr>
+      <td class="right">${i+1}</td>
+      <td style="text-align:left">${esc(t.team)}</td>
+      <td class="right">${t.gp}</td>
+      <td class="right">${t.w}</td>
+      <td class="right">${t.d}</td>
+      <td class="right">${t.l}</td>
+      <td class="right">${t.gf}</td>
+      <td class="right">${t.ga}</td>
+      <td class="right">${t.gd}</td>
+      <td class="right" style="font-weight:800">${t.pts}</td>
+    </tr>`;
+  });
+  h+='</tbody>';
+  tbl.innerHTML=h; tbl.style.display='table';
+  document.getElementById('leaderboard-card').classList.add('ready');
+}
+
+function renderHomeAway(agg){
+  const sk=document.getElementById('sk-ha'); if(sk) sk.style.display='none';
+  const tbl=document.getElementById('tbl-ha');
+  const row = (label,s)=>`
+    <tr>
+      <td>${label}</td>
+      <td class="right">${fmt(s.gp)}</td>
+      <td class="right">${fmt(s.w)}</td>
+      <td class="right">${fmt(s.d)}</td>
+      <td class="right">${fmt(s.l)}</td>
+      <td class="right">${fmt(s.gf)}</td>
+      <td class="right">${fmt(s.ga)}</td>
+      <td class="right">${pct(s.w,s.gp)}</td>
+      <td class="right">${s.gp?(s.gf/s.gp).toFixed(2):'0.00'}</td>
+    </tr>`;
+  let h = '<thead><tr><th></th><th>GP</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>Win %</th><th>GF/Match</th></tr></thead><tbody>';
+  h += row('Home', agg.home) + row('Away', agg.away) + '</tbody>';
+  tbl.innerHTML=h; tbl.style.display='table';
+  document.getElementById('homeaway-card').classList.add('ready');
+}
+
+/* ========= Filters UI ========= */
+function buildFilters(){
+  const host=document.getElementById('filters'); host.innerHTML='';
+  LEAGUES.forEach((lg,idx)=>{
+    const div=document.createElement('div');
+    div.className='chip'+(idx===0?' active':''); div.dataset.key=lg.key; div.textContent=lg.name;
+    div.addEventListener('click',()=>{
+      [...host.children].forEach(c=>c.classList.remove('active')); div.classList.add('active');
+      run([lg.key]);
+    });
+    host.appendChild(div);
+  });
+}
+
+/* ========= Controller ========= */
+async function run(selectedKeys){
+  if(!selectedKeys||!selectedKeys.length) selectedKeys=['All'];
+  // reset skeletons
+  document.getElementById('sk-leader').style.display='block';
+  document.getElementById('sk-ha').style.display='block';
+  document.getElementById('tbl-leader').style.display='none';
+  document.getElementById('tbl-ha').style.display='none';
+  document.getElementById('leaderboard-card').classList.remove('ready');
+  document.getElementById('homeaway-card').classList.remove('ready');
+
+  const {matches, leagues} = await loadAll(selectedKeys);
+  const agg = aggregate(matches);
+
+  renderKPIs(agg, leagues);
+  renderLeader(agg.teams);
+  renderHomeAway(agg);
+}
+
+buildFilters();
+run(['All']);
+</script>
+
+</body>
+</html>
