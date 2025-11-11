@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>eFPL Live Stats — Embed (Stable + GD)</title>
+<title>eFPL Live Stats — Embed (League Accents)</title>
 <meta name="description" content="Live eFPL Season 2 stats across Diamond, Ruby, Sapphire, Crystal, Gold, and Emerald leagues." />
 <style>
 /* ========= Base / Palette ========= */
@@ -13,6 +13,13 @@
   --ink:#fff; --muted:#b8c6e3; --accent:#f9d71c;
   --line:rgba(249,215,28,.28);
   --ok:#2fbf71; --mid:#9aa4b2; --away:#5aa4ff;
+  /* League accent colours */
+  --diamond:#99ecff;
+  --ruby:#ff6f6f;
+  --sapphire:#5ac8fa;
+  --crystal:#b1e1ff;
+  --emerald:#63ffa1;
+  --gold:#f9d71c;
 }
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,Segoe UI,Roboto,Arial,sans-serif}
@@ -49,7 +56,7 @@ tbody tr:nth-child(even){background:var(--card2)}
 .left{text-align:left}.right{text-align:right}.center{text-align:center}
 .numeric{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
 
-/* Leaderboard — simplified columns incl. GD */
+/* Leaderboard — columns incl. GD */
 #tbl-leader col.c-rank{width:4.2ch}
 #tbl-leader col.c-team{width:auto} /* flexible */
 #tbl-leader col.c-p,
@@ -59,10 +66,32 @@ tbody tr:nth-child(even){background:var(--card2)}
 #tbl-leader col.c-gd{width:4.8ch}
 #tbl-leader col.c-pts{width:5.4ch}
 
-/* Team cell: wrap (no ellipsis), so names never show ".." */
-.teamwrap{display:flex;align-items:flex-start;gap:8px;min-width:0}
-.lg{height:20px;width:auto;object-fit:contain;flex:0 0 auto;filter:drop-shadow(0 0 3px rgba(0,0,0,.6))}
-.teamname{display:block;min-width:0;white-space:normal;overflow:visible;line-height:1.25;word-break:break-word}
+/* ===== Option 2: League-coloured left bar + badge glow (text remains white) ===== */
+.teamwrap{
+  display:flex;align-items:flex-start;gap:10px;min-width:0;position:relative;padding-left:10px;
+}
+.teamwrap::before{
+  content:"";position:absolute;left:0;top:6px;bottom:6px;width:3px;border-radius:2px;background:transparent;
+}
+/* Per-league accent bar colours */
+.teamwrap.Diamond::before{ background:var(--diamond); }
+.teamwrap.Ruby::before{    background:var(--ruby); }
+.teamwrap.Sapphire::before{background:var(--sapphire); }
+.teamwrap.Crystal::before{ background:var(--crystal); }
+.teamwrap.Emerald::before{ background:var(--emerald); }
+.teamwrap.Gold::before{    background:var(--gold); }
+
+/* Badge glow to match league */
+.lg{height:20px;width:auto;object-fit:contain;flex:0 0 auto;filter:drop-shadow(0 0 2px rgba(0,0,0,.6))}
+.lg.Diamond{ filter:drop-shadow(0 0 4px color-mix(in srgb, var(--diamond) 60%, transparent)); }
+.lg.Ruby{    filter:drop-shadow(0 0 4px color-mix(in srgb, var(--ruby) 60%, transparent)); }
+.lg.Sapphire{filter:drop-shadow(0 0 4px color-mix(in srgb, var(--sapphire) 60%, transparent)); }
+.lg.Crystal{ filter:drop-shadow(0 0 4px color-mix(in srgb, var(--crystal) 60%, transparent)); }
+.lg.Emerald{ filter:drop-shadow(0 0 4px color-mix(in srgb, var(--emerald) 60%, transparent)); }
+.lg.Gold{    filter:drop-shadow(0 0 4px color-mix(in srgb, var(--gold) 60%, transparent)); }
+
+/* Team text stays white; wraps (no ellipsis) */
+.teamname{display:block;min-width:0;white-space:normal;overflow:visible;line-height:1.25;word-break:break-word;color:var(--ink)}
 
 /* Highlights can wrap normally */
 #tbl-hi td{white-space:normal;line-height:1.35}
@@ -80,6 +109,9 @@ tbody tr:nth-child(even){background:var(--card2)}
   thead th{padding:8px;font-size:11.5px}
   tbody td{padding:8px;font-size:14px}
   .lg{height:18px}
+  /* Keep the coloured bar visible but tighter */
+  .teamwrap{ padding-left:8px; gap:8px; }
+  .teamwrap::before{ left:0; top:6px; bottom:6px; width:3px; }
 }
 @media (max-width:360px){
   tbody td{font-size:13px}
@@ -377,8 +409,11 @@ function renderRails(agg, leagues, scheduledTotal){
 }
 
 function teamCell(t){
-  const lg=t.league||'Diamond';
-  return `<span class="teamwrap"><img class="lg" src="${BADGE_BASE}${lg}-League.png" alt="${esc(lg)}"><span class="teamname">${esc(t.team)}</span></span>`;
+  const lg=t.league||'Diamond'; // class hook for colour bar & badge glow
+  return `<span class="teamwrap ${lg}">
+    <img class="lg ${lg}" src="${BADGE_BASE}${lg}-League.png" alt="${esc(lg)}">
+    <span class="teamname">${esc(t.team)}</span>
+  </span>`;
 }
 
 function renderLeaderboard(teams){
@@ -431,7 +466,7 @@ function renderMini(minis){
     const div=document.createElement('div');
     div.className='card';
     div.innerHTML = `<div style="display:flex;align-items:center;gap:8px">
-        <img class="lg" src="${BADGE_BASE}${m.league}-League.png" alt="${esc(m.league)}">
+        <img class="lg ${m.league}" src="${BADGE_BASE}${m.league}-League.png" alt="${esc(m.league)}">
         <div><strong>${esc(m.league)}</strong><div class="note">${line}</div></div>
       </div>`;
     host.appendChild(div);
