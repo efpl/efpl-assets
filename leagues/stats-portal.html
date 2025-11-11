@@ -234,6 +234,27 @@ details[open] summary::after{content:"▴"}
   #tbl-leader col.c-team{ width:52% !important; }
   #tbl-leader col:not(.c-rank):not(.c-team):not(.c-gp):not(.c-gf):not(.c-ga):not(.c-gd){ width:auto !important; }
 }
+/* Stack Leaderboard + Highlights on smaller screens */
+@media (max-width:900px){
+  .two-col{
+    grid-template-columns:1fr;  /* one column */
+    gap:12px;
+  }
+}
+
+/* Let the Highlights text wrap normally (don't inherit table nowrap) */
+#tbl-hi{
+  table-layout:auto;            /* allow natural width */
+  width:100%;
+}
+#tbl-hi td{
+  white-space:normal;           /* override global nowrap */
+  overflow:visible;
+  text-overflow:clip;
+  line-height:1.35;
+  padding:10px 12px;            /* match table rhythm */
+}
+#tbl-hi td.right{ text-align:right; }
 </style>
 </head>
 <body>
