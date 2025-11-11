@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>eFPL Season 2 — Compact Live Stats</title>
+<meta name="description" content="Live eFPL Season 2 stats across Diamond, Ruby, Sapphire, Crystal, Gold, and Emerald leagues: matches, goals, standings, clean sheets, biggest wins and more." />
+<link rel="icon" href="https://efpl-assets.pages.dev/img/logo.png" />
+
+<style>
+  :root{
+    --bg:#0b1636;            /* page */
+    --card:#0f1e49;          /* cards */
+    --card2:#13265b;         /* alt */
+    --ink:#ffffff;           /* text */
+    --muted:#b8c6e3;         /* muted text */
+    --accent:#f9d71c;        /* brand yellow */
+    --line:rgba(249,215,28,.3);
+    --ok:#2fbf71; --mid:#9aa4b2; --away:#5aa4ff;
+  }
+  * { box-sizing:border-box }
+  html,body{margin:0;background:var(--bg);color:var(--ink);font:15.5px/1.55 system-ui,Segoe UI,Roboto,Arial,sans-serif}
+
+  .wrap{max-width:1080px;margin:0 auto;padding:16px 16px 28px}
+
+  /* Header */
+  .hdr{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0}
+  .brand{display:flex;align-items:center;gap:10px}
+  .brand img{width:36px;height:36px;border-radius:8px}
+  .brand h1{margin:0;font-size:18px;letter-spacing:.4px}
+  .eyebrow{display:inline-block;background:var(--accent);color:#0b1b3d;padding:2px 8px;border-radius:999px;font-weight:900;font-size:11px}
+
+  /* League badges filter */
+  .badges{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0 12px}
+  .badge{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px 10px;display:flex;align-items:center;gap:8px;cursor:pointer}
+  .badge img{width:22px;height:22px;display:block}
+  .badge.active{background:var(--accent);color:#0b1b3d;border-color:transparent}
+
+  /* KPI rail */
+  .rail{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px}
+  .kpi .t{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+  .kpi .v{font-weight:900;font-size:20px}
+
+  /* Bars */
+  .bar{height:10px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden;border:1px solid var(--line)}
+  .seg{height:100%;display:inline-block}
+  .home{background:var(--ok)} .draw{background:var(--mid)} .away{background:var(--away)}
+  .mini{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+
+  /* Tables (compact) */
+  table{width:100%;border-collapse:collapse}
+  thead th{background:var(--accent);color:#0b1b3d;padding:8px;font-size:12px;text-transform:uppercase;letter-spacing:.03em}
+  tbody td{padding:8px;font-weight:600}
+  tbody tr:nth-child(odd){background:var(--card)}
+  tbody tr:nth-child(even){background:var(--card2)}
+  .left{text-align:left}.right{text-align:right}.center{text-align:center}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media (max-width:900px){
+    .rail{grid-template-columns:repeat(2,1fr)}
+    .two-col{grid-template-columns:1fr}
+  }
+
+  /* Collapsibles */
+  details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px}
+  summary{cursor:pointer;font-weight:900}
+  summary::marker{content:""}
+  summary::after{content:"▾";margin-left:6px}
+  details[open] summary::after{content:"▴"}
+  .note{color:var(--muted);font-size:12.5px}
+
+  /* Footer bar */
+  .foot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:14px;color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- Header -->
+    <header class="hdr">
+      <div class="brand">
+        <img src="https://efpl-assets.pages.dev/img/logo.png" alt="eFPL logo">
+        <div>
+          <div class="eyebrow">Season 2</div>
+          <h1>eFPL Live Stats (Compact)</h1>
+        </div>
+      </div>
+      <div id="updated" class="eyebrow">Loading…</div>
+    </header>
+
+    <!-- League badge filter -->
+    <nav class="badges" id="badges"></nav>
+
+    <!-- KPI rail -->
+    <section class="rail" aria-label="Key metrics">
+      <div class="kpi"><div class="t">Matches</div><div class="v" id="kpi-matches">—</div></div>
+      <div class="kpi"><div class="t">Goals</div><div class="v" id="kpi-goals">—</div></div>
+      <div class="kpi"><div class="t">Avg / match</div><div class="v" id="kpi-avg">—</div></div>
+      <div class="kpi"><div class="t">Leagues</div><div class="v" id="kpi-leagues">—</div></div>
+    </section>
+
+    <!-- Result + Progress bars -->
+    <section class="mini" style="margin-top:10px">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <strong>Result split</strong>
+          <span id="split-text" class="note">—</span>
+        </div>
+        <div class="bar" title="Home / Draw / Away">
+          <span id="seg-home" class="seg home" style="width:0%"></span>
+          <span id="seg-draw" class="seg draw" style="width:0%"></span>
+          <span id="seg-away" class="seg away" style="width:0%"></span>
+        </div>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <strong>Completion</strong>
+          <span id="prog-text" class="note">—</span>
+        </div>
+        <div class="bar" title="Completed / Scheduled">
+          <span id="seg-prog" class="seg" style="width:0%;background:linear-gradient(90deg,#ffd03b,#f9d71c)"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Leaderboard + Best/Worst -->
+    <section class="two-col" style="margin-top:10px">
+      <div class="card">
+        <h3 style="margin:0 0 8px">Leaderboard</h3>
+        <table id="tbl-leader">
+          <thead><tr>
+            <th>#</th><th class="left">Team</th><th>GP</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th><th>CS</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 8px">Highlights</h3>
+        <table id="tbl-hi">
+          <tbody>
+            <tr><td class="left">Biggest win</td><td id="hi-big" class="right">—</td></tr>
+            <tr><td class="left">Highest scoring game</td><td id="hi-hsg" class="right">—</td></tr>
+            <tr><td class="left">Top scoring team</td><td id="hi-topgf" class="right">—</td></tr>
+            <tr><td class="left">Most conceded</td><td id="hi-mostga" class="right">—</td></tr>
+            <tr><td class="left">Most clean sheets</td><td id="hi-mostcs" class="right">—</td></tr>
+          </tbody>
+        </table>
+
+        <details style="margin-top:10px">
+          <summary>More tables</summary>
+          <div style="margin-top:8px">
+            <div class="card" style="margin-bottom:8px">
+              <strong>Top scoring teams (Top 10)</strong>
+              <table id="tbl-gf" style="margin-top:6px">
+                <thead><tr><th>#</th><th class="left">Team</th><th>GP</th><th>GF</th><th>GD</th><th>Pts</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="card">
+              <strong>Best defence (Top 10)</strong>
+              <table id="tbl-ga" style="margin-top:6px">
+                <thead><tr><th>#</th><th class="left">Team</th><th>GP</th><th>GA</th><th>GD</th><th>Pts</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- Per-league compact cards -->
+    <section class="card" style="margin-top:10px">
+      <h3 style="margin:0 0 8px">Per-league comparison</h3>
+      <div id="league-mini" class="mini"></div>
+      <div class="note">Each card: Avg goals • Home/Draw/Away % • Completion %.</div>
+    </section>
+
+    <!-- Optional: timeline + form are omitted here for maximal compactness.
+         (Say the word if you want them back as collapsibles.) -->
+
+    <footer class="foot">
+      <span>Live from Google Sheets (Fixtures & Embed).</span>
+      <span id="foot-scope">Scope: All Leagues</span>
+    </footer>
+  </div>
+
+<script>
+/* ====== CONFIG ====== */
+const LEAGUES = [
+  { key:'All',      name:'All Leagues', badge:null, id:null }, // synthetic
+  { key:'Diamond',  name:'Diamond',  badge:'Diamond-League.png',  id:'1vkDOFfwBJJnSHOPM0BFcrNyZd-2nIbiDKNnWGKT3OP0' },
+  { key:'Ruby',     name:'Ruby',     badge:'Ruby-League.png',     id:'12Qg5yi3yQtsPSrd6EHxROkPNurVn5ylzELPvU4UOmGU' },
+  { key:'Sapphire', name:'Sapphire', badge:'Sapphire-League.png', id:'1qa03hOquzVg8ithFLdhrel2O3k3nTQCQZp81AWFvECg' },
+  { key:'Crystal',  name:'Crystal',  badge:'Crystal-League.png',  id:'1LqRM7ICWpENmsKH5tTuu7Bf7VQa7YoJ-9TAivruymvo' },
+  { key:'Emerald',  name:'Emerald',  badge:'Emerald-League.png',  id:'1rD_03y276wGjjlukus6icgwq_FPcOgc70654dOOG6sg' },
+  { key:'Gold',     name:'Gold',     badge:'Gold-League.png',     id:'1ACOQ3dffrjczk1LmBmPiC-wV37t9nQKEDwApOEEeFU8' },
+];
+const BADGE_BASE = 'https://efpl-assets.pages.dev/img/leagues/';
+
+const FX_TAB = 'Fixtures', FX_RANGE='C4:I94'; // Home|HG|-|AG|Away|Completed|Completed On
+const EM_TAB = 'Embed',    EM_RANGE='A15:C105'; // Home|mid|Away
+const BUCKET_MS = 5*60*1000, CB = Math.floor(Date.now()/BUCKET_MS);
+
+/* ====== Utils ====== */
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function parseGviz(txt){const a=txt.indexOf('{'),b=txt.lastIndexOf('}');if(a===-1||b===-1)throw new Error('Bad GViz');return JSON.parse(txt.slice(a,b+1))}
+function num(x){const n=Number(x);return Number.isFinite(n)?n:null}
+function truthy(v){return v===true || String(v).toLowerCase()==='true' || v==='☑'}
+function pct(p,t){return t?((p*100/t).toFixed(1)+'%'):'0.0%'}
+function fmt(n){return Number.isFinite(n)?n.toLocaleString():'0'}
+function set(id,txt){const el=document.getElementById(id); if(el) el.textContent=txt;}
+function byId(id){return document.getElementById(id)}
+
+/* ====== Fetchers ====== */
+async function fetchRange(id, sheet, range){
+  const url=`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheet)}&range=${encodeURIComponent(range)}&cachebust=${CB}`;
+  const res=await fetch(url); const txt=await res.text();
+  if(!res.ok) throw new Error(res.status+' '+txt.slice(0,160));
+  return parseGviz(txt);
+}
+async function loadFromFixtures(id){
+  const data=await fetchRange(id, FX_TAB, FX_RANGE);
+  const rows=(data.table.rows||[]).map(r=>(r.c||[]).map(c=>c?c.v:''));
+  let scheduled=0;
+  const items=rows.map(c=>{
+    const home=c[0]??'', hg=num(c[1]), ag=num(c[3]), away=c[4]??'', completed=truthy(c[5]);
+    if(home&&away) scheduled++;
+    return {home,away,hg,ag,completed};
+  });
+  return {items, scheduled};
+}
+async function loadFromEmbed(id){
+  const data=await fetchRange(id, EM_TAB, EM_RANGE);
+  const rows=(data.table.rows||[]).map(r=>(r.c||[]).map(c=>c?c.v:'')).filter(r=>r && !r.every(x=>String(x).trim()===''));
+  const scheduled=rows.filter(r=>(r[0]||'').trim()&&(r[2]||'').trim()).length;
+  const items=rows.map(r=>{
+    const mid=r[1]??'', clean=String(mid).replace(/[^0-9\-]/g,'').trim();
+    const m=clean.match(/^(\d+)\s*-\s*(\d+)$/);
+    return {home:r[0]??'',away:r[2]??'',hg:m?Number(m[1]):null,ag:m?Number(m[2]):null,completed:!!m};
+  });
+  return {items, scheduled};
+}
+async function loadAll(selectedKeys){
+  const selected = selectedKeys.includes('All')
+    ? LEAGUES.filter(x=>x.id)
+    : LEAGUES.filter(x=>x.id && selectedKeys.includes(x.key));
+  const matches=[], perLeague={}, leagues=selected.map(x=>x.key);
+  let scheduledTotal=0;
+
+  for(const lg of selected){
+    perLeague[lg.key]={matches:[],scheduled:0};
+    let gotAny=false;
+    try{
+      const {items,scheduled}=await loadFromFixtures(lg.id);
+      scheduledTotal+=scheduled; perLeague[lg.key].scheduled+=scheduled;
+      items.forEach(r=>{
+        if(r.completed && Number.isFinite(r.hg) && Number.isFinite(r.ag)){
+          const m={league:lg.key,home:r.home,away:r.away,hg:r.hg,ag:r.ag};
+          matches.push(m); perLeague[lg.key].matches.push(m); gotAny=true;
+        }
+      });
+      if(gotAny) continue;
+    }catch(e){}
+    try{
+      const {items,scheduled}=await loadFromEmbed(lg.id);
+      scheduledTotal+=scheduled; perLeague[lg.key].scheduled+=scheduled;
+      items.forEach(r=>{
+        if(r.completed && Number.isFinite(r.hg) && Number.isFinite(r.ag)){
+          const m={league:lg.key,home:r.home,away:r.away,hg:r.hg,ag:r.ag};
+          matches.push(m); perLeague[lg.key].matches.push(m);
+        }
+      });
+    }catch(e){}
+  }
+  return {matches, leagues, perLeague, scheduledTotal};
+}
+
+/* ====== Aggregation ====== */
+function aggregate(matches){
+  const played=matches.length;
+  const goals=matches.reduce((s,m)=>s+m.hg+m.ag,0);
+  const avg=played?goals/played:0;
+
+  let homeW=0,draw=0,awayW=0;
+  let biggest=null, highest=null;
+
+  const teams=new Map();
+  function add(name){ if(!teams.has(name)) teams.set(name,{team:name,gp:0,w:0,d:0,l:0,gf:0,ga:0,gd:0,pts:0,cs:0}); return teams.get(name); }
+
+  matches.forEach(m=>{
+    if(m.hg>m.ag) homeW++; else if(m.hg<m.ag) awayW++; else draw++;
+
+    const diff=Math.abs(m.hg-m.ag);
+    if(!biggest || diff>biggest.diff){
+      const text = m.hg>=m.ag ? `${m.home} ${m.hg}-${m.ag} ${m.away}` : `${m.away} ${m.ag}-${m.hg} ${m.home}`;
+      biggest={diff,text,sub:`${m.league}`};
+    }
+    const total=m.hg+m.ag;
+    if(!highest || total>highest.total){
+      highest={total,text:`${m.home} ${m.hg}-${m.ag} ${m.away}`,sub:`${m.league}`};
+    }
+
+    const H=add(m.home), A=add(m.away);
+    H.gp++; A.gp++;
+    H.gf+=m.hg; H.ga+=m.ag;
+    A.gf+=m.ag; A.ga+=m.hg;
+    if(m.hg>m.ag){ H.w++; H.pts+=3; A.l++; }
+    else if(m.hg<m.ag){ A.w++; A.pts+=3; H.l++; }
+    else { H.d++; A.d++; H.pts++; A.pts++; }
+    if(m.ag===0) H.cs++; if(m.hg===0) A.cs++;
+  });
+
+  const list=Array.from(teams.values()).map(t=>({...t,gd:t.gf-t.ga}));
+  const topGF = [...list].sort((a,b)=> b.gf-a.gf || a.team.localeCompare(b.team))[0] || null;
+  const mostGA = [...list].sort((a,b)=> b.ga-a.ga || a.team.localeCompare(b.team))[0] || null;
+  const mostCS = [...list].sort((a,b)=> b.cs-a.cs || a.team.localeCompare(b.team))[0] || null;
+
+  return {played,goals,avg,homeW,draw,awayW,teams:list,biggest,highest,topGF,mostGA,mostCS};
+}
+
+function leagueAggregates(perLeague){
+  const out=[];
+  for(const key of Object.keys(perLeague)){
+    const bucket=perLeague[key];
+    const ms=bucket.matches, scheduled=bucket.scheduled;
+    const played=ms.length;
+    const goals=ms.reduce((s,m)=>s+m.hg+m.ag,0);
+    const avg=played?goals/played:0;
+    const homeW=ms.filter(m=>m.hg>m.ag).length;
+    const draw =ms.filter(m=>m.hg===m.ag).length;
+    const awayW=ms.filter(m=>m.hg<m.ag).length;
+    out.push({league:key,played,scheduled,avg,homeW,draw,awayW});
+  }
+  return out.sort((a,b)=>a.league.localeCompare(b.league));
+}
+
+/* ====== Render ====== */
+function renderBadges(){
+  const host=byId('badges'); host.innerHTML='';
+  // "All" pill first
+  const all=document.createElement('div');
+  all.className='badge active'; all.dataset.key='All';
+  all.innerHTML=`<img src="https://efpl-assets.pages.dev/img/logo.png" alt="All"><span>All</span>`;
+  all.onclick=()=>selectLeague('All');
+  host.appendChild(all);
+  // Leagues
+  LEAGUES.filter(x=>x.id).forEach(lg=>{
+    const div=document.createElement('div');
+    div.className='badge'; div.dataset.key=lg.key;
+    div.innerHTML=`<img src="${BADGE_BASE}${lg.badge}" alt="${esc(lg.key)}"><span>${esc(lg.key)}</span>`;
+    div.onclick=()=>selectLeague(lg.key);
+    host.appendChild(div);
+  });
+}
+function selectLeague(key){
+  // toggle UI
+  [...document.querySelectorAll('.badge')].forEach(b=>b.classList.toggle('active', b.dataset.key===key));
+  // run
+  run([key]);
+  // footer scope
+  set('foot-scope','Scope: '+ (key==='All'?'All Leagues':key));
+}
+
+function renderRails(agg, leagues, scheduledTotal){
+  set('kpi-matches', fmt(agg.played));
+  set('kpi-goals', fmt(agg.goals));
+  set('kpi-avg', agg.avg.toFixed(2));
+  set('kpi-leagues', leagues.length);
+  // result text + bar
+  byId('split-text').textContent = `${fmt(agg.homeW)} H • ${fmt(agg.draw)} D • ${fmt(agg.awayW)} A — ${pct(agg.homeW,agg.played)} / ${pct(agg.draw,agg.played)} / ${pct(agg.awayW,agg.played)}`;
+  byId('seg-home').style.width = (agg.played?agg.homeW*100/agg.played:0) + '%';
+  byId('seg-draw').style.width = (agg.played?agg.draw*100/agg.played:0) + '%';
+  byId('seg-away').style.width = (agg.played?agg.awayW*100/agg.played:0) + '%';
+  // completion
+  byId('prog-text').textContent = scheduledTotal ? `${fmt(agg.played)} / ${fmt(scheduledTotal)} • ${pct(agg.played,scheduledTotal)}` : '—';
+  byId('seg-prog').style.width = scheduledTotal ? (agg.played*100/scheduledTotal)+'%' : '0%';
+  const up=byId('updated'); if(up) up.textContent='Updated '+new Date().toLocaleString();
+}
+
+function renderLeaderboard(teams){
+  const tbody = byId('tbl-leader').querySelector('tbody'); tbody.innerHTML='';
+  const rows=[...teams].sort((a,b)=> b.pts-a.pts || (b.gd-a.gd) || (b.gf-a.gf) || a.team.localeCompare(b.team));
+  rows.forEach((t,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML = `
+      <td class="right">${i+1}</td>
+      <td class="left">${esc(t.team)}</td>
+      <td class="right">${t.gp}</td>
+      <td class="right">${t.w}</td>
+      <td class="right">${t.d}</td>
+      <td class="right">${t.l}</td>
+      <td class="right">${t.gf}</td>
+      <td class="right">${t.ga}</td>
+      <td class="right">${t.gd}</td>
+      <td class="right"><strong>${t.pts}</strong></td>
+      <td class="right">${t.cs}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderHighlights(agg){
+  set('hi-big', agg.biggest ? `${agg.biggest.text} (${agg.biggest.sub})` : '—');
+  set('hi-hsg', agg.highest ? `${agg.highest.text} (${agg.highest.total} goals • ${agg.highest.sub})` : '—');
+  set('hi-topgf', agg.topGF ? `${agg.topGF.team} — ${agg.topGF.gf}` : '—');
+  set('hi-mostga', agg.mostGA ? `${agg.mostGA.team} — ${agg.mostGA.ga}` : '—');
+  set('hi-mostcs', agg.mostCS ? `${agg.mostCS.team} — ${agg.mostCS.cs}` : '—');
+}
+
+function renderMini(minis){
+  const host=byId('league-mini'); host.innerHTML='';
+  minis.forEach(m=>{
+    const line = `${m.played?m.avg.toFixed(2):'0.00'} avg • ${pct(m.homeW,m.played)} / ${pct(m.draw,m.played)} / ${pct(m.awayW,m.played)} • ${pct(m.played,m.scheduled||0)}`;
+    const div=document.createElement('div');
+    div.className='badge'; // reuse compact style
+    div.style.width='100%';
+    div.innerHTML = `<img src="${BADGE_BASE}${m.league}-League.png" alt="${esc(m.league)}">
+      <div><div><strong>${esc(m.league)}</strong></div><div class="note">${line}</div></div>`;
+    host.appendChild(div);
+  });
+}
+
+function renderTopTables(teams){
+  // Top GF
+  const gf = [...teams].sort((a,b)=> b.gf-a.gf || a.team.localeCompare(b.team)).slice(0,10);
+  const gfBody = byId('tbl-gf').querySelector('tbody'); gfBody.innerHTML='';
+  gf.forEach((t,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML = `<td class="right">${i+1}</td><td class="left">${esc(t.team)}</td><td class="right">${t.gp}</td><td class="right">${t.gf}</td><td class="right">${t.gd}</td><td class="right">${t.pts}</td>`;
+    gfBody.appendChild(tr);
+  });
+  // Best defence
+  const ga = [...teams].sort((a,b)=> a.ga-b.ga || a.team.localeCompare(b.team)).slice(0,10);
+  const gaBody = byId('tbl-ga').querySelector('tbody'); gaBody.innerHTML='';
+  ga.forEach((t,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML = `<td class="right">${i+1}</td><td class="left">${esc(t.team)}</td><td class="right">${t.gp}</td><td class="right">${t.ga}</td><td class="right">${t.gd}</td><td class="right">${t.pts}</td>`;
+    gaBody.appendChild(tr);
+  });
+}
+
+/* ====== Controller ====== */
+async function run(selectedKeys){
+  if(!selectedKeys||!selectedKeys.length) selectedKeys=['All'];
+
+  const {matches, leagues, perLeague, scheduledTotal} = await loadAll(selectedKeys);
+  const agg = aggregate(matches);
+  const minis = leagueAggregates(perLeague);
+
+  renderRails(agg, leagues, scheduledTotal);
+  renderLeaderboard(agg.teams);
+  renderHighlights(agg);
+  renderMini(minis);
+}
+
+renderBadges();
+run(['All']);
+</script>
+</body>
+</html>
