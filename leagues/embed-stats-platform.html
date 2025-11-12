@@ -374,27 +374,34 @@ async function loadAll(selectedKeys){
 
 /* ====== Aggregation ====== */
 function aggregate(matches, platformByTeam){
-  const played=matches.length;
-  const goals=matches.reduce((s,m)=>s+m.hg+m.ag,0);
-  const avg=played?goals/played:0;
+  const played = matches.length;
+  const goals = matches.reduce((s,m)=>s+m.hg+m.ag,0);
+  const avg = played ? goals/played : 0;
 
-  let homeW=0,draw=0,awayW=0;
+  let homeW=0, draw=0, awayW=0;
   let biggest=null, highest=null;
 
   const teams=new Map();
   function add(name, league){
-    if(!teams.has(name)) teams.set(name,{team:name,league:league||null,gp:0,w:0,d:0,l:0,gf:0,ga:0,gd:0,pts:0,cs:0,platform:platformByTeam.get(name)||'Unspecified'});
-    const t=teams.get(name); if(!t.league && league) t.league=league; return t;
+    if(!teams.has(name))
+      teams.set(name,{
+        team:name, league:league||null,
+        gp:0,w:0,d:0,l:0,gf:0,ga:0,gd:0,pts:0,cs:0,
+        platform:platformByTeam.get(name)||'Unspecified'
+      });
+    const t=teams.get(name);
+    if(!t.league && league) t.league=league;
+    return t;
   }
 
-  // Platform tallies
-  const platTallies = new Map(); // plat -> {gp,w}
-  const bump = (plat, field) => {
-    if(!platTallies.has(plat)) platTallies.set(plat,{gp:0,w:0});
-    platTallies.get(plat)[field] += 1;
+  // track matches per platform (unique matches, not sides)
+  const platMap = new Map(); // plat -> {matches:Set(), wins:Set()}
+  const getPlatBucket = (plat) => {
+    if(!platMap.has(plat)) platMap.set(plat,{matches:new Set(),wins:new Set()});
+    return platMap.get(plat);
   };
 
-  matches.forEach(m=>{
+  matches.forEach((m,i)=>{
     if(m.hg>m.ag) homeW++; else if(m.hg<m.ag) awayW++; else draw++;
 
     const diff=Math.abs(m.hg-m.ag);
@@ -409,26 +416,36 @@ function aggregate(matches, platformByTeam){
 
     const H=add(m.home,m.league), A=add(m.away,m.league);
     H.gp++; A.gp++;
-    H.gf+=m.hg; H.ga+=m.ag; A.gf+=m.ag; A.ga+=m.hg;
+    H.gf+=m.hg; H.ga+=m.ag;
+    A.gf+=m.ag; A.ga+=m.hg;
 
-    const hPlat = H.platform||'Unspecified', aPlat = A.platform||'Unspecified';
-    bump(hPlat,'gp'); bump(aPlat,'gp');
-
-    if(m.hg>m.ag){ H.w++; H.pts+=3; A.l++; bump(hPlat,'w'); }
-    else if(m.hg<m.ag){ A.w++; A.pts+=3; H.l++; bump(aPlat,'w'); }
+    if(m.hg>m.ag){ H.w++; H.pts+=3; A.l++; }
+    else if(m.hg<m.ag){ A.w++; A.pts+=3; H.l++; }
     else { H.d++; A.d++; H.pts++; A.pts++; }
     if(m.ag===0) H.cs++; if(m.hg===0) A.cs++;
+
+    // ---- Platform match-level counting ----
+    const hPlat = H.platform || 'Unspecified';
+    const aPlat = A.platform || 'Unspecified';
+    const matchId = `M${i}`;
+    getPlatBucket(hPlat).matches.add(matchId);
+    getPlatBucket(aPlat).matches.add(matchId);
+    if(m.hg>m.ag) getPlatBucket(hPlat).wins.add(matchId);
+    else if(m.hg<m.ag) getPlatBucket(aPlat).wins.add(matchId);
   });
 
-  const list=Array.from(teams.values()).map(t=>({...t,gd:t.gf-t.ga}));
+  const list = Array.from(teams.values()).map(t=>({...t,gd:t.gf-t.ga}));
   const topGF = [...list].sort((a,b)=> b.gf-a.gf || a.team.localeCompare(b.team))[0] || null;
   const mostGA = [...list].sort((a,b)=> b.ga-a.ga || a.team.localeCompare(b.team))[0] || null;
   const mostCS = [...list].sort((a,b)=> b.cs-a.cs || a.team.localeCompare(b.team))[0] || null;
 
-  // Platform summary array
-  const platforms = Array.from(platTallies.entries()).map(([plat,v])=>({
-    platform: plat, gp: v.gp, w: v.w, win: v.gp ? (v.w*100/v.gp) : 0
-  })).sort((a,b)=> b.gp-a.gp || b.win-a.win || a.platform.localeCompare(b.platform));
+  // Compute per-platform summary
+  const platforms = Array.from(platMap.entries()).map(([plat,b])=>{
+    const gp = b.matches.size;
+    const w = b.wins.size;
+    const win = gp ? (w*100/gp) : 0;
+    return { platform:plat, gp, w, win };
+  }).sort((a,b)=> b.gp-a.gp || b.win-a.win || a.platform.localeCompare(b.platform));
 
   return {played,goals,avg,homeW,draw,awayW,teams:list,biggest,highest,topGF,mostGA,mostCS,platforms};
 }
