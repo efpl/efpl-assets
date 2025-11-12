@@ -79,7 +79,7 @@ tbody tr:nth-child(even){background:var(--card2)}
 .teamwrap.Ruby::before{    background:var(--ruby); }
 .teamwrap.Sapphire::before{background:var(--sapphire); }
 .teamwrap.Crystal::before{ background:var(--crystal); }
-teamwrap.Emerald::before{ background:var(--emerald); }
+.teamwrap.Emerald::before{ background:var(--emerald); }
 .teamwrap.Gold::before{    background:var(--gold); }
 
 /* Badge glow to match league (simplified for max compatibility) */
@@ -206,51 +206,41 @@ teamwrap.Emerald::before{ background:var(--emerald); }
         </table>
       </div>
 
-      <!-- RIGHT COLUMN -->
-      <div>
-        <!-- Platform Win % (placed ABOVE Highlights) -->
-        <div class="card">
-          <h3 style="margin:0 0 8px">Win % by Platform</h3>
-          <div id="plat-list" style="display:grid;gap:10px"></div>
-          <div id="plat-top" class="note" style="margin-top:6px"></div>
-        </div>
+      <!-- Highlights + more tables -->
+      <div class="card">
+        <h3 style="margin:0 0 8px">Highlights</h3>
+        <table id="tbl-hi">
+          <tbody>
+            <tr><td class="left">Biggest win</td><td id="hi-big" class="right">-</td></tr>
+            <tr><td class="left">Highest scoring game</td><td id="hi-hsg" class="right">-</td></tr>
+            <tr><td class="left">Top scoring team</td><td id="hi-topgf" class="right">-</td></tr>
+            <tr><td class="left">Most conceded</td><td id="hi-mostga" class="right">-</td></tr>
+            <tr><td class="left">Most clean sheets</td><td id="hi-mostcs" class="right">-</td></tr>
+          </tbody>
+        </table>
 
-        <!-- Highlights + more tables -->
-        <div class="card" style="margin-top:10px">
-          <h3 style="margin:0 0 8px">Highlights</h3>
-          <table id="tbl-hi">
-            <tbody>
-              <tr><td class="left">Biggest win</td><td id="hi-big" class="right">-</td></tr>
-              <tr><td class="left">Highest scoring game</td><td id="hi-hsg" class="right">-</td></tr>
-              <tr><td class="left">Top scoring team</td><td id="hi-topgf" class="right">-</td></tr>
-              <tr><td class="left">Most conceded</td><td id="hi-mostga" class="right">-</td></tr>
-              <tr><td class="left">Most clean sheets</td><td id="hi-mostcs" class="right">-</td></tr>
-            </tbody>
-          </table>
-
-          <div class="mini-grid" style="margin-top:10px">
-            <div class="card">
-              <strong>Top scoring teams (Top 10)</strong>
-              <table id="tbl-gf" style="margin-top:6px">
-                <colgroup>
-                  <col class="c-rank"><col class="c-team">
-                  <col class="c-p"><col class="c-gf"><col class="c-pts">
-                </colgroup>
-                <thead><tr><th>#</th><th class="left">Team</th><th>P</th><th>GF</th><th>PTS</th></tr></thead>
-                <tbody></tbody>
-              </table>
-            </div>
-            <div class="card">
-              <strong>Best defence (Top 10)</strong>
-              <table id="tbl-ga" style="margin-top:6px">
-                <colgroup>
-                  <col class="c-rank"><col class="c-team">
-                  <col class="c-p"><col class="c-ga"><col class="c-pts">
-                </colgroup>
-                <thead><tr><th>#</th><th class="left">Team</th><th>P</th><th>GA</th><th>PTS</th></tr></thead>
-                <tbody></tbody>
-              </table>
-            </div>
+        <div class="mini-grid" style="margin-top:10px">
+          <div class="card">
+            <strong>Top scoring teams (Top 10)</strong>
+            <table id="tbl-gf" style="margin-top:6px">
+              <colgroup>
+                <col class="c-rank"><col class="c-team">
+                <col class="c-p"><col class="c-gf"><col class="c-pts">
+              </colgroup>
+              <thead><tr><th>#</th><th class="left">Team</th><th>P</th><th>GF</th><th>PTS</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="card">
+            <strong>Best defence (Top 10)</strong>
+            <table id="tbl-ga" style="margin-top:6px">
+              <colgroup>
+                <col class="c-rank"><col class="c-team">
+                <col class="c-p"><col class="c-ga"><col class="c-pts">
+              </colgroup>
+              <thead><tr><th>#</th><th class="left">Team</th><th>P</th><th>GA</th><th>PTS</th></tr></thead>
+              <tbody></tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -273,7 +263,7 @@ const LEAGUES = [
   { key:'Sapphire', name:'Sapphire', badge:'Sapphire-League.png', id:'1qa03hOquzVg8ithFLdhrel2O3k3nTQCQZp81AWFvECg' },
   { key:'Crystal',  name:'Crystal',  badge:'Crystal-League.png',  id:'1LqRM7ICWpENmsKH5tTuu7Bf7VQa7YoJ-9TAivruymvo' },
   { key:'Emerald',  name:'Emerald',  badge:'Emerald-League.png',  id:'1rD_03y276wGjjlukus6icgwq_FPcOgc70654dOOG6sg' },
-  { key:'Gold',     name:'Gold',     badge:'Gold-League.png',     id:'1ACOQ3dffrjczk1LmBmPiC-wV37t9QKEDwApOEEeFU8' },
+  { key:'Gold',     name:'Gold',     badge:'Gold-League.png',     id:'1ACOQ3dffrjczk1LmBmPiC-wV37t9nQKEDwApOEEeFU8' },
 ];
 const BADGE_BASE = 'https://efpl-assets.pages.dev/img/leagues/';
 
@@ -289,25 +279,6 @@ const truthy = v => v===true || String(v).toLowerCase()==='true' || v==='☑';
 const pct = (p,t)=> t ? (p*100/t).toFixed(1)+'%' : '0.0%';
 const fmt = n => Number.isFinite(n)?n.toLocaleString():'0';
 const byId = id => document.getElementById(id);
-
-/* ====== Helpers for robust matching / platform text ====== */
-// Normalise team names for matching across tabs
-function tkey(s){
-  return String(s||'')
-    .replace(/\u00A0/g,' ')   // NBSP → space
-    .replace(/\s+/g,' ')      // collapse spaces
-    .trim()
-    .toLowerCase();
-}
-// Normalise platform strings and catch common typos/variants
-function normalizePlat(s){
-  const v = String(s||'').trim().toLowerCase();
-  if(!v) return '';
-  if (['ps','ps4','ps5','playstation','play staion','playstaion','playsation','play station'].includes(v)) return 'PlayStation';
-  if (['xbox','xbox one','xbox series','xsx','xss','series x','series s'].includes(v)) return 'Xbox';
-  if (['pc','steam','windows','win','computer'].includes(v)) return 'Steam';
-  return s;
-}
 
 /* ====== Fetchers ====== */
 async function fetchRange(id, sheet, range){
@@ -429,95 +400,7 @@ function leagueAggregates(perLeague){
   return out.sort((a,b)=>a.league.localeCompare(b.league));
 }
 
-/* ====== Platform Win% ====== */
-// Read Teams!A1:Z to map Team → Platform by header
-async function fetchTeamsMapFor(leagues){
-  const map = new Map();
-  for(const lg of leagues){
-    try{
-      const data = await fetchRange(lg.id, 'Teams', 'A1:Z1000');
-      const rows = (data.table.rows||[]).map(r=>(r.c||[]).map(c=>c?c.v:''));
-      if(!rows.length) continue;
-      const head = rows[0] || [];
-      const colTeam = head.findIndex(h=>/team/i.test(h));
-      const colPlat = head.findIndex(h=>/platform/i.test(h));
-      if(colTeam<0 || colPlat<0) continue;
-      rows.slice(1).forEach(r=>{
-        const name = (r[colTeam]||'').trim();
-        const plat = normalizePlat((r[colPlat]||'').trim());
-        if(name) map.set(tkey(name), plat);
-      });
-    }catch(_){}
-  }
-  return map;
-}
-
-// Count each completed match once per platform (not team-appearances)
-function platformStats(matches, teamToPlat){
-  const by = new Map(); // plat → {W,D,L,GP}
-  const get = p => {
-    const key = p || 'Unspecified';
-    if(!by.has(key)) by.set(key, {W:0,D:0,L:0,GP:0});
-    return by.get(key);
-  };
-
-  for(const m of matches){
-    const hp = teamToPlat.get(tkey(m.home)) || '';
-    const ap = teamToPlat.get(tkey(m.away)) || '';
-
-    // skip if neither platform known
-    if(!hp && !ap) continue;
-
-    // both sides known
-    if(hp && ap){
-      get(hp).GP += 1;
-      if(ap !== hp) get(ap).GP += 1;
-
-      if(m.hg > m.ag){ get(hp).W += 1; if(ap !== hp) get(ap).L += 1; }
-      else if(m.hg < m.ag){ get(ap).W += 1; if(ap !== hp) get(hp).L += 1; }
-      else {
-        if(ap !== hp){ get(hp).D += 1; get(ap).D += 1; }
-        // same-platform draw: counted as a match only (no W/D/L)
-      }
-    }else{
-      // Only one side has platform data
-      const p = hp || ap;
-      const rec = get(p);
-      rec.GP += 1;
-      if(m.hg === m.ag) rec.D += 1;
-      else if(m.hg > m.ag && hp) rec.W += 1;
-      else if(m.hg < m.ag && ap) rec.W += 1;
-    }
-  }
-
-  return [...by.entries()]
-    .map(([plat,o])=>({plat, ...o, winp: o.GP ? o.W/o.GP : 0}))
-    .filter(r => r.plat !== 'Unspecified' && r.GP > 0) // hide unknowns
-    .sort((a,b)=> b.winp-a.winp || a.plat.localeCompare(b.plat));
-}
-
-function renderPlatforms(rows){
-  const host = byId('plat-list'); host.innerHTML='';
-  const top  = byId('plat-top');
-
-  rows.forEach(r=>{
-    const div = document.createElement('div');
-    div.className = 'card';
-    div.style.display = 'grid';
-    div.style.gridTemplateColumns = '1fr auto';
-    div.style.alignItems = 'center';
-    div.innerHTML =
-      `<div><strong>${esc(r.plat)}</strong> — Matches ${r.GP}, W${r.W}-D${r.D}-L${r.L}</div>
-       <div class="numeric">${(r.winp*100).toFixed(1)}%</div>`;
-    host.appendChild(div);
-  });
-
-  top.textContent = rows.length
-    ? `Top platform: ${rows[0].plat} — ${(rows[0].winp*100).toFixed(1)}%`
-    : 'No results yet.';
-}
-
-/* ====== Render (rest) ====== */
+/* ====== Render ====== */
 function renderBadges(){
   const host=byId('badges'); host.innerHTML='';
   const all=document.createElement('div');
@@ -631,14 +514,6 @@ async function run(selectedKeys){
   renderHighlights(agg);
   renderTopTables(agg.teams);
   renderMini(minis);
-
-  // Platform Win% (All vs specific league scope respected)
-  const chosen = (selectedKeys.includes('All')
-    ? LEAGUES.filter(x=>x.id)
-    : LEAGUES.filter(x=>x.id && selectedKeys.includes(x.key)));
-  const teamMap = await fetchTeamsMapFor(chosen);
-  const platRows = platformStats(matches, teamMap);
-  renderPlatforms(platRows);
 }
 
 (function boot(){
