@@ -34,7 +34,7 @@ img{max-width:100%;height:auto;display:inline-block}
 
 .badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
 .badge{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 10px;display:flex;align-items:center;gap:8px;cursor:pointer}
-.badge img{height:20px;width:auto;object-fit:contain}
+.badge img{height:24px;width:auto;object-fit:contain} /* ↑ bigger badges */
 .badge.active{background:var(--accent);color:#0b1b3d;border-color:transparent}
 
 .rail{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:10px 0}
@@ -68,8 +68,8 @@ tbody tr:nth-child(even){background:var(--card2)}
 #tbl-leader col.c-pts{width:5.4ch}
 
 /* Team cell with league accent bar + badge glow (Option 2) */
-.teamwrap{display:flex;align-items:flex-start;gap:10px;min-width:0;position:relative;padding-left:12px}
-.teamwrap::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:4px;border-radius:2px;background:transparent}
+.teamwrap{display:flex;align-items:flex-start;gap:10px;min-width:0;position:relative;padding-left:14px}
+.teamwrap::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:5px;border-radius:2px;background:transparent} /* thicker bar */
 .teamwrap.Diamond::before{background:var(--diamond)}
 .teamwrap.Ruby::before{background:var(--ruby)}
 .teamwrap.Sapphire::before{background:var(--sapphire)}
@@ -77,15 +77,15 @@ tbody tr:nth-child(even){background:var(--card2)}
 .teamwrap.Emerald::before{background:var(--emerald)}
 .teamwrap.Gold::before{background:var(--gold)}
 .lg{height:20px;width:auto;object-fit:contain;flex:0 0 auto;transition:filter .15s ease}
-.lg.Diamond{filter:drop-shadow(0 0 4px color-mix(in srgb, var(--diamond) 60%, transparent))}
-.lg.Ruby{filter:drop-shadow(0 0 4px color-mix(in srgb, var(--ruby) 60%, transparent))}
-.lg.Sapphire{filter:drop-shadow(0 0 4px color-mix(in srgb, var(--sapphire) 60%, transparent))}
-.lg.Crystal{filter:drop-shadow(0 0 4px color-mix(in srgb, var(--crystal) 60%, transparent))}
-.lg.Emerald{filter:drop-shadow(0 0 4px color-mix(in srgb, var(--emerald) 60%, transparent))}
-.lg.Gold{filter:drop-shadow(0 0 4px color-mix(in srgb, var(--gold) 60%, transparent))}
-tr:hover .lg{filter:drop-shadow(0 0 7px rgba(255,255,255,.35))}
+.lg.Diamond{filter:drop-shadow(0 0 5px color-mix(in srgb, var(--diamond) 70%, transparent))}
+.lg.Ruby{filter:drop-shadow(0 0 5px color-mix(in srgb, var(--ruby) 70%, transparent))}
+.lg.Sapphire{filter:drop-shadow(0 0 5px color-mix(in srgb, var(--sapphire) 70%, transparent))}
+.lg.Crystal{filter:drop-shadow(0 0 5px color-mix(in srgb, var(--crystal) 70%, transparent))}
+.lg.Emerald{filter:drop-shadow(0 0 5px color-mix(in srgb, var(--emerald) 70%, transparent))}
+.lg.Gold{filter:drop-shadow(0 0 5px color-mix(in srgb, var(--gold) 70%, transparent))}
+tr:hover .lg{filter:drop-shadow(0 0 10px rgba(255,255,255,.45))} /* stronger hover glow */
 
-/* Names wrap neatly; no “…” in this full page version */
+/* Names wrap neatly (no ellipsis in this full page version) */
 .teamname{display:block;min-width:0;white-space:normal;overflow:visible;line-height:1.25;word-break:break-word;color:var(--ink)}
 
 /* Highlights normal wrapping */
@@ -107,7 +107,8 @@ tr:hover .lg{filter:drop-shadow(0 0 7px rgba(255,255,255,.35))}
   .mini{grid-template-columns:1fr}    /* stack bars */
 }
 @media (max-width:520px){
-  .brand{align-items:flex-start;gap:10px;flex-direction:column}
+  /* Stack title and update pill */
+  .hdr{flex-direction:column;align-items:flex-start}
   .rail{grid-template-columns:1fr}
 }
 @media (max-width:360px){
@@ -200,7 +201,9 @@ tr:hover .lg{filter:drop-shadow(0 0 7px rgba(255,255,255,.35))}
             </thead>
             <tbody></tbody>
           </table>
-          <div class="note" style="margin-top:6px">Based on completed fixtures only.</div>
+          <div class="note" style="margin-top:6px">
+            Based on completed fixtures. Counts unique matches where at least one team on that platform took part.
+          </div>
         </div>
 
         <!-- Highlights -->
@@ -303,8 +306,7 @@ async function loadTeams(id){
 
 async function loadFromFixtures(id){
   const data=await fetchRange(id, FX_TAB, FX_RANGE);
-  const rows=(data.table.rows||[]).map(r=>(r.c||[]).map(c=>c?c.v:''));
-  let scheduled=0;
+  const rows=(data.table.rows||[]).map(r=>(r.c||[]).map(c=>c?c.v:'')); let scheduled=0;
   const items=rows.map(c=>{
     const home=c[0]??'', hg=num(c[1]), ag=num(c[3]), away=c[4]??'', completed=truthy(c[5]), doneOn=safeDate(c[6]);
     if(home&&away) scheduled++;
@@ -394,7 +396,7 @@ function aggregate(matches, platformByTeam){
     return t;
   }
 
-  // track matches per platform (unique matches, not sides)
+  // Platform unique-match counters
   const platMap = new Map(); // plat -> {matches:Set(), wins:Set()}
   const getPlatBucket = (plat) => {
     if(!platMap.has(plat)) platMap.set(plat,{matches:new Set(),wins:new Set()});
@@ -424,7 +426,7 @@ function aggregate(matches, platformByTeam){
     else { H.d++; A.d++; H.pts++; A.pts++; }
     if(m.ag===0) H.cs++; if(m.hg===0) A.cs++;
 
-    // ---- Platform match-level counting ----
+    // Platform tallies (unique match counted once per platform involved)
     const hPlat = H.platform || 'Unspecified';
     const aPlat = A.platform || 'Unspecified';
     const matchId = `M${i}`;
@@ -439,7 +441,6 @@ function aggregate(matches, platformByTeam){
   const mostGA = [...list].sort((a,b)=> b.ga-a.ga || a.team.localeCompare(b.team))[0] || null;
   const mostCS = [...list].sort((a,b)=> b.cs-a.cs || a.team.localeCompare(b.team))[0] || null;
 
-  // Compute per-platform summary
   const platforms = Array.from(platMap.entries()).map(([plat,b])=>{
     const gp = b.matches.size;
     const w = b.wins.size;
