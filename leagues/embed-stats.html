@@ -252,6 +252,13 @@ tbody tr:nth-child(even){background:var(--card2)}
       <div id="league-mini" class="mini"></div>
       <div class="note">Each card: Avg goals • Home/Draw/Away % • Completion %.</div>
     </section>
+
+    <!-- Win % by Platform (NEW) -->
+    <section class="card" style="margin-top:10px">
+      <h3 style="margin:0 0 8px">Win % by Platform</h3>
+      <div id="plat-list" style="display:grid;gap:10px"></div>
+      <div id="plat-top" class="note" style="margin-top:6px"></div>
+    </section>
   </div>
 
 <script>
@@ -503,6 +510,80 @@ function renderMini(minis){
   });
 }
 
+/* ====== Platform Win% (helpers) ====== */
+/* Optional normaliser so PS5 → PlayStation, PC → Steam, etc. */
+function normalizePlat(s){
+  const v = String(s||'').trim().toLowerCase();
+  if(!v) return '';
+  if(['ps','ps4','ps5','playstation'].includes(v)) return 'PlayStation';
+  if(['xbox','xbox one','xbox series','xsx','xss'].includes(v)) return 'Xbox';
+  if(['pc','steam','windows'].includes(v)) return 'Steam';
+  return s;
+}
+
+/* Read Teams!A1:Z to map Team → Platform by header name */
+async function fetchTeamsMapFor(leagues){
+  const map = new Map();
+  for(const lg of leagues){
+    try{
+      const data = await fetchRange(lg.id, 'Teams', 'A1:Z1000');
+      const rows = (data.table.rows||[]).map(r=>(r.c||[]).map(c=>c?c.v:''));
+      if(!rows.length) continue;
+      const head = rows[0] || [];
+      const colTeam = head.findIndex(h=>/team/i.test(h));
+      const colPlat = head.findIndex(h=>/platform/i.test(h));
+      if(colTeam<0 || colPlat<0) continue;
+      rows.slice(1).forEach(r=>{
+        const name = (r[colTeam]||'').trim();
+        const plat = normalizePlat((r[colPlat]||'').trim());
+        if(name) map.set(name, plat);
+      });
+    }catch(_){}
+  }
+  return map;
+}
+
+/* Turn matches + team→platform into per-platform W/D/L/GP + Win% */
+function platformStats(matches, teamToPlat){
+  const by = new Map(); // plat → {W,D,L,GP}
+  const add = (p,w=0,d=0,l=0,gp=0)=>{
+    const key = p || 'Unspecified';
+    const o = by.get(key) || {W:0,D:0,L:0,GP:0};
+    o.W+=w; o.D+=d; o.L+=l; o.GP+=gp;
+    by.set(key,o);
+  };
+  for(const m of matches){
+    const hp = teamToPlat.get(m.home) || '';
+    const ap = teamToPlat.get(m.away) || '';
+    if(m.hg>m.ag){ add(hp,1,0,0,1); add(ap,0,0,1,1); }
+    else if(m.hg<m.ag){ add(hp,0,0,1,1); add(ap,1,0,0,1); }
+    else { add(hp,0,1,0,1); add(ap,0,1,0,1); }
+  }
+  return [...by.entries()]
+    .map(([plat,o])=>({plat, ...o, winp: o.GP? o.W/o.GP : 0}))
+    .sort((a,b)=> b.winp-a.winp || a.plat.localeCompare(b.plat));
+}
+
+/* Render the Platform card */
+function renderPlatforms(rows){
+  const host = byId('plat-list'); host.innerHTML='';
+  const top  = byId('plat-top');
+  rows.forEach(r=>{
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.style.display = 'grid';
+    div.style.gridTemplateColumns = '1fr auto';
+    div.style.alignItems = 'center';
+    div.innerHTML =
+      `<div><strong>${esc(r.plat)}</strong> — GP ${r.GP}, W${r.W}-D${r.D}-L${r.L}</div>
+       <div class="numeric">${(r.winp*100).toFixed(1)}%</div>`;
+    host.appendChild(div);
+  });
+  top.textContent = rows.length
+    ? `Top platform: ${rows[0].plat} — ${(rows[0].winp*100).toFixed(1)}%`
+    : 'No results yet.';
+}
+
 /* ====== Controller ====== */
 async function run(selectedKeys){
   if(!selectedKeys||!selectedKeys.length) selectedKeys=['All'];
@@ -514,6 +595,14 @@ async function run(selectedKeys){
   renderHighlights(agg);
   renderTopTables(agg.teams);
   renderMini(minis);
+
+  // === Platform Win% (compute + render)
+  const chosen = (selectedKeys.includes('All')
+    ? LEAGUES.filter(x=>x.id)
+    : LEAGUES.filter(x=>x.id && selectedKeys.includes(x.key)));
+  const teamMap = await fetchTeamsMapFor(chosen);
+  const platRows = platformStats(matches, teamMap);
+  renderPlatforms(platRows);
 }
 
 (function boot(){
