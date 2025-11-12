@@ -13,13 +13,13 @@
   --ink:#fff; --muted:#b8c6e3; --accent:#f9d71c;
   --line:rgba(249,215,28,.28);
   --ok:#2fbf71; --mid:#9aa4b2; --away:#5aa4ff;
-  /* League accent colours (Discord ranks) */
+  /* League accent colours */
   --diamond:#99ecff;
-  --ruby:#e01c71;
-  --sapphire:#008af1;
-  --crystal:#868af1;
-  --emerald:#3d9a5c;
-  --gold:#d4af37;
+  --ruby:#ff6f6f;
+  --sapphire:#5ac8fa;
+  --crystal:#b1e1ff;
+  --emerald:#63ffa1;
+  --gold:#f9d71c;
 }
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,Segoe UI,Roboto,Arial,sans-serif}
@@ -66,13 +66,12 @@ tbody tr:nth-child(even){background:var(--card2)}
 #tbl-leader col.c-gd{width:4.8ch}
 #tbl-leader col.c-pts{width:5.4ch}
 
-/* ===== League-coloured left bar + badge glow (text remains white) ===== */
+/* ===== Option 2: League-coloured left bar + badge glow (text remains white) ===== */
 .teamwrap{
-  display:flex;align-items:flex-start;gap:10px;min-width:0;position:relative;padding-left:12px; /* +2px for thicker bar */
+  display:flex;align-items:flex-start;gap:10px;min-width:0;position:relative;padding-left:10px;
 }
 .teamwrap::before{
-  content:"";position:absolute;left:0;top:4px;bottom:4px;width:5px; /* was 3px */
-  border-radius:2px;background:transparent;transition:box-shadow .25s ease, transform .25s ease;
+  content:"";position:absolute;left:0;top:6px;bottom:6px;width:3px;border-radius:2px;background:transparent;
 }
 /* Per-league accent bar colours */
 .teamwrap.Diamond::before{ background:var(--diamond); }
@@ -82,46 +81,17 @@ tbody tr:nth-child(even){background:var(--card2)}
 .teamwrap.Emerald::before{ background:var(--emerald); }
 .teamwrap.Gold::before{    background:var(--gold); }
 
-/* Badge glow to match league (simplified for max compatibility) */
+/* Badge glow to match league */
 .lg{height:20px;width:auto;object-fit:contain;flex:0 0 auto;filter:drop-shadow(0 0 2px rgba(0,0,0,.6))}
-.lg.Diamond{ filter:drop-shadow(0 0 4px var(--diamond)); }
-.lg.Ruby{    filter:drop-shadow(0 0 4px var(--ruby)); }
-.lg.Sapphire{filter:drop-shadow(0 0 4px var(--sapphire)); }
-.lg.Crystal{ filter:drop-shadow(0 0 4px var(--crystal)); }
-.lg.Emerald{ filter:drop-shadow(0 0 4px var(--emerald)); }
-.lg.Gold{    filter:drop-shadow(0 0 4px var(--gold)); }
+.lg.Diamond{ filter:drop-shadow(0 0 4px color-mix(in srgb, var(--diamond) 60%, transparent)); }
+.lg.Ruby{    filter:drop-shadow(0 0 4px color-mix(in srgb, var(--ruby) 60%, transparent)); }
+.lg.Sapphire{filter:drop-shadow(0 0 4px color-mix(in srgb, var(--sapphire) 60%, transparent)); }
+.lg.Crystal{ filter:drop-shadow(0 0 4px color-mix(in srgb, var(--crystal) 60%, transparent)); }
+.lg.Emerald{ filter:drop-shadow(0 0 4px color-mix(in srgb, var(--emerald) 60%, transparent)); }
+.lg.Gold{    filter:drop-shadow(0 0 4px color-mix(in srgb, var(--gold) 60%, transparent)); }
 
 /* Team text stays white; wraps (no ellipsis) */
 .teamname{display:block;min-width:0;white-space:normal;overflow:visible;line-height:1.25;word-break:break-word;color:var(--ink)}
-
-/* Row hover glow (subtle, plus league bar glow) */
-#tbl-leader tbody tr:hover,
-#tbl-gf tbody tr:hover,
-#tbl-ga tbody tr:hover{
-  position:relative;z-index:1;background-color:rgba(255,255,255,0.05);
-  box-shadow:0 0 12px rgba(255,255,255,0.07) inset;transition:box-shadow .25s ease, background-color .25s ease;
-}
-#tbl-leader tbody tr:hover .teamwrap::before,
-#tbl-gf tbody tr:hover .teamwrap::before,
-#tbl-ga tbody tr:hover .teamwrap::before{ transform:scaleX(1.15); }
-#tbl-leader tbody tr:hover .teamwrap.Diamond::before,
-#tbl-gf tbody tr:hover .teamwrap.Diamond::before,
-#tbl-ga tbody tr:hover .teamwrap.Diamond::before{ box-shadow:0 0 10px var(--diamond); }
-#tbl-leader tbody tr:hover .teamwrap.Ruby::before,
-#tbl-gf tbody tr:hover .teamwrap.Ruby::before,
-#tbl-ga tbody tr:hover .teamwrap.Ruby::before{ box-shadow:0 0 10px var(--ruby); }
-#tbl-leader tbody tr:hover .teamwrap.Sapphire::before,
-#tbl-gf tbody tr:hover .teamwrap.Sapphire::before,
-#tbl-ga tbody tr:hover .teamwrap.Sapphire::before{ box-shadow:0 0 10px var(--sapphire); }
-#tbl-leader tbody tr:hover .teamwrap.Crystal::before,
-#tbl-gf tbody tr:hover .teamwrap.Crystal::before,
-#tbl-ga tbody tr:hover .teamwrap.Crystal::before{ box-shadow:0 0 10px var(--crystal); }
-#tbl-leader tbody tr:hover .teamwrap.Emerald::before,
-#tbl-gf tbody tr:hover .teamwrap.Emerald::before,
-#tbl-ga tbody tr:hover .teamwrap.Emerald::before{ box-shadow:0 0 10px var(--emerald); }
-#tbl-leader tbody tr:hover .teamwrap.Gold::before,
-#tbl-gf tbody tr:hover .teamwrap.Gold::before,
-#tbl-ga tbody tr:hover .teamwrap.Gold::before{ box-shadow:0 0 10px var(--gold); }
 
 /* Highlights can wrap normally */
 #tbl-hi td{white-space:normal;line-height:1.35}
@@ -140,8 +110,8 @@ tbody tr:nth-child(even){background:var(--card2)}
   tbody td{padding:8px;font-size:14px}
   .lg{height:18px}
   /* Keep the coloured bar visible but tighter */
-  .teamwrap{ padding-left:10px; gap:8px; }
-  .teamwrap::before{ left:0; top:6px; bottom:6px; width:5px; }
+  .teamwrap{ padding-left:8px; gap:8px; }
+  .teamwrap::before{ left:0; top:6px; bottom:6px; width:3px; }
 }
 @media (max-width:360px){
   tbody td{font-size:13px}
