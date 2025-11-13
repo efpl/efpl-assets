@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>eFPL Hall of Fame</title>
+
+<style>
+/* ===========================  
+   BASE THEME  
+   =========================== */
+:root{
+  --bg:#00143b;
+  --card:#05225a;
+  --card2:#0c2e66;
+  --ink:#ffffff;
+  --muted:#cbd5e1;
+  --gold:#f9d71c;
+  --border:rgba(249,215,28,.35);
+  --shadow:0 4px 14px rgba(0,0,0,.35);
+}
+
+html,body{
+  background:transparent;
+  margin:0;
+  font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;
+  color:var(--ink);
+}
+
+.wrap{
+  max-width:1100px;
+  margin:24px auto;
+  padding:16px;
+}
+
+/* ===========================  
+   TITLE HEADER  
+   =========================== */
+.hof-title{
+  text-align:center;
+  margin-bottom:24px;
+}
+.hof-title h1{
+  font-size:clamp(26px,6vw,40px);
+  margin:0;
+  font-weight:900;
+  color:var(--gold);
+}
+.hof-title p{
+  margin:6px 0 0;
+  color:var(--muted);
+}
+
+/* ===========================  
+   ACCORDION SECTIONS  
+   =========================== */
+.section{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  margin-bottom:14px;
+  overflow:hidden;
+  box-shadow:var(--shadow);
+}
+
+.section-header{
+  padding:14px 16px;
+  font-size:18px;
+  font-weight:800;
+  color:var(--gold);
+  cursor:pointer;
+  user-select:none;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.section-header:hover{
+  background:var(--card2);
+}
+.section-header span{
+  font-size:22px;
+  font-weight:900;
+}
+
+.section-content{
+  max-height:0;
+  overflow:hidden;
+  transition:max-height .35s ease;
+  background:var(--card2);
+}
+
+.inner{
+  padding:16px;
+}
+
+/* ===========================  
+   LEAGUE & CUP CARDS  
+   =========================== */
+.league-grid,
+.cup-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:14px;
+}
+
+.card-item{
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:12px;
+  text-align:center;
+  box-shadow:var(--shadow);
+}
+
+.card-item img{
+  width:60px;
+  height:60px;
+  object-fit:contain;
+  margin-bottom:8px;
+}
+
+.card-title{
+  font-size:16px;
+  font-weight:800;
+  margin-bottom:4px;
+  color:var(--gold);
+}
+
+.card-winner{
+  font-size:16px;
+  font-weight:700;
+}
+
+.card-points{
+  margin-top:4px;
+  font-size:14px;
+  color:var(--muted);
+}
+
+/* ===========================  
+   ALL-TIME WINNERS TABLE  
+   =========================== */
+.table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:8px;
+}
+
+.table th{
+  background:var(--gold);
+  color:#00143b;
+  padding:10px;
+  text-align:left;
+  font-weight:900;
+}
+
+.table td{
+  padding:10px;
+  border-bottom:1px solid var(--border);
+}
+
+.rank-1{
+  background:rgba(249,215,28,.15);
+}
+
+.rank-2{
+  background:rgba(249,215,28,.08);
+}
+
+/* ===========================  
+   RECORDS BOX  
+   =========================== */
+.records-box{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:16px;
+  margin-top:20px;
+  box-shadow:var(--shadow);
+}
+.records-box h3{
+  margin:0 0 12px;
+  color:var(--gold);
+  font-size:20px;
+}
+.record-row{
+  display:flex;
+  justify-content:space-between;
+  padding:6px 0;
+  border-bottom:1px dashed var(--border);
+  color:var(--muted);
+}
+.record-row:last-child{
+  border-bottom:none;
+}
+
+/* ===========================  
+   MOBILE  
+   =========================== */
+@media(max-width:600px){
+  .card-item img{
+    width:50px;
+    height:50px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="hof-title">
+    <h1>eFPL Hall of Fame</h1>
+    <p>Celebrating champions, cup winners, and legends of the league.</p>
+  </div>
+<script>
+/* ============================================================
+   CONFIG
+   ============================================================ */
+const SHEET_ID = "1DaYTkVVWiQVg7aianACoIfxXBZSKYqtycyuofX8WXj8";
+
+/* Map of all tabs we need to load */
+const TABS = {
+  settings: "Settings",
+  europe: "Europe_Leagues",
+  apac: "APAC_Leagues",
+  americas: "Americas_Leagues",
+  cups: "Cups",
+  winners: "AllTime_Winners",
+  records: "Records"
+};
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+
+/* Fetch GViz JSON */
+async function fetchGViz(tab) {
+  const url =
+    `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?` +
+    `tqx=out:json&sheet=${encodeURIComponent(tab)}&cachebuster=${Date.now()}`;
+
+  const res = await fetch(url);
+  const txt = await res.text();
+
+  const jsonStart = txt.indexOf('{');
+  const jsonEnd = txt.lastIndexOf('}');
+  if (jsonStart === -1 || jsonEnd === -1) return null;
+
+  return JSON.parse(txt.slice(jsonStart, jsonEnd + 1));
+}
+
+/* Convert GViz table to array of rows */
+function gvizToRows(gviz) {
+  if (!gviz || !gviz.table || !gviz.table.rows) return [];
+  return gviz.table.rows.map(r =>
+    (r.c || []).map(c => (c ? c.v : ""))
+  );
+}
+
+/* ============================================================
+   DATA CONTAINERS (populated as we load)
+   ============================================================ */
+
+let SETTINGS = {
+  regions: {},
+  icons: {}
+};
+
+let EUROPE = [];
+let APAC = [];
+let AMERICAS = [];
+let CUPS = [];
+let WINNERS = [];
+let RECORDS = [];
+
+/* ============================================================
+   LOAD SETTINGS (Icons + Region names)
+   ============================================================ */
+function parseSettings(rows){
+  rows.forEach(r=>{
+    const type=r[0];
+    const key=r[1];
+    const val=r[2];
+
+    if(type==="region"){
+      SETTINGS.regions[key]=val;
+    }
+    if(type==="icon"){
+      SETTINGS.icons[key]=val;
+    }
+  });
+}
+
+/* ============================================================
+   LOAD LEAGUE ROWS (shared logic for Europe/APAC/Americas)
+   Each row structure:
+   Season | League1 Winner | League1 Pts | League2 Winner | League2 Pts ...
+   ============================================================ */
+function parseLeagueRows(rows){
+  const out = {};  // group by season
+
+  rows.forEach(r=>{
+    const season = r[0];
+    if(!season) return;
+
+    if(!out[season]) out[season] = [];
+
+    for(let i=1;i<r.length;i+=2){
+      const winner = r[i];
+      const pts = r[i+1];
+      const headerOffset = i;  // determines league name from columns
+    }
+  });
+
+  return out;
+}
+
+/* ============================================================
+   LOAD CUPS
+   row structure:
+   Season | Region | Cup Name | Winner
+   ============================================================ */
+function parseCups(rows){
+  const out = {};
+
+  rows.forEach(r=>{
+    const season=r[0];
+    if(!season) return;
+
+    if(!out[season]) out[season]=[];
+    out[season].push({
+      region: r[1],
+      cup: r[2],
+      winner: r[3]
+    });
+  });
+
+  return out;
+}
+</script>
+<script>
+/* ============================================================
+   RENDER HELPERS
+   ============================================================ */
+
+/* Create an accordion section (Season / Region / Cups / etc.) */
+function createSection(title){
+  const id = "sec-" + Math.random().toString(36).substring(2,8);
+
+  return `
+    <div class="section" id="${id}">
+      <div class="section-header" onclick="toggleSection('${id}')">
+        ${title}
+        <span>+</span>
+      </div>
+      <div class="section-content">
+        <div class="inner" id="${id}-content"></div>
+      </div>
+    </div>
+  `;
+}
+
+/* Toggle accordion open/close */
+function toggleSection(id){
+  const sec = document.querySelector(`#${id} .section-content`);
+  const icon = document.querySelector(`#${id} .section-header span`);
+
+  if(!sec.style.maxHeight){
+    sec.style.maxHeight = sec.scrollHeight + "px";
+    icon.textContent = "–";
+  } else {
+    sec.style.maxHeight = null;
+    icon.textContent = "+";
+  }
+}
+
+/* Safely get icon from settings */
+function getIcon(name){
+  return SETTINGS.icons[name] || "";
+}
+
+/* Card (League or Cup) */
+function cardItem(icon, title, winner, pts=""){
+  return `
+    <div class="card-item">
+      ${icon ? `<img src="${icon}" alt="">` : ""}
+      <div class="card-title">${title}</div>
+      <div class="card-winner">${winner || "-"}</div>
+      ${pts ? `<div class="card-points">${pts} pts</div>` : ""}
+    </div>
+  `;
+}
+
+/* ============================================================
+   RENDER LEAGUES FOR A REGION
+   rows = { S1:[{league, winner, pts}], S2:[...], ... }
+   ============================================================ */
+function renderLeagueRegion(title, rows, regionKey){
+  let html = "";
+  html += createSection(title);
+
+  return { html, target:`${title}` };
+}
+
+/* We will populate sections AFTER building the DOM structure */
+function fillLeagueRegion(seasonRows, containerID){
+  const container = document.getElementById(containerID);
+  if(!container) return;
+
+  const seasons = Object.keys(seasonRows).sort();
+
+  seasons.forEach(season=>{
+    const secID = containerID + "-" + season;
+    const html = createSection(`Season ${season}`);
+    container.innerHTML += html;
+
+    const target = document.querySelector(`#sec-${season} .inner`);
+  });
+}
+
+/* ============================================================
+   RENDER ALL-TIME WINNERS
+   rows from AllTime_Winners tab
+   ============================================================ */
+function renderAllTime(rows){
+  let html = createSection("All-Time Winners");
+
+  document.body.insertAdjacentHTML("beforeend", html);
+
+  const content = document.querySelector("#sec-All-Time-Winners-content");
+
+  let table = `
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Player</th>
+          <th>Total Trophies</th>
+          <th>League Titles</th>
+          <th>Cup Titles</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  rows.forEach((r,i)=>{
+    const player = r[0];
+    const league = r[1];
+    const cup = r[2];
+    const total = r[3];
+    const rank = r[4];
+
+    if(!player) return;
+
+    const rankClass =
+      rank == 1 ? "rank-1" :
+      rank == 2 ? "rank-2" : "";
+
+    table += `
+      <tr class="${rankClass}">
+        <td>${rank}</td>
+        <td>${player}</td>
+        <td>${total}</td>
+        <td>${league}</td>
+        <td>${cup}</td>
+      </tr>
+    `;
+  });
+
+  table += "</tbody></table>";
+
+  content.innerHTML = table;
+}
+
+/* ============================================================
+   RENDER RECORDS
+   ============================================================ */
+function renderRecords(rows){
+  let html = createSection("Records");
+  document.body.insertAdjacentHTML("beforeend", html);
+
+  const content = document.querySelector("#sec-Records-content");
+
+  let out = `<div class="records-box"><h3>League & Cup Records</h3>`;
+
+  rows.forEach(r=>{
+    if(!r[0] || !r[1]) return;
+    out += `
+      <div class="record-row">
+        <span>${r[0]}</span>
+        <span>${r[1]}</span>
+      </div>
+    `;
+  });
+
+  out += "</div>";
+  content.innerHTML = out;
+}
+
+/* ============================================================
+   MASTER RENDER FUNCTION
+   ============================================================ */
+async function renderAll(){
+
+  /* 1. Load SETTINGS */
+  const settingsGV = await fetchGViz(TABS.settings);
+  parseSettings(gvizToRows(settingsGV));
+
+  /* 2. Load league data */
+  const europeGV = await fetchGViz(TABS.europe);
+  const apacGV = await fetchGViz(TABS.apac);
+  const amerGV = await fetchGViz(TABS.americas);
+
+  EUROPE = gvizToRows(europeGV);
+  APAC = gvizToRows(apacGV);
+  AMERICAS = gvizToRows(amerGV);
+
+  /* 3. Load Cups */
+  const cupsGV = await fetchGViz(TABS.cups);
+  CUPS = gvizToRows(cupsGV);
+
+  /* 4. Load All-Time Winners */
+  const winGV = await fetchGViz(TABS.winners);
+  WINNERS = gvizToRows(winGV);
+
+  /* 5. Load Records */
+  const recGV = await fetchGViz(TABS.records);
+  RECORDS = gvizToRows(recGV);
+
+  /* RENDER SECTIONS BELOW (Part 4) */
+}
+</script>
+<script>
+/* ============================================================
+   FINAL PAGE RENDERING (VISIBLE STRUCTURE)
+   ============================================================ */
+
+/* CARD BUILDER FOR LEAGUES */
+function buildLeagueCards(rows, regionName) {
+  const seasons = {};
+
+  rows.forEach(r => {
+    const season = r[0];
+    if (!season) return;
+
+    if (!seasons[season]) seasons[season] = [];
+
+    // Each league is pair of columns (Winner, Points)
+    const leagueCols = [
+      { name: "Diamond League", w: r[1], p: r[2] },
+      { name: "Ruby League", w: r[3], p: r[4] },
+      { name: "Sapphire League", w: r[5], p: r[6] },
+      { name: "Crystal League", w: r[7], p: r[8] },
+      { name: "Emerald League", w: r[1], p: r[2] }, // fallback for APAC future
+      { name: "League 2", w: r[3], p: r[4] },
+      { name: "League 3", w: r[5], p: r[6] },
+      { name: "League 4", w: r[7], p: r[8] }
+    ];
+
+    leagueCols.forEach(l => {
+      if (l.w && l.w !== "-" && l.w !== "TBD" && l.w !== "Winner") {
+        seasons[season].push({
+          league: l.name,
+          winner: l.w,
+          pts: l.p,
+          icon: SETTINGS.icons[l.name] || ""
+        });
+      }
+    });
+  });
+
+  return seasons;
+}
+
+/* BUILD CUP CARDS */
+function buildCupCards(rows){
+  const seasons = {};
+
+  rows.forEach(r=>{
+    const season = r[0];
+    if(!season) return;
+
+    if(!seasons[season]) seasons[season] = [];
+
+    const cup = r[2];
+    const winner = r[3];
+
+    if (!winner || winner === "-" || winner === "TBD" || winner === "Winner") return;
+
+    seasons[season].push({
+      cup,
+      winner,
+      icon: SETTINGS.icons[cup] || ""
+    });
+  });
+
+  return seasons;
+}
+
+/* CREATE A FULL REGION BLOCK */
+function createRegionBlock(title, seasonsObj){
+  let html = createSection(title);
+  document.body.insertAdjacentHTML("beforeend", html);
+
+  const sect = document.querySelector(`.section:last-child .inner`);
+
+  const seasons = Object.keys(seasonsObj).sort();
+
+  seasons.forEach(season => {
+    const innerID = `${title.replace(/\s+/g,'')}-${season}`;
+    const seasonHTML = createSection(`Season ${season}`);
+    sect.innerHTML += seasonHTML;
+
+    const target = document.querySelector(`.section:last-child .section-content .inner`);
+
+    let grid = `<div class="league-grid">`;
+
+    seasonsObj[season].forEach(item => {
+      grid += cardItem(item.icon, item.league, item.winner, item.pts);
+    });
+
+    grid += `</div>`;
+    target.innerHTML = grid;
+  });
+}
+
+
+/* CREATE THE CUP BLOCK */
+function createCupBlock(seasonCups){
+  let html = createSection("Cup History");
+  document.body.insertAdjacentHTML("beforeend", html);
+
+  const sect = document.querySelector(`.section:last-child .inner`);
+
+  const seasons = Object.keys(seasonCups).sort();
+
+  seasons.forEach(season => {
+    const seasonHTML = createSection(`Season ${season}`);
+    sect.innerHTML += seasonHTML;
+
+    const target = document.querySelector(`.section:last-child .section-content .inner:last-child`);
+
+    let grid = `<div class="cup-grid">`;
+
+    seasonCups[season].forEach(c => {
+      grid += cardItem(c.icon, c.cup, c.winner);
+    });
+
+    grid += `</div>`;
+    target.innerHTML = grid;
+  });
+}
+
+
+/* ============================================================
+   RUN EVERYTHING
+   ============================================================ */
+async function runHOF(){
+  await renderAll();
+
+  /* Build league season objects */
+  const europeSeasons = buildLeagueCards(EUROPE, "Europe / Africa");
+  const apacSeasons = buildLeagueCards(APAC, "Asia-Pacific (APAC)");
+  const amerSeasons = buildLeagueCards(AMERICAS, "The Americas");
+
+  /* Build cup season objects */
+  const cupSeasons = buildCupCards(CUPS);
+
+  /* Render Data */
+  createRegionBlock("Europe / Africa", europeSeasons);
+  createRegionBlock("Asia-Pacific (APAC)", apacSeasons);
+  createRegionBlock("The Americas", amerSeasons);
+
+  createCupBlock(cupSeasons);
+
+  renderAllTime(WINNERS);
+  renderRecords(RECORDS);
+}
+
+/* Run on load */
+runHOF();
+</script>
+
+</div> <!-- wrap end -->
+</body>
+</html>
