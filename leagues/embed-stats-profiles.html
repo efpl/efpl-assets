@@ -86,7 +86,7 @@ tbody tr:nth-child(even){background:var(--card2)}
 .teamwrap.Gold::before{    background:var(--gold); }
 
 /* Badge glow to match league */
-.lg{height:20px;width:auto;object-fit:contain;flex:0 0 auto;filter:drop-shadow(0 0 2px rgba(0,0,0,.6))}
+.lg{height:21px;width:auto;object-fit:contain;flex:0 0 auto;filter:drop-shadow(0 0 2px rgba(0,0,0,.6))}
 .lg.Diamond{ filter:drop-shadow(0 0 4px rgba(153,236,255,.9)); }
 .lg.Ruby{    filter:drop-shadow(0 0 4px rgba(224,28,113,.9)); }
 .lg.Sapphire{filter:drop-shadow(0 0 4px rgba(0,138,241,.9)); }
@@ -217,95 +217,6 @@ tbody tr:nth-child(even){background:var(--card2)}
 }
 .player-modal td.value{
   font-weight:600;
-}
-/* ===== ULTRA-SMALL MOBILE LEADERBOARD (≤420px) ===== */
-/* Columns: P • W • GD • PTS only */
-@media (max-width: 420px){
-
-  /* Hide table headers (they break tiny width layouts) */
-  #tbl-leader thead{ display:none !important; }
-
-  /* Hide TEAM GP/W/D/L/GD/PTS columns you don't want */
-  /* Hide D (5) and L (6), and hide GF/GA if still visible */
-  #tbl-leader td:nth-child(5),
-  #tbl-leader td:nth-child(6),
-  #tbl-leader td:nth-child(7),
-  #tbl-leader td:nth-child(3){ display:none !important; }
-
-  /* New grid layout: 
-     # | Team | P | W | GD | PTS
-     (P = col 3, W = col 4, GD = col 7, PTS = col 8)
-  */
-  #tbl-leader tbody tr{
-    display:grid !important;
-    grid-template-columns:
-      2.8ch       /* # */
-      1fr         /* Team */
-      3ch         /* P */
-      3ch         /* W */
-      3.2ch       /* GD */
-      3.4ch;      /* PTS */
-    column-gap:8px;
-    align-items:center;
-  }
-
-  /* Position the columns */
-  #tbl-leader td:nth-child(1){ grid-column:1; text-align:right; }
-  #tbl-leader td:nth-child(2){ grid-column:2; } /* team */
-  #tbl-leader td:nth-child(3){ grid-column:3; text-align:center; } /* P */
-  #tbl-leader td:nth-child(4){ grid-column:4; text-align:center; } /* W */
-  #tbl-leader td:nth-child(7){ grid-column:5; text-align:center; } /* GD */
-  #tbl-leader td:nth-child(8){ grid-column:6; text-align:right; font-weight:800;} /* PTS */
-
-  /* Smaller text for ultra tiny screens */
-  #tbl-leader tbody td{
-    font-size:13px;
-    padding:7px 6px;
-  }
-
-  /* Team name handling: one line ellipsis */
-  .teamwrap{
-    gap:6px;
-    padding-left:8px;
-  }
-
-  .teamname{
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-
-  .lg{
-    height:16px;
-  }
-}
-
-/* ===== Smallest screens: simplify leaderboard to P W GD Pts ===== */
-@media (max-width: 520px){
-
-  /* Hide D (col 5) and L (col 6) */
-  #tbl-leader th:nth-child(5),
-  #tbl-leader td:nth-child(5),
-  #tbl-leader th:nth-child(6),
-  #tbl-leader td:nth-child(6){
-    display:none !important;
-  }
-
-  /* Let the remaining columns breathe */
-  #tbl-leader{
-    table-layout:auto;
-  }
-
-  /* Give the Team column more room */
-  #tbl-leader col.c-team{
-    width:auto;
-  }
-
-  /* Slightly tighten numeric padding so names get more space */
-  #tbl-leader td.right.numeric{
-    padding-left:6px;
-    padding-right:6px;
-  }
 }
 </style>
 </head>
