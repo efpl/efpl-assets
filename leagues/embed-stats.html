@@ -650,6 +650,14 @@ function openPlayerModal(teamName){
   const body = byId('player-modal-body');
   if(!backdrop || !body) return;
 
+  // Make sure the iframe view is at the top so the card is visible
+  try{
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }catch(e){
+    // Fallback for older browsers
+    window.scrollTo(0, 0);
+  }
+
   const league = team.league || '';
   const badgeUrl = `${BADGE_BASE}${league || 'Diamond'}-League.png`;
   const gdText = (team.gd>=0?'+':'') + team.gd;
@@ -690,6 +698,7 @@ function openPlayerModal(teamName){
   `;
 
   backdrop.style.display = 'flex';
+  backdrop.style.alignItems = 'flex-start';
   backdrop.setAttribute('aria-hidden','false');
 }
 
