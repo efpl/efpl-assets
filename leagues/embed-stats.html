@@ -58,7 +58,7 @@ tbody tr:nth-child(even){background:var(--card2)}
 .left{text-align:left}.right{text-align:right}.center{text-align:center}
 .numeric{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
 
-/* Leaderboard — columns incl. GD (desktop / normal) */
+/* Leaderboard — columns incl. GD */
 #tbl-leader col.c-rank{width:4.2ch}
 #tbl-leader col.c-team{width:auto} /* flexible */
 #tbl-leader col.c-p,
@@ -71,7 +71,7 @@ tbody tr:nth-child(even){background:var(--card2)}
 /* ===== League-coloured left bar + badge glow (text remains white) ===== */
 .teamwrap{
   display:flex;align-items:flex-start;gap:10px;min-width:0;position:relative;padding-left:12px;
-  cursor:pointer; /* clickable for pop-up */
+  cursor:pointer; /* clickable for profile panel */
 }
 .teamwrap::before{
   content:"";position:absolute;left:0;top:4px;bottom:4px;width:5px;
@@ -133,6 +133,9 @@ tbody tr:nth-child(even){background:var(--card2)}
 #tbl-gf tbody tr:hover .teamwrap.Gold::before,
 #tbl-ga tbody tr:hover .teamwrap.Gold::before{ box-shadow:0 0 16px 2px rgba(212,175,55,.85); }
 
+/* Highlights can wrap normally */
+#tbl-hi td{white-space:normal;line-height:1.35}
+
 /* Generic small text */
 .note{color:var(--muted);font-size:12px}
 
@@ -162,16 +165,17 @@ tbody tr:nth-child(even){background:var(--card2)}
     display:none !important;
   }
 
-  /* Make the remaining columns use full width */
+  /* Let table auto-size columns */
   #tbl-leader{
     table-layout:auto !important;
-    width:100% !important;
   }
 
+  /* Make all remaining columns share the full width */
   #tbl-leader col{
     width:auto !important;
   }
 
+  /* Team column can flex; numeric cols tighter */
   #tbl-leader col.c-team{ width:auto !important; }
   #tbl-leader td.right.numeric{
     padding-left:6px !important;
@@ -180,72 +184,6 @@ tbody tr:nth-child(even){background:var(--card2)}
 }
 @media (max-width:360px){
   tbody td{font-size:13px}
-}
-
-/* ====== Player mini-profile modal ====== */
-.player-modal-backdrop{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.6);
-  display:none;                 /* JS sets this to "flex" when opening */
-  z-index:9999;
-  display:none;
-  align-items:flex-start;       /* stick near top */
-  justify-content:center;       /* center horizontally */
-}
-
-.player-modal{
-  max-width:360px;
-  width:calc(100% - 24px);      /* side margin on mobile */
-  background:var(--card);
-  border-radius:12px;
-  border:1px solid var(--line);
-  box-shadow:0 18px 40px rgba(0,0,0,0.55);
-  padding:14px 14px 10px;
-  margin-top:60px;              /* distance from top of iframe viewport */
-  position:relative;
-}
-.player-modal-close{
-  position:absolute;
-  top:6px;right:8px;
-  background:transparent;
-  border:none;
-  color:var(--muted);
-  font-size:18px;
-  cursor:pointer;
-}
-.player-modal-close:hover{color:#fff}
-.player-modal-header{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-bottom:6px;
-}
-.player-modal-header img{
-  height:32px;width:auto;object-fit:contain;border-radius:6px;
-}
-.player-modal-title{
-  font-size:16px;font-weight:700;margin:0;
-}
-.player-modal-sub{
-  font-size:12px;color:var(--muted);
-}
-.player-modal table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:4px;
-  font-size:13px;
-}
-.player-modal td{
-  padding:4px 2px;
-}
-.player-modal td.left{ text-align:left; }
-.player-modal td.right{ text-align:right; }
-.player-modal td.label{
-  color:var(--muted);
-}
-.player-modal td.value{
-  font-weight:600;
 }
 </style>
 </head>
@@ -287,7 +225,7 @@ tbody tr:nth-child(even){background:var(--card2)}
       </div>
     </section>
 
-    <!-- Leaderboard + Highlights -->
+    <!-- Leaderboard + Highlights + Selected player -->
     <section class="two-col" style="margin-top:10px">
       <div class="card">
         <h3 style="margin:0 0 8px">Leaderboard</h3>
@@ -305,7 +243,15 @@ tbody tr:nth-child(even){background:var(--card2)}
       </div>
 
       <div class="card">
-        <h3 style="margin:0 0 8px">Highlights</h3>
+        <!-- Selected player panel -->
+        <div class="card" id="player-panel">
+          <strong>Selected player</strong>
+          <div id="player-panel-content" class="note" style="margin-top:4px">
+            Tap a team name in the leaderboard to view their profile here.
+          </div>
+        </div>
+
+        <h3 style="margin:10px 0 8px">Highlights</h3>
         <table id="tbl-hi">
           <tbody>
             <tr><td class="left">Biggest win</td><td id="hi-big" class="right">-</td></tr>
@@ -349,15 +295,6 @@ tbody tr:nth-child(even){background:var(--card2)}
       <div id="league-mini" class="mini"></div>
       <div class="note">Each card: Avg goals • Home/Draw/Away % • Completion %.</div>
     </section>
-
-    <!-- Player mini-profile modal -->
-    <div id="player-modal-backdrop" class="player-modal-backdrop" aria-hidden="true">
-      <div class="player-modal" role="dialog" aria-modal="true" aria-labelledby="player-modal-title">
-        <button type="button" class="player-modal-close" aria-label="Close">&times;</button>
-        <div id="player-modal-body"></div>
-      </div>
-    </div>
-
   </div>
 
 <script>
@@ -642,21 +579,11 @@ function renderMini(minis){
   });
 }
 
-/* ====== Player mini-profile pop-up ====== */
-function openPlayerModal(teamName){
+/* ====== Selected player panel ====== */
+function renderSelectedPlayer(teamName){
   const team = TEAM_INDEX.get(teamName);
-  if(!team) return;
-  const backdrop = byId('player-modal-backdrop');
-  const body = byId('player-modal-body');
-  if(!backdrop || !body) return;
-
-  // Make sure the iframe view is at the top so the card is visible
-  try{
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }catch(e){
-    // Fallback for older browsers
-    window.scrollTo(0, 0);
-  }
+  const panel = byId('player-panel-content');
+  if(!panel || !team) return;
 
   const league = team.league || '';
   const badgeUrl = `${BADGE_BASE}${league || 'Diamond'}-League.png`;
@@ -665,68 +592,45 @@ function openPlayerModal(teamName){
   const lastFive = results.slice(-5);
   const formStr = lastFive.length ? lastFive.join(' ') : 'No matches yet';
 
-  body.innerHTML = `
-    <div class="player-modal-header">
-      <img src="${badgeUrl}" alt="${esc(league || 'League')}">
+  panel.innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+      <img src="${badgeUrl}" alt="${esc(league || 'League')}" style="height:28px;width:auto;border-radius:6px;object-fit:contain">
       <div>
-        <h4 id="player-modal-title" class="player-modal-title">${esc(team.team)}</h4>
-        <div class="player-modal-sub">${league ? esc(league)+' League' : 'eFPL Player'}</div>
+        <div style="font-weight:700">${esc(team.team)}</div>
+        <div class="note">${league ? esc(league)+' League' : 'eFPL Player'}</div>
       </div>
     </div>
-    <table>
+    <table style="width:100%;border-collapse:collapse;font-size:13px">
       <tbody>
         <tr>
-          <td class="left label">Matches</td>
-          <td class="right value">${team.gp}</td>
-          <td class="left label">Points</td>
-          <td class="right value">${team.pts}</td>
+          <td class="left note">Matches</td>
+          <td class="right" style="font-weight:600">${team.gp}</td>
+          <td class="left note">Points</td>
+          <td class="right" style="font-weight:600">${team.pts}</td>
         </tr>
         <tr>
-          <td class="left label">Record</td>
-          <td class="right value" colspan="3">${team.w}-${team.d}-${team.l}</td>
+          <td class="left note">Record</td>
+          <td class="right" colspan="3" style="font-weight:600">${team.w}-${team.d}-${team.l}</td>
         </tr>
         <tr>
-          <td class="left label">Goals</td>
-          <td class="right value" colspan="3">${team.gf} / ${team.ga} (${gdText})</td>
+          <td class="left note">Goals</td>
+          <td class="right" colspan="3" style="font-weight:600">${team.gf} / ${team.ga} (${gdText})</td>
         </tr>
         <tr>
-          <td class="left label">Form</td>
-          <td class="right value" colspan="3">${esc(formStr)}</td>
+          <td class="left note">Form (last 5)</td>
+          <td class="right" colspan="3" style="font-weight:600">${esc(formStr)}</td>
         </tr>
       </tbody>
     </table>
   `;
-
-  backdrop.style.display = 'flex';
-  backdrop.style.alignItems = 'flex-start';
-  backdrop.setAttribute('aria-hidden','false');
 }
 
-function closePlayerModal(){
-  const backdrop = byId('player-modal-backdrop');
-  if(!backdrop) return;
-  backdrop.style.display = 'none';
-  backdrop.setAttribute('aria-hidden','true');
-}
-
-// Click + keyboard handlers for modal
+/* Click handler for team names -> selected player panel */
 document.addEventListener('click', (e)=>{
   const wrap = e.target.closest('.teamwrap');
   if(wrap && wrap.dataset.team){
-    openPlayerModal(wrap.dataset.team);
-    return;
+    renderSelectedPlayer(wrap.dataset.team);
   }
-  if(e.target.classList.contains('player-modal-close')){
-    closePlayerModal();
-    return;
-  }
-  const backdrop = byId('player-modal-backdrop');
-  if(backdrop && e.target === backdrop){
-    closePlayerModal();
-  }
-});
-document.addEventListener('keydown', (e)=>{
-  if(e.key === 'Escape') closePlayerModal();
 });
 
 /* ====== Controller ====== */
@@ -736,7 +640,7 @@ async function run(selectedKeys){
   const agg = aggregate(matches);
   const minis = leagueAggregates(perLeague);
 
-  // index teams (incl. results) for the modal
+  // index teams (incl. results) for the profile panel
   TEAM_INDEX = new Map();
   agg.teams.forEach(t => TEAM_INDEX.set(t.team, t));
 
