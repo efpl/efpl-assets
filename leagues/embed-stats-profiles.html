@@ -86,7 +86,7 @@ tbody tr:nth-child(even){background:var(--card2)}
 .teamwrap.Gold::before{    background:var(--gold); }
 
 /* Badge glow to match league */
-.lg{height:20px;width:auto;object-fit:contain;flex:0 0 auto;filter:drop-shadow(0 0 2px rgba(0,0,0,.6))}
+.lg{height:32px;width:auto;object-fit:contain;flex:0 0 auto;filter:drop-shadow(0 0 2px rgba(0,0,0,.6))}
 .lg.Diamond{ filter:drop-shadow(0 0 4px rgba(153,236,255,.9)); }
 .lg.Ruby{    filter:drop-shadow(0 0 4px rgba(224,28,113,.9)); }
 .lg.Sapphire{filter:drop-shadow(0 0 4px rgba(0,138,241,.9)); }
@@ -96,6 +96,11 @@ tbody tr:nth-child(even){background:var(--card2)}
 
 /* Team text stays white; wraps (no ellipsis) for embed */
 .teamname{display:block;min-width:0;white-space:normal;overflow:visible;line-height:1.25;word-break:break-word;color:var(--ink)}
+
+/* Make clickable names feel clickable */
+.teamwrap:hover .teamname{
+  text-decoration:underline;
+}
 
 /* Row hover glow (brighter, league tinted) */
 #tbl-leader tbody tr:hover,
@@ -143,13 +148,14 @@ tbody tr:nth-child(even){background:var(--card2)}
   .rail{grid-template-columns:1fr}
   thead th{padding:8px;font-size:11.5px}
   tbody td{padding:8px;font-size:14px}
-  .lg{height:18px}
+  .lg{height:21px}
   /* Keep the coloured bar visible but tighter */
   .teamwrap{ padding-left:10px; gap:8px; }
   .teamwrap::before{ left:0; top:6px; bottom:6px; width:5px; }
 }
 @media (max-width:360px){
   tbody td{font-size:13px}
+  .lg{height:19px}
 }
 .note{color:var(--muted);font-size:12px}
 
@@ -528,7 +534,10 @@ function selectLeague(key){
 
 function teamCell(t){
   const lg = t.league || 'Diamond';
-  return `<span class="teamwrap ${esc(lg)}" data-team="${esc(t.team)}"><img class="lg ${esc(lg)}" src="${BADGE_BASE}${lg}-League.png" alt="${esc(lg)}"><span class="teamname" title="${esc(t.team)}">${esc(t.team)}</span></span>`;
+  return `<span class="teamwrap ${esc(lg)}" data-team="${esc(t.team)}">
+    <img class="lg ${esc(lg)}" src="${BADGE_BASE}${lg}-League.png" alt="${esc(lg)}">
+    <span class="teamname" title="View profile: ${esc(t.team)}">${esc(t.team)}</span>
+  </span>`;
 }
 
 function renderRails(agg, leagues, scheduledTotal){
