@@ -188,13 +188,16 @@ tbody tr:nth-child(even){background:var(--card2)}
 
 /* ====== Player mini-profile modal ====== */
 .player-modal-backdrop{
-  position:fixed;inset:0;
+  position:fixed;
+  inset:0;
   background:rgba(0,0,0,0.6);
   display:none;
-  align-items:center;
+  /* show near the top of the iframe, not dead centre */
+  align-items:flex-start;
   justify-content:center;
+  padding:60px 12px 12px;  /* top gap so it’s just under the header */
   z-index:9999;
-  padding:12px;
+  overflow-y:auto;          /* just in case the modal is taller than the viewport */
 }
 .player-modal{
   max-width:360px;width:100%;
