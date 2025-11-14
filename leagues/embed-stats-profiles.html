@@ -279,6 +279,34 @@ tbody tr:nth-child(even){background:var(--card2)}
     height:16px;
   }
 }
+
+/* ===== Smallest screens: simplify leaderboard to P W GD Pts ===== */
+@media (max-width: 520px){
+
+  /* Hide D (col 5) and L (col 6) */
+  #tbl-leader th:nth-child(5),
+  #tbl-leader td:nth-child(5),
+  #tbl-leader th:nth-child(6),
+  #tbl-leader td:nth-child(6){
+    display:none !important;
+  }
+
+  /* Let the remaining columns breathe */
+  #tbl-leader{
+    table-layout:auto;
+  }
+
+  /* Give the Team column more room */
+  #tbl-leader col.c-team{
+    width:auto;
+  }
+
+  /* Slightly tighten numeric padding so names get more space */
+  #tbl-leader td.right.numeric{
+    padding-left:6px;
+    padding-right:6px;
+  }
+}
 </style>
 </head>
 <body>
