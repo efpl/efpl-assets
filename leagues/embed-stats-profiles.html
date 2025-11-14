@@ -170,6 +170,11 @@ tbody tr:nth-child(even){background:var(--card2)}
     table-layout:auto !important;
   }
 
+  /* Make all remaining columns share the full width */
+  #tbl-leader col{
+    width:auto !important;
+  }
+
   /* Team column can flex; numeric cols tighter */
   #tbl-leader col.c-team{ width:auto !important; }
   #tbl-leader td.right.numeric{
