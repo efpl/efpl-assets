@@ -186,24 +186,32 @@ tbody tr:nth-child(even){background:var(--card2)}
   tbody td{font-size:13px}
 }
 
+/* put this AFTER the media query */
+.note{color:var(--muted);font-size:12px}
+
 /* ====== Player mini-profile modal ====== */
 .player-modal-backdrop{
-  position:fixed;inset:0;
+  position:fixed;
+  inset:0;
   background:rgba(0,0,0,0.6);
   display:none;
-  align-items:center;
-  justify-content:center;
   z-index:9999;
-  padding:12px;
 }
+
+/* Card is fixed to the top-centre of the iframe viewport */
 .player-modal{
-  max-width:360px;width:100%;
+  position:fixed;
+  top:60px;                 /* distance from top of iframe view */
+  left:50%;
+  transform:translateX(-50%);
+  max-width:360px;
+  width:calc(100% - 24px);  /* small side margin on mobile */
+
   background:var(--card);
   border-radius:12px;
   border:1px solid var(--line);
   box-shadow:0 18px 40px rgba(0,0,0,0.55);
   padding:14px 14px 10px;
-  position:relative;
 }
 .player-modal-close{
   position:absolute;
