@@ -58,7 +58,7 @@ tbody tr:nth-child(even){background:var(--card2)}
 .left{text-align:left}.right{text-align:right}.center{text-align:center}
 .numeric{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
 
-/* Leaderboard — columns incl. GD */
+/* Leaderboard — columns incl. GD (desktop / normal) */
 #tbl-leader col.c-rank{width:4.2ch}
 #tbl-leader col.c-team{width:auto} /* flexible */
 #tbl-leader col.c-p,
@@ -133,9 +133,6 @@ tbody tr:nth-child(even){background:var(--card2)}
 #tbl-gf tbody tr:hover .teamwrap.Gold::before,
 #tbl-ga tbody tr:hover .teamwrap.Gold::before{ box-shadow:0 0 16px 2px rgba(212,175,55,.85); }
 
-/* Highlights can wrap normally */
-#tbl-hi td{white-space:normal;line-height:1.35}
-
 /* Generic small text */
 .note{color:var(--muted);font-size:12px}
 
@@ -165,17 +162,16 @@ tbody tr:nth-child(even){background:var(--card2)}
     display:none !important;
   }
 
-  /* Let table auto-size columns */
+  /* Make the remaining columns use full width */
   #tbl-leader{
     table-layout:auto !important;
+    width:100% !important;
   }
 
-  /* Make all remaining columns share the full width */
   #tbl-leader col{
     width:auto !important;
   }
 
-  /* Team column can flex; numeric cols tighter */
   #tbl-leader col.c-team{ width:auto !important; }
   #tbl-leader td.right.numeric{
     padding-left:6px !important;
@@ -186,32 +182,28 @@ tbody tr:nth-child(even){background:var(--card2)}
   tbody td{font-size:13px}
 }
 
-/* put this AFTER the media query */
-.note{color:var(--muted);font-size:12px}
-
 /* ====== Player mini-profile modal ====== */
 .player-modal-backdrop{
   position:fixed;
   inset:0;
   background:rgba(0,0,0,0.6);
-  display:none;
+  display:none;                 /* JS sets this to "flex" when opening */
   z-index:9999;
+  display:none;
+  align-items:flex-start;       /* stick near top */
+  justify-content:center;       /* center horizontally */
 }
 
-/* Card is fixed to the top-centre of the iframe viewport */
 .player-modal{
-  position:fixed;
-  top:60px;                 /* distance from top of iframe view */
-  left:50%;
-  transform:translateX(-50%);
   max-width:360px;
-  width:calc(100% - 24px);  /* small side margin on mobile */
-
+  width:calc(100% - 24px);      /* side margin on mobile */
   background:var(--card);
   border-radius:12px;
   border:1px solid var(--line);
   box-shadow:0 18px 40px rgba(0,0,0,0.55);
   padding:14px 14px 10px;
+  margin-top:60px;              /* distance from top of iframe viewport */
+  position:relative;
 }
 .player-modal-close{
   position:absolute;
