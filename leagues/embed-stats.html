@@ -139,6 +139,136 @@ tbody tr:nth-child(even){background:var(--card2)}
 /* Generic small text */
 .note{color:var(--muted);font-size:12px}
 
+/* ========= Player profile panel ========= */
+#player-panel{
+  background:var(--card2);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:12px;
+  margin-bottom:10px;
+}
+.player-card{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.player-header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.player-badge{
+  height:40px;
+  width:auto;
+  border-radius:10px;
+  object-fit:contain;
+  box-shadow:0 0 12px rgba(0,0,0,.6);
+}
+.player-title{}
+.player-name{
+  font-size:18px;
+  font-weight:800;
+  letter-spacing:.02em;
+}
+.player-league{
+  font-size:13px;
+  color:var(--muted);
+}
+.player-grid{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  row-gap:6px;
+  column-gap:10px;
+  font-size:13px;
+}
+.pg-label{
+  color:var(--muted);
+}
+.pg-value{
+  text-align:right;
+  font-weight:600;
+}
+.pg-form{
+  display:flex;
+  justify-content:flex-end;
+  gap:4px;
+  flex-wrap:wrap;
+}
+
+/* Form pills WWLD */
+.form-pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:22px;
+  padding:2px 6px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.04em;
+  border:1px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.03);
+}
+.form-pill.win{
+  border-color:rgba(47,191,113,.85);
+  background:rgba(47,191,113,.15);
+  color:#b8ffd6;
+}
+.form-pill.draw{
+  border-color:rgba(154,164,178,.85);
+  background:rgba(154,164,178,.12);
+  color:#dde3f0;
+}
+.form-pill.loss{
+  border-color:rgba(224,28,113,.9);
+  background:rgba(224,28,113,.16);
+  color:#ffd0e4;
+}
+
+/* ========= Per-league comparison cards ========= */
+#league-mini{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin:10px 0;
+}
+.league-mini-card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:10px 14px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.league-mini-bar{
+  width:4px;
+  align-self:stretch;
+  border-radius:999px;
+  background:var(--muted);
+}
+.league-mini-card.Crystal .league-mini-bar{background:var(--crystal);}
+.league-mini-card.Diamond .league-mini-bar{background:var(--diamond);}
+.league-mini-card.Emerald .league-mini-bar{background:var(--emerald);}
+.league-mini-card.Gold .league-mini-bar{background:var(--gold);}
+.league-mini-card.Ruby .league-mini-bar{background:var(--ruby);}
+.league-mini-card.Sapphire .league-mini-bar{background:var(--sapphire);}
+
+.league-mini-badge{
+  height:32px;
+  width:auto;
+  object-fit:contain;
+  flex:0 0 auto;
+  filter:drop-shadow(0 0 6px rgba(0,0,0,.7));
+}
+.league-mini-text-title{
+  font-weight:700;
+}
+.league-mini-text-sub{
+  font-size:12px;
+  color:var(--muted);
+}
+
 /* ========= Responsive ========= */
 @media (max-width:1100px){
   .rail{grid-template-columns:repeat(2,1fr)}
@@ -146,6 +276,7 @@ tbody tr:nth-child(even){background:var(--card2)}
 @media (max-width:900px){
   .two-col{grid-template-columns:1fr}        /* stack Leaderboard + Highlights */
   .mini{grid-template-columns:1fr}           /* stack bars */
+  #league-mini{grid-template-columns:1fr}
 }
 @media (max-width:520px){
   .rail{grid-template-columns:1fr}
@@ -156,7 +287,7 @@ tbody tr:nth-child(even){background:var(--card2)}
   .teamwrap{ padding-left:10px; gap:8px; }
   .teamwrap::before{ left:0; top:6px; bottom:6px; width:5px; }
 
-  /* ===== simplify leaderboard to P W GD Pts on small screens ===== */
+  /* simplify leaderboard to P W GD Pts on small screens */
   /* Hide D (5) and L (6) */
   #tbl-leader th:nth-child(5),
   #tbl-leader td:nth-child(5),
@@ -165,21 +296,26 @@ tbody tr:nth-child(even){background:var(--card2)}
     display:none !important;
   }
 
-  /* Let table auto-size columns */
   #tbl-leader{
     table-layout:auto !important;
   }
-
-  /* Make all remaining columns share the full width */
   #tbl-leader col{
     width:auto !important;
   }
-
-  /* Team column can flex; numeric cols tighter */
   #tbl-leader col.c-team{ width:auto !important; }
   #tbl-leader td.right.numeric{
     padding-left:6px !important;
     padding-right:6px !important;
+  }
+
+  #player-panel{
+    padding:10px;
+  }
+  .player-name{
+    font-size:16px;
+  }
+  .player-badge{
+    height:32px;
   }
 }
 @media (max-width:360px){
@@ -567,14 +703,14 @@ function renderMini(minis){
   minis.forEach(m=>{
     const line = `${m.played?m.avg.toFixed(2):'0.00'} avg • ${pct(m.homeW,m.played)} / ${pct(m.draw,m.played)} / ${pct(m.awayW,m.played)} • ${pct(m.played,m.scheduled||0)}`;
     const div=document.createElement('div');
-    div.className='card';
-    div.innerHTML = `<div class="teamwrap ${esc(m.league)}" style="padding-left:10px">
-      <img class="lg ${esc(m.league)}" src="${BADGE_BASE}${m.league}-League.png" alt="${esc(m.league)}">
-      <div>
-        <div><strong>${esc(m.league)}</strong></div>
-        <div class="note">${line}</div>
-      </div>
-    </div>`;
+    div.className='league-mini-card '+esc(m.league);
+    div.innerHTML = `
+      <div class="league-mini-bar"></div>
+      <img class="league-mini-badge" src="${BADGE_BASE}${m.league}-League.png" alt="${esc(m.league)}">
+      <div class="league-mini-text">
+        <div class="league-mini-text-title">${esc(m.league)}</div>
+        <div class="league-mini-text-sub">${line}</div>
+      </div>`;
     host.appendChild(div);
   });
 }
@@ -589,39 +725,47 @@ function renderSelectedPlayer(teamName){
   const badgeUrl = `${BADGE_BASE}${league || 'Diamond'}-League.png`;
   const gdText = (team.gd>=0?'+':'') + team.gd;
   const results = Array.isArray(team.results) ? team.results : [];
+  // last five results, oldest on the left, newest on the right
   const lastFive = results.slice(-5);
-  const formStr = lastFive.length ? lastFive.join(' ') : 'No matches yet';
+  let formHtml;
+  if(lastFive.length){
+    formHtml = lastFive.map(res=>{
+      let cls='form-pill';
+      if(res==='W') cls+=' win';
+      else if(res==='D') cls+=' draw';
+      else cls+=' loss';
+      return `<span class="${cls}">${esc(res)}</span>`;
+    }).join('');
+  }else{
+    formHtml = '<span class="note">No matches yet</span>';
+  }
 
   panel.innerHTML = `
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-      <img src="${badgeUrl}" alt="${esc(league || 'League')}" style="height:28px;width:auto;border-radius:6px;object-fit:contain">
-      <div>
-        <div style="font-weight:700">${esc(team.team)}</div>
-        <div class="note">${league ? esc(league)+' League' : 'eFPL Player'}</div>
+    <div class="player-card">
+      <div class="player-header">
+        <img src="${badgeUrl}" alt="${esc(league || 'League')}" class="player-badge">
+        <div class="player-title">
+          <div class="player-name">${esc(team.team)}</div>
+          <div class="player-league">${league ? esc(league)+' League' : 'eFPL player'}</div>
+        </div>
+      </div>
+      <div class="player-grid">
+        <div class="pg-label">Matches</div>
+        <div class="pg-value">${team.gp}</div>
+
+        <div class="pg-label">Points</div>
+        <div class="pg-value">${team.pts}</div>
+
+        <div class="pg-label">Record</div>
+        <div class="pg-value">${team.w}-${team.d}-${team.l}</div>
+
+        <div class="pg-label">Goals</div>
+        <div class="pg-value">${team.gf} / ${team.ga} (${gdText})</div>
+
+        <div class="pg-label">Form (last 5)</div>
+        <div class="pg-value pg-form">${formHtml}</div>
       </div>
     </div>
-    <table style="width:100%;border-collapse:collapse;font-size:13px">
-      <tbody>
-        <tr>
-          <td class="left note">Matches</td>
-          <td class="right" style="font-weight:600">${team.gp}</td>
-          <td class="left note">Points</td>
-          <td class="right" style="font-weight:600">${team.pts}</td>
-        </tr>
-        <tr>
-          <td class="left note">Record</td>
-          <td class="right" colspan="3" style="font-weight:600">${team.w}-${team.d}-${team.l}</td>
-        </tr>
-        <tr>
-          <td class="left note">Goals</td>
-          <td class="right" colspan="3" style="font-weight:600">${team.gf} / ${team.ga} (${gdText})</td>
-        </tr>
-        <tr>
-          <td class="left note">Form (last 5)</td>
-          <td class="right" colspan="3" style="font-weight:600">${esc(formStr)}</td>
-        </tr>
-      </tbody>
-    </table>
   `;
 }
 
