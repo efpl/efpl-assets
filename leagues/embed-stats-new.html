@@ -517,26 +517,42 @@ tr.row-selected{
 
         <div class="mini-grid" style="margin-top:10px">
           <div class="card">
-            <strong>Top scoring teams (Top 10)</strong>
-            <table id="tbl-gf" style="margin-top:6px">
-              <colgroup>
-                <col class="c-rank"><col class="c-team">
-                <col class="c-gf"><col class="c-pts">
-              </colgroup>
-              <thead><tr><th>#</th><th class="left">Team</th><th>GF</th><th>Pts</th></tr></thead>
-              <tbody></tbody>
-            </table>
+           <strong>Best offence (Top 10)</strong>
+<table id="tbl-gf" style="margin-top:6px">
+  <colgroup>
+    <col class="c-rank"><col class="c-team">
+    <col class="c-gf"><col class="c-pts">
+  </colgroup>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th class="left">Team</th>
+      <th>GF</th>
+      <th>P</th>
+      <th>GF / game</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
           </div>
           <div class="card">
             <strong>Best defence (Top 10)</strong>
-            <table id="tbl-ga" style="margin-top:6px">
-              <colgroup>
-                <col class="c-rank"><col class="c-team">
-                <col class="c-ga"><col class="c-pts">
-              </colgroup>
-              <thead><tr><th>#</th><th class="left">Team</th><th>GA</th><th>Pts</th></tr></thead>
-              <tbody></tbody>
-            </table>
+<table id="tbl-ga" style="margin-top:6px">
+  <colgroup>
+    <col class="c-rank"><col class="c-team">
+    <col class="c-ga"><col class="c-pts">
+  </colgroup>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th class="left">Team</th>
+      <th>GA</th>
+      <th>P</th>
+      <th>GA / game</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
           </div>
         </div>
       </div>
@@ -976,23 +992,63 @@ function renderHighlights(agg){
 }
 
 function renderTopTables(teams){
-  const gf = [...teams].sort((a,b)=> b.gf-a.gf || a.team.localeCompare(b.team)).slice(0,10);
-  const gfBody = byId('tbl-gf').querySelector('tbody'); gfBody.innerHTML='';
-  gf.forEach((t,i)=>{
-    const tr=document.createElement('tr');
+  // === Best offence — GF per game ===
+  const gfRows = [...teams]
+    .filter(t => t.gp > 0)
+    .map(t => ({
+      ...t,
+      gfPerGame: t.gf / t.gp
+    }))
+    .sort((a,b)=>
+      b.gfPerGame - a.gfPerGame ||  // first: highest GF/game
+      b.gf - a.gf ||                // tie-break: highest total GF
+      b.pts - a.pts ||              // then: highest points
+      a.team.localeCompare(b.team)  // final: alphabetical
+    )
+    .slice(0,10);
+
+  const gfBody = byId('tbl-gf').querySelector('tbody');
+  gfBody.innerHTML = '';
+  gfRows.forEach((t,i)=>{
+    const tr = document.createElement('tr');
     tr.dataset.team = t.team;
-    if(CURRENT_TEAM && t.team === CURRENT_TEAM) tr.classList.add('row-selected');
-    tr.innerHTML = `<td class="right numeric">${i+1}</td><td class="left">${teamCell(t)}</td><td class="right numeric">${t.gf}</td><td class="right numeric">${t.pts}</td>`;
+    if (CURRENT_TEAM && t.team === CURRENT_TEAM) tr.classList.add('row-selected');
+    tr.innerHTML = `
+      <td class="right numeric">${i+1}</td>
+      <td class="left">${teamCell(t)}</td>
+      <td class="right numeric">${t.gf}</td>
+      <td class="right numeric">${t.gp}</td>
+      <td class="right numeric">${t.gfPerGame.toFixed(2)}</td>`;
     gfBody.appendChild(tr);
   });
 
-  const ga = [...teams].sort((a,b)=> a.ga-b.ga || a.team.localeCompare(b.team)).slice(0,10);
-  const gaBody = byId('tbl-ga').querySelector('tbody'); gaBody.innerHTML='';
-  ga.forEach((t,i)=>{
-    const tr=document.createElement('tr');
+  // === Best defence — GA per game ===
+  const gaRows = [...teams]
+    .filter(t => t.gp > 0)
+    .map(t => ({
+      ...t,
+      gaPerGame: t.ga / t.gp
+    }))
+    .sort((a,b)=>
+      a.gaPerGame - b.gaPerGame ||  // first: lowest GA/game
+      a.ga - b.ga ||                // tie-break: lowest total GA
+      b.pts - a.pts ||              // then: highest points
+      a.team.localeCompare(b.team)  // final: alphabetical
+    )
+    .slice(0,10);
+
+  const gaBody = byId('tbl-ga').querySelector('tbody');
+  gaBody.innerHTML = '';
+  gaRows.forEach((t,i)=>{
+    const tr = document.createElement('tr');
     tr.dataset.team = t.team;
-    if(CURRENT_TEAM && t.team === CURRENT_TEAM) tr.classList.add('row-selected');
-    tr.innerHTML = `<td class="right numeric">${i+1}</td><td class="left">${teamCell(t)}</td><td class="right numeric">${t.ga}</td><td class="right numeric">${t.pts}</td>`;
+    if (CURRENT_TEAM && t.team === CURRENT_TEAM) tr.classList.add('row-selected');
+    tr.innerHTML = `
+      <td class="right numeric">${i+1}</td>
+      <td class="left">${teamCell(t)}</td>
+      <td class="right numeric">${t.ga}</td>
+      <td class="right numeric">${t.gp}</td>
+      <td class="right numeric">${t.gaPerGame.toFixed(2)}</td>`;
     gaBody.appendChild(tr);
   });
 }
