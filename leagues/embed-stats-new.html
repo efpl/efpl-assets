@@ -333,6 +333,43 @@ tr.row-selected{
   color:var(--muted);
 }
 
+/* ========= Season activity / Matchday visuals ========= */
+.activity-block{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  font-size:13px;
+  color:var(--muted);
+}
+.activity-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  align-items:center;
+}
+.activity-pill{
+  border-radius:999px;
+  border:1px solid var(--line);
+  padding:3px 9px;
+  font-size:12px;
+  background:rgba(0,0,0,.16);
+  color:#fff;
+  font-weight:600;
+}
+.activity-pill.accent{
+  border-color:rgba(249,215,28,.65);
+  background:linear-gradient(90deg, rgba(249,215,28,.18), rgba(249,215,28,.05));
+  color:#fff;
+}
+.activity-note{
+  font-size:12px;
+  opacity:.9;
+}
+.activity-empty{
+  font-size:12px;
+  color:var(--muted);
+}
+
 /* ========= Responsive ========= */
 @media (max-width:1100px){
   .rail{grid-template-columns:repeat(2,1fr)}
@@ -425,6 +462,22 @@ tr.row-selected{
       </div>
     </section>
 
+    <!-- Season activity + Matchday trends (moved up) -->
+    <section class="two-col" style="margin-top:10px">
+      <div class="card">
+        <h3 style="margin:0 0 8px">Season activity</h3>
+        <div id="season-activity" class="activity-block">
+          <div class="activity-empty">Not enough completed match dates yet.</div>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="margin:0 0 8px">Matchday trends</h3>
+        <div id="matchday-trends" class="activity-block">
+          <div class="activity-empty">Matchday trends will appear once more games are dated.</div>
+        </div>
+      </div>
+    </section>
+
     <!-- Leaderboard + Highlights + Selected player -->
     <section class="two-col" style="margin-top:10px">
       <div class="card">
@@ -495,22 +548,6 @@ tr.row-selected{
       <div id="league-mini" class="mini"></div>
       <div class="note">Each card: Avg goals • Home/Draw/Away % • Completion %.</div>
     </section>
-
-    <!-- Season activity + Matchday trends -->
-    <section class="two-col" style="margin-top:10px">
-      <div class="card">
-        <h3 style="margin:0 0 8px">Season activity</h3>
-        <p id="season-activity" class="note">
-          Not enough completed match dates yet.
-        </p>
-      </div>
-      <div class="card">
-        <h3 style="margin:0 0 8px">Matchday trends</h3>
-        <p id="matchday-trends" class="note">
-          Matchday trends will appear once more games are dated.
-        </p>
-      </div>
-    </section>
   </div>
 
 <script>
@@ -543,7 +580,6 @@ function num(x){const n=Number(x);return Number.isFinite(n)?n:null}
 function truthy(v){return v===true || String(v).toLowerCase()==='true' || v==='☑'}
 function pct(p,t){return t?((p*100/t).toFixed(1)+'%'):'0.0%'}
 function fmt(n){return Number.isFinite(n)?n.toLocaleString():'0'}
-function setTxt(id,txt){const el=document.getElementById(id); if(el) el.textContent=txt;}
 function byId(id){return document.getElementById(id)}
 function normTeamName(s){return String(s||'').toLowerCase().replace(/\*/g,'').trim();}
 
@@ -551,18 +587,16 @@ function normTeamName(s){return String(s||'').toLowerCase().replace(/\*/g,'').tr
 function safeDate(v){
   if(!v && v!==0) return null;
 
-  // GViz can wrap dates in an object: {v:"Date(2025,0,31,0,0,0)", f:"31/01/2025"}
   if(typeof v === 'object'){
     if(v.v !== undefined) return safeDate(v.v);
-    if(v.f) {
+    if(v.f){
       const d = new Date(v.f);
       if(!isNaN(d.getTime())) return d;
     }
   }
 
-  // Serial number (Sheets date)
   if(typeof v === 'number'){
-    const base = new Date(Date.UTC(1899,11,30)); // Excel/Sheets epoch
+    const base = new Date(Date.UTC(1899,11,30));
     const d = new Date(base.getTime() + v*86400000);
     return isNaN(d.getTime()) ? null : d;
   }
@@ -571,7 +605,6 @@ function safeDate(v){
     const s = v.trim();
     if(!s) return null;
 
-    // "Date(2025,0,31,0,0,0)"
     if(/^Date\(/i.test(s)){
       const nums = s.replace(/[^\d,]/g,'').split(',').map(n=>parseInt(n,10));
       if(nums.length>=3){
@@ -580,7 +613,6 @@ function safeDate(v){
       }
     }
 
-    // dd/mm/yyyy or dd/mm/yy
     let m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
     if(m){
       let day = parseInt(m[1],10), month = parseInt(m[2],10)-1, year = parseInt(m[3],10);
@@ -589,7 +621,6 @@ function safeDate(v){
       if(!isNaN(d.getTime())) return d;
     }
 
-    // yyyy-mm-dd
     m = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
     if(m){
       const d = new Date(parseInt(m[1],10), parseInt(m[2],10)-1, parseInt(m[3],10));
@@ -793,13 +824,15 @@ function leagueAggregates(perLeague){
   return out.sort((a,b)=>a.league.localeCompare(b.league));
 }
 
-/* ====== Season activity + matchday trends stats ====== */
+/* ====== Season activity + matchday trends stats (HTMLified) ====== */
 function buildActivityStats(matches){
   const dated = matches.filter(m=>m.doneOn instanceof Date);
   if(!dated.length){
     return {
-      activityText:'Not enough completed match dates yet.',
-      trendText:'Matchday trends will appear once more games are dated.'
+      activityHtml:
+        '<div class="activity-block"><div class="activity-empty">Not enough completed match dates yet.</div></div>',
+      trendHtml:
+        '<div class="activity-block"><div class="activity-empty">Matchday trends will appear once more games are dated.</div></div>'
     };
   }
   dated.sort((a,b)=>a.doneOn-b.doneOn);
@@ -813,10 +846,15 @@ function buildActivityStats(matches){
   const cut = new Date(last.getTime() - recentWindow*86400000);
   const lastWindowCount = dated.filter(m=>m.doneOn>=cut).length;
 
-  const activityText =
-    `${fmt(dated.length)} dated matches across about ${weeks} week${weeks===1?'':'s'} `
-    + `(${perWeek.toFixed(1)} per week). `
-    + `Last ${recentWindow} days: ${fmt(lastWindowCount)} match${lastWindowCount===1?'':'es'}.`;
+  const activityHtml =
+    `<div class="activity-block">
+      <div class="activity-row">
+        <span class="activity-pill accent">${fmt(dated.length)} dated matches</span>
+        <span class="activity-pill">≈ ${weeks} week${weeks===1?'':'s'} span</span>
+        <span class="activity-pill">${perWeek.toFixed(1)} per week</span>
+      </div>
+      <div class="activity-note">Last ${recentWindow} days: <strong>${fmt(lastWindowCount)}</strong> match${lastWindowCount===1?'':'es'} played.</div>
+    </div>`;
 
   const dayNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   const dayCounts = new Array(7).fill(0);
@@ -827,9 +865,10 @@ function buildActivityStats(matches){
     .filter(p=>p.count>0)
     .sort((a,b)=>b.count-a.count || a.day.localeCompare(b.day));
 
-  let trendText;
+  let trendHtml;
   if(!pairs.length){
-    trendText='Matchday trends will appear once more games are dated.';
+    trendHtml =
+      '<div class="activity-block"><div class="activity-empty">Matchday trends will appear once more games are dated.</div></div>';
   }else{
     const total = dated.length;
     const top = pairs[0];
@@ -837,13 +876,28 @@ function buildActivityStats(matches){
     if(pairs.length>1){
       const sec = pairs[1];
       const secPct = (sec.count*100/total).toFixed(1);
-      trendText = `${top.day} is currently the busiest matchday (${topPct}% of dated games), followed by ${sec.day} (${secPct}%).`;
+      trendHtml =
+        `<div class="activity-block">
+          <div class="activity-row">
+            <span class="activity-pill accent">Top day: ${top.day}</span>
+            <span class="activity-pill">${topPct}% of dated games</span>
+            <span class="activity-pill">Next: ${sec.day} (${secPct}%)</span>
+          </div>
+          <div class="activity-note">Based on ${fmt(total)} dated matches so far.</div>
+        </div>`;
     }else{
-      trendText = `${top.day} is currently the main matchday (${topPct}% of dated games).`;
+      trendHtml =
+        `<div class="activity-block">
+          <div class="activity-row">
+            <span class="activity-pill accent">Main day: ${top.day}</span>
+            <span class="activity-pill">${topPct}% of dated games</span>
+          </div>
+          <div class="activity-note">Based on ${fmt(total)} dated matches so far.</div>
+        </div>`;
     }
   }
 
-  return {activityText, trendText};
+  return {activityHtml, trendHtml};
 }
 
 /* ====== Render ====== */
@@ -877,10 +931,10 @@ function teamCell(t){
 }
 
 function renderRails(agg, leagues, scheduledTotal){
-  setTxt('kpi-matches', fmt(agg.played));
-  setTxt('kpi-goals', fmt(agg.goals));
-  setTxt('kpi-avg', agg.avg.toFixed(2));
-  setTxt('kpi-leagues', leagues.length);
+  byId('kpi-matches').textContent = fmt(agg.played);
+  byId('kpi-goals').textContent = fmt(agg.goals);
+  byId('kpi-avg').textContent = agg.avg.toFixed(2);
+  byId('kpi-leagues').textContent = leagues.length;
   byId('split-text').textContent =
     `${fmt(agg.homeW)} H • ${fmt(agg.draw)} D • ${fmt(agg.awayW)} A `
     + `• ${pct(agg.homeW,agg.played)} / ${pct(agg.draw,agg.played)} / ${pct(agg.awayW,agg.played)}`;
@@ -914,11 +968,11 @@ function renderLeaderboard(teams){
 }
 
 function renderHighlights(agg){
-  setTxt('hi-big', agg.biggest ? `${agg.biggest.text} (${agg.biggest.sub})` : '-');
-  setTxt('hi-hsg', agg.highest ? `${agg.highest.text} (${agg.highest.total} goals • ${agg.highest.sub})` : '-');
-  setTxt('hi-topgf', agg.topGF ? `${agg.topGF.team} - ${agg.topGF.gf}` : '-');
-  setTxt('hi-mostga', agg.mostGA ? `${agg.mostGA.team} - ${agg.mostGA.ga}` : '-');
-  setTxt('hi-mostcs', agg.mostCS ? `${agg.mostCS.team} - ${agg.mostCS.cs}` : '-');
+  byId('hi-big').textContent = agg.biggest ? `${agg.biggest.text} (${agg.biggest.sub})` : '-';
+  byId('hi-hsg').textContent = agg.highest ? `${agg.highest.text} (${agg.highest.total} goals • ${agg.highest.sub})` : '-';
+  byId('hi-topgf').textContent = agg.topGF ? `${agg.topGF.team} - ${agg.topGF.gf}` : '-';
+  byId('hi-mostga').textContent = agg.mostGA ? `${agg.mostGA.team} - ${agg.mostGA.ga}` : '-';
+  byId('hi-mostcs').textContent = agg.mostCS ? `${agg.mostCS.team} - ${agg.mostCS.cs}` : '-';
 }
 
 function renderTopTables(teams){
@@ -1133,8 +1187,10 @@ async function run(selectedKeys){
   applySelectionHighlight();
 
   if(activity){
-    setTxt('season-activity', activity.activityText);
-    setTxt('matchday-trends', activity.trendText);
+    const sa = byId('season-activity');
+    const mt = byId('matchday-trends');
+    if(sa) sa.innerHTML = activity.activityHtml;
+    if(mt) mt.innerHTML = activity.trendHtml;
   }
 }
 
