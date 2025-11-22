@@ -867,7 +867,7 @@ function buildActivityStats(matches){
   const activityHtml =
     `<div class="activity-block">
       <div class="activity-row">
-        <span class="activity-pill accent">${fmt(dated.length)} dated matches</span>
+        <span class="activity-pill accent">${fmt(dated.length)} compeleted matches</span>
         <span class="activity-pill">≈ ${weeks} week${weeks===1?'':'s'} span</span>
         <span class="activity-pill">${perWeek.toFixed(1)} per week</span>
       </div>
@@ -898,19 +898,19 @@ function buildActivityStats(matches){
         `<div class="activity-block">
           <div class="activity-row">
             <span class="activity-pill accent">Top day: ${top.day}</span>
-            <span class="activity-pill">${topPct}% of dated games</span>
+            <span class="activity-pill">${topPct}% of compeleted games</span>
             <span class="activity-pill">Next: ${sec.day} (${secPct}%)</span>
           </div>
-          <div class="activity-note">Based on ${fmt(total)} dated matches so far.</div>
+          <div class="activity-note">Based on ${fmt(total)} compeleted matches so far.</div>
         </div>`;
     }else{
       trendHtml =
         `<div class="activity-block">
           <div class="activity-row">
             <span class="activity-pill accent">Main day: ${top.day}</span>
-            <span class="activity-pill">${topPct}% of dated games</span>
+            <span class="activity-pill">${topPct}% of compeleted games</span>
           </div>
-          <div class="activity-note">Based on ${fmt(total)} dated matches so far.</div>
+          <div class="activity-note">Based on ${fmt(total)} compeleted matches so far.</div>
         </div>`;
     }
   }
