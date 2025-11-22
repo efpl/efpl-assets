@@ -46,7 +46,7 @@ img{max-width:100%;height:auto;display:inline-block}
 .home{background:var(--ok)} .draw{background:var(--mid)} .away{background:var(--away)}
 
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-/* Stacked by default inside some sections */
+/* Stacked by default for embed to avoid tight squeezes */
 .mini-grid{display:grid;grid-template-columns:1fr;gap:10px}
 
 /* ========= Mini hero ========= */
@@ -146,15 +146,7 @@ tr.row-selected{
 .lg.Emerald{ filter:drop-shadow(0 0 4px rgba(61,154,92,.9)); }
 .lg.Gold{    filter:drop-shadow(0 0 4px rgba(212,175,55,.9)); }
 
-.teamname{
-  display:block;
-  min-width:0;
-  white-space:normal;
-  overflow:visible;
-  line-height:1.25;
-  word-break:break-word;
-  color:var(--ink)
-}
+.teamname{display:block;min-width:0;white-space:normal;overflow:visible;line-height:1.25;word-break:break-word;color:var(--ink)}
 .teamwrap:hover .teamname{ text-decoration:underline; }
 
 /* Row hover glow */
@@ -341,7 +333,7 @@ tr.row-selected{
   color:var(--muted);
 }
 
-/* ========= Season activity / Matchday visuals ========= */
+/* ========= Weekly Games Played / Matchday visuals ========= */
 .activity-block{
   display:flex;
   flex-direction:column;
@@ -395,7 +387,6 @@ tr.row-selected{
   .teamwrap{ padding-left:10px; gap:8px; }
   .teamwrap::before{ left:0; top:6px; bottom:6px; width:5px; }
 
-  /* Leaderboard: hide D & L on very small screens */
   #tbl-leader th:nth-child(5),
   #tbl-leader td:nth-child(5),
   #tbl-leader th:nth-child(6),
@@ -410,32 +401,9 @@ tr.row-selected{
     padding-right:6px !important;
   }
 
-  /* Best offence / defence: hide raw GF/GA, keep P and per-game */
-  #tbl-gf th:nth-child(3),
-  #tbl-gf td:nth-child(3),
-  #tbl-ga th:nth-child(3),
-  #tbl-ga td:nth-child(3){
-    display:none !important;
-  }
-
   #player-panel{ padding:10px; }
   .player-name{ font-size:16px; }
   .player-badge{ height:32px; }
-
-  /* Stack hero nicely on mobile */
-  .mini-hero{
-    flex-direction:column;
-    align-items:flex-start;
-    padding:8px 8px 4px;
-  }
-  .mh-right{
-    width:100%;
-    justify-content:flex-start;
-  }
-  .mh-pill{
-    width:100%;
-    text-align:left;
-  }
 }
 @media (max-width:360px){
   tbody td{font-size:13px}
@@ -494,18 +462,20 @@ tr.row-selected{
       </div>
     </section>
 
-    <!-- Season activity + Matchday trends (near top) -->
+    <!-- Weekly Games Played + Most Active Days (moved up) -->
     <section class="two-col" style="margin-top:10px">
       <div class="card">
-        <h3 style="margin:0 0 8px">Season activity</h3>
+        <h3 style="margin:0 0 8px">Weekly Games Played</h3>
+<div class="note">How many matches were completed this week compared to the previous week.</div>
         <div id="season-activity" class="activity-block">
           <div class="activity-empty">Not enough completed match dates yet.</div>
         </div>
       </div>
       <div class="card">
-        <h3 style="margin:0 0 8px">Matchday trends</h3>
+        <h3 style="margin:0 0 8px">Most Active Days</h3>
+<div class="note">Which days players complete the most fixtures.</div>
         <div id="matchday-trends" class="activity-block">
-          <div class="activity-empty">Matchday trends will appear once more games are dated.</div>
+          <div class="activity-empty">Most Active Days will appear once more games are dated.</div>
         </div>
       </div>
     </section>
@@ -549,42 +519,42 @@ tr.row-selected{
 
         <div class="mini-grid" style="margin-top:10px">
           <div class="card">
-            <strong>Best offence (Top 10)</strong>
-            <table id="tbl-gf" style="margin-top:6px">
-              <colgroup>
-                <col class="c-rank"><col class="c-team">
-                <col class="c-gf"><col class="c-pts">
-              </colgroup>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th class="left">Team</th>
-                  <th>GF</th>
-                  <th>P</th>
-                  <th>GF / game</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
+           <strong>Best offence (Top 10)</strong>
+<table id="tbl-gf" style="margin-top:6px">
+  <colgroup>
+    <col class="c-rank"><col class="c-team">
+    <col class="c-gf"><col class="c-pts">
+  </colgroup>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th class="left">Team</th>
+      <th>GF</th>
+      <th>P</th>
+      <th>GF / game</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
           </div>
           <div class="card">
             <strong>Best defence (Top 10)</strong>
-            <table id="tbl-ga" style="margin-top:6px">
-              <colgroup>
-                <col class="c-rank"><col class="c-team">
-                <col class="c-ga"><col class="c-pts">
-              </colgroup>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th class="left">Team</th>
-                  <th>GA</th>
-                  <th>P</th>
-                  <th>GA / game</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
+<table id="tbl-ga" style="margin-top:6px">
+  <colgroup>
+    <col class="c-rank"><col class="c-team">
+    <col class="c-ga"><col class="c-pts">
+  </colgroup>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th class="left">Team</th>
+      <th>GA</th>
+      <th>P</th>
+      <th>GA / game</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
           </div>
         </div>
       </div>
@@ -872,7 +842,7 @@ function leagueAggregates(perLeague){
   return out.sort((a,b)=>a.league.localeCompare(b.league));
 }
 
-/* ====== Season activity + matchday trends stats (HTMLified) ====== */
+/* ====== Weekly Games Played + matchday trends stats (HTMLified) ====== */
 function buildActivityStats(matches){
   const dated = matches.filter(m=>m.doneOn instanceof Date);
   if(!dated.length){
@@ -880,7 +850,7 @@ function buildActivityStats(matches){
       activityHtml:
         '<div class="activity-block"><div class="activity-empty">Not enough completed match dates yet.</div></div>',
       trendHtml:
-        '<div class="activity-block"><div class="activity-empty">Matchday trends will appear once more games are dated.</div></div>'
+        '<div class="activity-block"><div class="activity-empty">Most Active Days will appear once more games are dated.</div></div>'
     };
   }
   dated.sort((a,b)=>a.doneOn-b.doneOn);
@@ -916,7 +886,7 @@ function buildActivityStats(matches){
   let trendHtml;
   if(!pairs.length){
     trendHtml =
-      '<div class="activity-block"><div class="activity-empty">Matchday trends will appear once more games are dated.</div></div>';
+      '<div class="activity-block"><div class="activity-empty">Most Active Days will appear once more games are dated.</div></div>';
   }else{
     const total = dated.length;
     const top = pairs[0];
@@ -1032,10 +1002,10 @@ function renderTopTables(teams){
       gfPerGame: t.gf / t.gp
     }))
     .sort((a,b)=>
-      b.gfPerGame - a.gfPerGame ||
-      b.gf - a.gf ||
-      b.pts - a.pts ||
-      a.team.localeCompare(b.team)
+      b.gfPerGame - a.gfPerGame ||  // first: highest GF/game
+      b.gf - a.gf ||                // tie-break: highest total GF
+      b.pts - a.pts ||              // then: highest points
+      a.team.localeCompare(b.team)  // final: alphabetical
     )
     .slice(0,10);
 
@@ -1062,10 +1032,10 @@ function renderTopTables(teams){
       gaPerGame: t.ga / t.gp
     }))
     .sort((a,b)=>
-      a.gaPerGame - b.gaPerGame ||
-      a.ga - b.ga ||
-      b.pts - a.pts ||
-      a.team.localeCompare(b.team)
+      a.gaPerGame - b.gaPerGame ||  // first: lowest GA/game
+      a.ga - b.ga ||                // tie-break: lowest total GA
+      b.pts - a.pts ||              // then: highest points
+      a.team.localeCompare(b.team)  // final: alphabetical
     )
     .slice(0,10);
 
@@ -1267,7 +1237,6 @@ async function run(selectedKeys){
   agg.teams.forEach(t => TEAM_INDEX.set(t.team, t));
   FORM_INDEX = formByTeam;
 
-  renderBadges();
   renderRails(agg, leagues, scheduledTotal);
   renderLeaderboard(agg.teams);
   renderHighlights(agg);
