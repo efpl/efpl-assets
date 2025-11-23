@@ -247,7 +247,6 @@ tr.row-selected{
   box-shadow:0 0 14px rgba(0,0,0,.7);
 }
 
-
 /* Generic small text */
 .note{color:var(--muted);font-size:12px}
 
@@ -584,7 +583,7 @@ tr.row-selected{
       </div>
     </section>
 
-    <!-- Weekly Games Played + Most Active Days (moved up) -->
+    <!-- Weekly Games Played + Most Active Days -->
     <section class="two-col" style="margin-top:10px">
       <div class="card">
         <h3 style="margin:0 0 8px">Weekly Games Played</h3>
@@ -628,46 +627,47 @@ tr.row-selected{
           </div>
         </div>
 
-<h3 style="margin:10px 0 8px">Highlights</h3>
-<table id="tbl-hi">
-  <tbody>
-    <tr class="hi-big">
-      <td class="left hi-label">
-        <span class="hi-icon">🏆</span>
-        <span>Biggest win</span>
-      </td>
-      <td id="hi-big" class="right hi-value">-</td>
-    </tr>
-    <tr class="hi-hsg">
-      <td class="left hi-label">
-        <span class="hi-icon">🔥</span>
-        <span>Highest scoring game</span>
-      </td>
-      <td id="hi-hsg" class="right hi-value">-</td>
-    </tr>
-    <tr class="hi-topgf">
-      <td class="left hi-label">
-        <span class="hi-icon">🎯</span>
-        <span>Top scoring team</span>
-      </td>
-      <td id="hi-topgf" class="right hi-value">-</td>
-    </tr>
-    <tr class="hi-mostga">
-      <td class="left hi-label">
-        <span class="hi-icon">🚨</span>
-        <span>Most conceded</span>
-      </td>
-      <td id="hi-mostga" class="right hi-value">-</td>
-    </tr>
-    <tr class="hi-mostcs">
-      <td class="left hi-label">
-        <span class="hi-icon">🧱</span>
-        <span>Most clean sheets</span>
-      </td>
-      <td id="hi-mostcs" class="right hi-value">-</td>
-    </tr>
-  </tbody>
-</table>
+        <h3 style="margin:10px 0 8px">Highlights</h3>
+        <table id="tbl-hi">
+          <tbody>
+            <tr class="hi-big">
+              <td class="left hi-label">
+                <span class="hi-icon">🏆</span>
+                <span>Biggest win</span>
+              </td>
+              <td id="hi-big" class="right hi-value">-</td>
+            </tr>
+            <tr class="hi-hsg">
+              <td class="left hi-label">
+                <span class="hi-icon">🔥</span>
+                <span>Highest scoring game</span>
+              </td>
+              <td id="hi-hsg" class="right hi-value">-</td>
+            </tr>
+            <tr class="hi-topgf">
+              <td class="left hi-label">
+                <span class="hi-icon">🎯</span>
+                <span>Top scoring team</span>
+              </td>
+              <td id="hi-topgf" class="right hi-value">-</td>
+            </tr>
+            <tr class="hi-mostga">
+              <td class="left hi-label">
+                <span class="hi-icon">🚨</span>
+                <span>Most conceded</span>
+              </td>
+              <td id="hi-mostga" class="right hi-value">-</td>
+            </tr>
+            <tr class="hi-mostcs">
+              <td class="left hi-label">
+                <span class="hi-icon">🧱</span>
+                <span>Most clean sheets</span>
+              </td>
+              <td id="hi-mostcs" class="right hi-value">-</td>
+            </tr>
+          </tbody>
+        </table>
+
         <!-- Power Rankings -->
         <div class="card power-card">
           <div class="power-header">
@@ -695,42 +695,42 @@ tr.row-selected{
 
         <div class="mini-grid" style="margin-top:10px">
           <div class="card">
-           <strong>Best offence (Top 10)</strong>
-<table id="tbl-gf" style="margin-top:6px">
-  <colgroup>
-    <col class="c-rank"><col class="c-team">
-    <col class="c-gf"><col class="c-pts">
-  </colgroup>
-  <thead>
-    <tr>
-      <th>#</th>
-      <th class="left">Team</th>
-      <th>GF</th>
-      <th>P</th>
-      <th>GF / game</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
+            <strong>Best offence (Top 10)</strong>
+            <table id="tbl-gf" style="margin-top:6px">
+              <colgroup>
+                <col class="c-rank"><col class="c-team">
+                <col class="c-gf"><col class="c-pts">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th class="left">Team</th>
+                  <th>GF</th>
+                  <th>P</th>
+                  <th>GF / game</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
           </div>
           <div class="card">
             <strong>Best defence (Top 10)</strong>
-<table id="tbl-ga" style="margin-top:6px">
-  <colgroup>
-    <col class="c-rank"><col class="c-team">
-    <col class="c-ga"><col class="c-pts">
-  </colgroup>
-  <thead>
-    <tr>
-      <th>#</th>
-      <th class="left">Team</th>
-      <th>GA</th>
-      <th>P</th>
-      <th>GA / game</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
+            <table id="tbl-ga" style="margin-top:6px">
+              <colgroup>
+                <col class="c-rank"><col class="c-team">
+                <col class="c-ga"><col class="c-pts">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th class="left">Team</th>
+                  <th>GA</th>
+                  <th>P</th>
+                  <th>GA / game</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -889,50 +889,64 @@ async function loadForms(id){
   return map;
 }
 
-async function loadAll(selectedKeys){
-  const selected = selectedKeys.includes('All')
-    ? LEAGUES.filter(x=>x.id)
-    : LEAGUES.filter(x=>x.id && selectedKeys.includes(x.key));
+/* Load one league bundle (forms + fixtures in parallel, embed as fallback) */
+async function loadLeagueBundle(lg){
+  const bucket = {matches:[], scheduled:0};
+  let leagueMatches = [];
+  let scheduledTotal = 0;
+  let formMap = new Map();
 
-  const matches=[], perLeague={}, leagues=selected.map(x=>x.key);
-  let scheduledTotal=0;
-  const formByTeam = new Map();
+  // run forms + fixtures together
+  const [formResult, fixturesResult] = await Promise.all([
+    loadForms(lg.id).catch(()=>new Map()),
+    loadFromFixtures(lg.id).catch(()=>null)
+  ]);
 
-  for(const lg of selected){
-    perLeague[lg.key]={matches:[],scheduled:0};
+  if(formResult instanceof Map) formMap = formResult;
 
+  if(fixturesResult && Array.isArray(fixturesResult.items)){
+    scheduledTotal += fixturesResult.scheduled;
+    bucket.scheduled += fixturesResult.scheduled;
+    fixturesResult.items.forEach(r=>{
+      if(r.completed && Number.isFinite(r.hg) && Number.isFinite(r.ag)){
+        const m = {
+          league:lg.key,
+          home:r.home,
+          away:r.away,
+          hg:r.hg,
+          ag:r.ag,
+          doneOn:r.doneOn
+        };
+        bucket.matches.push(m);
+        leagueMatches.push(m);
+      }
+    });
+  }
+
+  // if no completed fixtures, fall back to Embed sheet
+  if(bucket.matches.length === 0){
     try{
-      const fm = await loadForms(lg.id);
-      fm.forEach((val,key)=>{
-        if(!formByTeam.has(key)) formByTeam.set(key,val);
-      });
-    }catch(e){}
-
-    let gotAny=false;
-    try{
-      const {items,scheduled}=await loadFromFixtures(lg.id);
-      scheduledTotal+=scheduled; perLeague[lg.key].scheduled+=scheduled;
+      const {items, scheduled} = await loadFromEmbed(lg.id);
+      scheduledTotal += scheduled;
+      bucket.scheduled += scheduled;
       items.forEach(r=>{
         if(r.completed && Number.isFinite(r.hg) && Number.isFinite(r.ag)){
-          const m={league:lg.key,home:r.home,away:r.away,hg:r.hg,ag:r.ag,doneOn:r.doneOn};
-          matches.push(m); perLeague[lg.key].matches.push(m); gotAny=true;
-        }
-      });
-      if(gotAny) continue;
-    }catch(e){}
-
-    try{
-      const {items,scheduled}=await loadFromEmbed(lg.id);
-      scheduledTotal+=scheduled; perLeague[lg.key].scheduled+=scheduled;
-      items.forEach(r=>{
-        if(r.completed && Number.isFinite(r.hg) && Number.isFinite(r.ag)){
-          const m={league:lg.key,home:r.home,away:r.away,hg:r.hg,ag:r.ag,doneOn:null};
-          matches.push(m); perLeague[lg.key].matches.push(m);
+          const m = {
+            league:lg.key,
+            home:r.home,
+            away:r.away,
+            hg:r.hg,
+            ag:r.ag,
+            doneOn:null
+          };
+          bucket.matches.push(m);
+          leagueMatches.push(m);
         }
       });
     }catch(e){}
   }
-  return {matches, leagues, perLeague, scheduledTotal, formByTeam};
+
+  return { key: lg.key, bucket, matches: leagueMatches, scheduledTotal, formMap };
 }
 
 /* ====== Aggregation ====== */
@@ -1487,7 +1501,31 @@ if(supportsHover){
 /* ====== Controller ====== */
 async function run(selectedKeys){
   if(!selectedKeys||!selectedKeys.length) selectedKeys=['All'];
-  const {matches, leagues, perLeague, scheduledTotal, formByTeam} = await loadAll(selectedKeys);
+
+  const selected = selectedKeys.includes('All')
+    ? LEAGUES.filter(x=>x.id)
+    : LEAGUES.filter(x=>x.id && selectedKeys.includes(x.key));
+
+  // load all leagues in parallel
+  const leagueResults = await Promise.all(
+    selected.map(lg => loadLeagueBundle(lg))
+  );
+
+  const matches = [];
+  const perLeague = {};
+  const formByTeam = new Map();
+  let scheduledTotal = 0;
+
+  leagueResults.forEach(res=>{
+    perLeague[res.key] = res.bucket;
+    scheduledTotal += res.scheduledTotal;
+    res.matches.forEach(m => matches.push(m));
+    res.formMap.forEach((val,key)=>{
+      if(!formByTeam.has(key)) formByTeam.set(key,val);
+    });
+  });
+
+  const leagues = selected.map(x=>x.key);
   const agg = aggregate(matches);
   const minis = leagueAggregates(perLeague);
   const activity = buildActivityStats(matches);
