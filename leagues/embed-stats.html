@@ -533,7 +533,6 @@ tr.row-selected{
         <h3 style="margin:0 0 8px">Weekly Games Played</h3>
         <div class="note">How many matches were completed this week compared to the previous week.</div>
         <div id="season-activity" class="activity-block">
-          <!-- message text updated -->
           <div class="activity-empty">Weekly stats will appear once some matches have been completed.</div>
         </div>
       </div>
@@ -541,7 +540,6 @@ tr.row-selected{
         <h3 style="margin:0 0 8px">Most Active Days</h3>
         <div class="note">Which days players complete the most fixtures.</div>
         <div id="matchday-trends" class="activity-block">
-          <!-- message text updated -->
           <div class="activity-empty">Most Active Days will appear once some matches have been completed.</div>
         </div>
       </div>
@@ -598,10 +596,7 @@ tr.row-selected{
               <tr>
                 <th>#</th>
                 <th class="left">Team</th>
-                <th>Lg</th>
-                <th>GP</th>
-                <th>Pts</th>
-                <th>GD</th>
+                <th>LG</th>
                 <th>Power</th>
               </tr>
             </thead>
@@ -937,7 +932,7 @@ function leagueAggregates(perLeague){
   return out.sort((a,b)=>a.league.localeCompare(b.league));
 }
 
-/* ====== Weekly Games Played + matchday trends (new Monday-based logic) ====== */
+/* ====== Weekly Games Played + matchday trends ====== */
 function buildActivityStats(matches){
   const dated = (matches || []).filter(m => m.doneOn instanceof Date);
   if(!dated.length){
@@ -949,14 +944,12 @@ function buildActivityStats(matches){
     };
   }
 
-  // sort oldest -> newest
   dated.sort((a,b)=>a.doneOn - b.doneOn);
 
-  // Use local weeks, Monday -> Sunday
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const day = today.getDay(); // 0 = Sun, 1 = Mon, ...
-  const offsetToMonday = (day + 6) % 7; // days since Monday
+  const day = today.getDay();
+  const offsetToMonday = (day + 6) % 7;
   const startThisWeek = new Date(today.getTime() - offsetToMonday*86400000);
   const endThisWeek   = new Date(startThisWeek.getTime() + 7*86400000);
   const startLastWeek = new Date(startThisWeek.getTime() - 7*86400000);
@@ -1012,7 +1005,6 @@ function buildActivityStats(matches){
       '<div class="activity-note">' + last7Label + '</div>' +
     '</div>';
 
-  // Most active days from the same completion dates
   const dayNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   const entries = Object.keys(dowCounts)
     .map(k=>({dayIndex:Number(k), count:dowCounts[k]}))
@@ -1165,9 +1157,6 @@ function renderPower(teams){
       <td class="right numeric">${i+1}</td>
       <td class="left">${teamCell(t)}</td>
       <td class="center">${esc(t.league || '')}</td>
-      <td class="right numeric">${t.gp}</td>
-      <td class="right numeric">${t.pts}</td>
-      <td class="right numeric">${t.gd}</td>
       <td class="right numeric">
         <span class="power-score-pill">${t.power.toFixed(2)}</span>
       </td>`;
@@ -1175,12 +1164,11 @@ function renderPower(teams){
   });
 
   if(rows.length === 0){
-    tbody.innerHTML = `<tr><td colspan="7" class="center note">Power Rankings will appear once at least 5 games have been played.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="4" class="center note">Power Rankings will appear once at least 5 games have been played.</td></tr>`;
   }
 }
 
 function renderTopTables(teams){
-  // === Best offence — GF per game ===
   const gfRows = [...teams]
     .filter(t => t.gp > 0)
     .map(t => ({
@@ -1210,7 +1198,6 @@ function renderTopTables(teams){
     gfBody.appendChild(tr);
   });
 
-  // === Best defence — GA per game ===
   const gaRows = [...teams]
     .filter(t => t.gp > 0)
     .map(t => ({
