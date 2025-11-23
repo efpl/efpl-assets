@@ -188,8 +188,65 @@ tr.row-selected{
 #tbl-ga tbody tr:hover .teamwrap.Gold::before,
 #tbl-power tbody tr:hover .teamwrap.Gold::before{ box-shadow:0 0 16px 2px rgba(212,175,55,.85); }
 
-/* Highlights can wrap normally */
-#tbl-hi td{white-space:normal;line-height:1.35}
+/* Highlights — pill style rows */
+#tbl-hi{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0 6px; /* gap between rows */
+}
+#tbl-hi td{
+  white-space:normal;
+  line-height:1.35;
+  padding:10px 12px;
+  background:var(--card2);
+}
+
+/* rounded ends for each row */
+#tbl-hi tbody tr td:first-child{
+  border-radius:10px 0 0 10px;
+}
+#tbl-hi tbody tr td:last-child{
+  border-radius:0 10px 10px 0;
+}
+
+/* icons + label */
+.hi-label{
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--muted);
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.hi-icon{
+  width:20px;
+  height:20px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:11px;
+  background:rgba(0,0,0,.35);
+}
+
+/* value side */
+.hi-value{
+  font-weight:700;
+  font-size:14px;
+}
+
+/* give the first 2 rows a subtle gold glow */
+#tbl-hi tbody tr:nth-child(1) td,
+#tbl-hi tbody tr:nth-child(2) td{
+  background:linear-gradient(90deg, rgba(249,215,28,.16), rgba(249,215,28,.03));
+}
+
+/* hover effect */
+#tbl-hi tbody tr:hover td{
+  box-shadow:0 0 14px rgba(0,0,0,.7);
+}
+
 
 /* Generic small text */
 .note{color:var(--muted);font-size:12px}
@@ -571,17 +628,46 @@ tr.row-selected{
           </div>
         </div>
 
-        <h3 style="margin:10px 0 8px">Highlights</h3>
-        <table id="tbl-hi">
-          <tbody>
-            <tr><td class="left">Biggest win</td><td id="hi-big" class="right">-</td></tr>
-            <tr><td class="left">Highest scoring game</td><td id="hi-hsg" class="right">-</td></tr>
-            <tr><td class="left">Top scoring team</td><td id="hi-topgf" class="right">-</td></tr>
-            <tr><td class="left">Most conceded</td><td id="hi-mostga" class="right">-</td></tr>
-            <tr><td class="left">Most clean sheets</td><td id="hi-mostcs" class="right">-</td></tr>
-          </tbody>
-        </table>
-
+<h3 style="margin:10px 0 8px">Highlights</h3>
+<table id="tbl-hi">
+  <tbody>
+    <tr class="hi-big">
+      <td class="left hi-label">
+        <span class="hi-icon">🏆</span>
+        <span>Biggest win</span>
+      </td>
+      <td id="hi-big" class="right hi-value">-</td>
+    </tr>
+    <tr class="hi-hsg">
+      <td class="left hi-label">
+        <span class="hi-icon">🔥</span>
+        <span>Highest scoring game</span>
+      </td>
+      <td id="hi-hsg" class="right hi-value">-</td>
+    </tr>
+    <tr class="hi-topgf">
+      <td class="left hi-label">
+        <span class="hi-icon">🎯</span>
+        <span>Top scoring team</span>
+      </td>
+      <td id="hi-topgf" class="right hi-value">-</td>
+    </tr>
+    <tr class="hi-mostga">
+      <td class="left hi-label">
+        <span class="hi-icon">🚨</span>
+        <span>Most conceded</span>
+      </td>
+      <td id="hi-mostga" class="right hi-value">-</td>
+    </tr>
+    <tr class="hi-mostcs">
+      <td class="left hi-label">
+        <span class="hi-icon">🧱</span>
+        <span>Most clean sheets</span>
+      </td>
+      <td id="hi-mostcs" class="right hi-value">-</td>
+    </tr>
+  </tbody>
+</table>
         <!-- Power Rankings -->
         <div class="card power-card">
           <div class="power-header">
