@@ -152,33 +152,41 @@ tr.row-selected{
 /* Row hover glow */
 #tbl-leader tbody tr:hover,
 #tbl-gf tbody tr:hover,
-#tbl-ga tbody tr:hover{
+#tbl-ga tbody tr:hover,
+#tbl-power tbody tr:hover{
   position:relative;z-index:1;
   box-shadow:0 0 12px rgba(255,255,255,0.07) inset;
   transition:box-shadow .25s ease, background-color .25s ease;
 }
 #tbl-leader tbody tr:hover .teamwrap::before,
 #tbl-gf tbody tr:hover .teamwrap::before,
-#tbl-ga tbody tr:hover .teamwrap::before{ transform:scaleX(1.15); }
+#tbl-ga tbody tr:hover .teamwrap::before,
+#tbl-power tbody tr:hover .teamwrap::before{ transform:scaleX(1.15); }
 
 #tbl-leader tbody tr:hover .teamwrap.Diamond::before,
 #tbl-gf tbody tr:hover .teamwrap.Diamond::before,
-#tbl-ga tbody tr:hover .teamwrap.Diamond::before{ box-shadow:0 0 16px 2px rgba(153,236,255,.85); }
+#tbl-ga tbody tr:hover .teamwrap.Diamond::before,
+#tbl-power tbody tr:hover .teamwrap.Diamond::before{ box-shadow:0 0 16px 2px rgba(153,236,255,.85); }
 #tbl-leader tbody tr:hover .teamwrap.Ruby::before,
 #tbl-gf tbody tr:hover .teamwrap.Ruby::before,
-#tbl-ga tbody tr:hover .teamwrap.Ruby::before{ box-shadow:0 0 16px 2px rgba(224,28,113,.85); }
+#tbl-ga tbody tr:hover .teamwrap.Ruby::before,
+#tbl-power tbody tr:hover .teamwrap.Ruby::before{ box-shadow:0 0 16px 2px rgba(224,28,113,.85); }
 #tbl-leader tbody tr:hover .teamwrap.Sapphire::before,
 #tbl-gf tbody tr:hover .teamwrap.Sapphire::before,
-#tbl-ga tbody tr:hover .teamwrap.Sapphire::before{ box-shadow:0 0 16px 2px rgba(0,138,241,.85); }
+#tbl-ga tbody tr:hover .teamwrap.Sapphire::before,
+#tbl-power tbody tr:hover .teamwrap.Sapphire::before{ box-shadow:0 0 16px 2px rgba(0,138,241,.85); }
 #tbl-leader tbody tr:hover .teamwrap.Crystal::before,
 #tbl-gf tbody tr:hover .teamwrap.Crystal::before,
-#tbl-ga tbody tr:hover .teamwrap.Crystal::before{ box-shadow:0 0 16px 2px rgba(134,138,241,.85); }
+#tbl-ga tbody tr:hover .teamwrap.Crystal::before,
+#tbl-power tbody tr:hover .teamwrap.Crystal::before{ box-shadow:0 0 16px 2px rgba(134,138,241,.85); }
 #tbl-leader tbody tr:hover .teamwrap.Emerald::before,
 #tbl-gf tbody tr:hover .teamwrap.Emerald::before,
-#tbl-ga tbody tr:hover .teamwrap.Emerald::before{ box-shadow:0 0 16px 2px rgba(61,154,92,.85); }
+#tbl-ga tbody tr:hover .teamwrap.Emerald::before,
+#tbl-power tbody tr:hover .teamwrap.Emerald::before{ box-shadow:0 0 16px 2px rgba(61,154,92,.85); }
 #tbl-leader tbody tr:hover .teamwrap.Gold::before,
 #tbl-gf tbody tr:hover .teamwrap.Gold::before,
-#tbl-ga tbody tr:hover .teamwrap.Gold::before{ box-shadow:0 0 16px 2px rgba(212,175,55,.85); }
+#tbl-ga tbody tr:hover .teamwrap.Gold::before,
+#tbl-power tbody tr:hover .teamwrap.Gold::before{ box-shadow:0 0 16px 2px rgba(212,175,55,.85); }
 
 /* Highlights can wrap normally */
 #tbl-hi td{white-space:normal;line-height:1.35}
@@ -370,6 +378,60 @@ tr.row-selected{
   color:var(--muted);
 }
 
+/* ========= Power Rankings (Top 10) ========= */
+.power-card{
+  margin-top:10px;
+}
+.power-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:6px;
+}
+.power-eyebrow{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  color:var(--muted);
+}
+.power-title{
+  font-size:15px;
+  font-weight:800;
+}
+.power-badge{
+  border-radius:999px;
+  border:1px solid rgba(249,215,28,.7);
+  padding:4px 10px;
+  font-size:11px;
+  font-weight:700;
+  background:linear-gradient(90deg, rgba(249,215,28,.22), rgba(249,215,28,.05));
+  color:#fff;
+  white-space:nowrap;
+}
+#tbl-power thead th{font-size:11.5px}
+#tbl-power tbody tr.power-1 td{
+  background:linear-gradient(90deg, rgba(249,215,28,.26), rgba(249,215,28,.06)) !important;
+  color:#fff;
+  font-weight:800;
+}
+#tbl-power tbody tr.power-2-3 td{
+  background:linear-gradient(90deg, rgba(249,215,28,.14), rgba(249,215,28,.03)) !important;
+}
+.power-score-pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:3.5ch;
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:900;
+  background:var(--accent);
+  color:#0b1b3d;
+  box-shadow:0 0 0 1px rgba(0,0,0,.6), 0 0 18px rgba(249,215,28,.6);
+}
+
 /* ========= Responsive ========= */
 @media (max-width:1100px){
   .rail{grid-template-columns:repeat(2,1fr)}
@@ -404,6 +466,9 @@ tr.row-selected{
   #player-panel{ padding:10px; }
   .player-name{ font-size:16px; }
   .player-badge{ height:32px; }
+
+  .power-header{flex-direction:column;align-items:flex-start}
+  .power-badge{align-self:flex-start}
 }
 @media (max-width:360px){
   tbody td{font-size:13px}
@@ -518,6 +583,34 @@ tr.row-selected{
             <tr><td class="left">Most clean sheets</td><td id="hi-mostcs" class="right">-</td></tr>
           </tbody>
         </table>
+
+        <!-- Power Rankings -->
+        <div class="card power-card">
+          <div class="power-header">
+            <div>
+              <div class="power-eyebrow">Season 2 • Live power index</div>
+              <div class="power-title">Power Rankings (Top 10)</div>
+            </div>
+            <div class="power-badge">Min. 5 games • (Pts × 2 + GD) ÷ GP</div>
+          </div>
+          <table id="tbl-power">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th class="left">Team</th>
+                <th>Lg</th>
+                <th>GP</th>
+                <th>Pts</th>
+                <th>GD</th>
+                <th>Power</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <div class="note" style="margin-top:4px">
+            Power Score rewards form, goal difference and consistency across all leagues.
+          </div>
+        </div>
 
         <div class="mini-grid" style="margin-top:10px">
           <div class="card">
@@ -1037,6 +1130,55 @@ function renderHighlights(agg){
   byId('hi-mostcs').textContent = agg.mostCS ? `${agg.mostCS.team} - ${agg.mostCS.cs}` : '-';
 }
 
+/* ====== Power Rankings ====== */
+function renderPower(teams){
+  const tbody = byId('tbl-power').querySelector('tbody');
+  if(!tbody) return;
+  tbody.innerHTML = '';
+
+  const rows = [...teams]
+    .filter(t => t.gp >= 5)
+    .map(t => ({
+      ...t,
+      league: t.league || '',
+      power: (t.gp > 0) ? ((t.pts * 2 + t.gd) / t.gp) : 0
+    }))
+    .sort((a,b)=>
+      b.power - a.power ||
+      b.pts - a.pts ||
+      b.gd  - a.gd  ||
+      b.gf  - a.gf  ||
+      a.team.localeCompare(b.team)
+    )
+    .slice(0,10);
+
+  rows.forEach((t,i)=>{
+    const tr = document.createElement('tr');
+    tr.dataset.team = t.team;
+
+    if(i === 0) tr.classList.add('power-1');
+    else if(i === 1 || i === 2) tr.classList.add('power-2-3');
+
+    if(CURRENT_TEAM && t.team === CURRENT_TEAM) tr.classList.add('row-selected');
+
+    tr.innerHTML = `
+      <td class="right numeric">${i+1}</td>
+      <td class="left">${teamCell(t)}</td>
+      <td class="center">${esc(t.league || '')}</td>
+      <td class="right numeric">${t.gp}</td>
+      <td class="right numeric">${t.pts}</td>
+      <td class="right numeric">${t.gd}</td>
+      <td class="right numeric">
+        <span class="power-score-pill">${t.power.toFixed(2)}</span>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+
+  if(rows.length === 0){
+    tbody.innerHTML = `<tr><td colspan="7" class="center note">Power Rankings will appear once at least 5 games have been played.</td></tr>`;
+  }
+}
+
 function renderTopTables(teams){
   // === Best offence — GF per game ===
   const gfRows = [...teams]
@@ -1284,6 +1426,7 @@ async function run(selectedKeys){
   renderRails(agg, leagues, scheduledTotal);
   renderLeaderboard(agg.teams);
   renderHighlights(agg);
+  renderPower(agg.teams);
   renderTopTables(agg.teams);
   renderMini(minis);
   applySelectionHighlight();
