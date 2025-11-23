@@ -106,7 +106,7 @@ tbody tr:hover{background-color:rgba(255,255,255,0.05)}
 
 /* Leaderboard — columns incl. GD */
 #tbl-leader col.c-rank{width:4.2ch}
-#tbl-leader col.c-team{width:auto} /* flexible */
+#tbl-leader col.c-team{width:auto}
 #tbl-leader col.c-p,
 #tbl-leader col.c-w,
 #tbl-leader col.c-d,
@@ -125,13 +125,12 @@ tr.row-selected{
 /* ===== League-coloured left bar + badge glow (text remains white) ===== */
 .teamwrap{
   display:flex;align-items:flex-start;gap:10px;min-width:0;position:relative;padding-left:12px;
-  cursor:pointer; /* clickable for profile panel */
+  cursor:pointer;
 }
 .teamwrap::before{
   content:"";position:absolute;left:0;top:4px;bottom:4px;width:5px;
   border-radius:2px;background:transparent;transition:box-shadow .25s ease, transform .25s ease;
 }
-/* Per-league accent bar colours */
 .teamwrap.Diamond::before{ background:var(--diamond); }
 .teamwrap.Ruby::before{    background:var(--ruby); }
 .teamwrap.Sapphire::before{background:var(--sapphire); }
@@ -139,35 +138,29 @@ tr.row-selected{
 .teamwrap.Emerald::before{ background:var(--emerald); }
 .teamwrap.Gold::before{    background:var(--gold); }
 
-/* Badge glow to match league */
 .lg{height:21px;width:auto;object-fit:contain;flex:0 0 auto;filter:drop-shadow(0 0 2px rgba(0,0,0,.6))}
 .lg.Diamond{ filter:drop-shadow(0 0 4px rgba(153,236,255,.9)); }
 .lg.Ruby{    filter:drop-shadow(0 0 4px rgba(224,28,113,.9)); }
 .lg.Sapphire{filter:drop-shadow(0 0 4px rgba(0,138,241,.9)); }
 .lg.Crystal{ filter:drop-shadow(0 0 4px rgba(134,138,241,.9)); }
-.lg.Emerald{ filter:drop-shadow(0 0 4px rgba(61,154,92,.9)); }
-.lg.Gold{    filter:drop-shadow(0 0 4px rgba(212,175,55,.9)); }
+.lg.Emerald{ filter:drop-shadow(0 0 4px rgba(61,154,92,.85)); }
+.lg.Gold{    filter:drop-shadow(0 0 4px rgba(212,175,55,.85)); }
 
-/* Team text stays white; wraps (no ellipsis) for embed */
 .teamname{display:block;min-width:0;white-space:normal;overflow:visible;line-height:1.25;word-break:break-word;color:var(--ink)}
+.teamwrap:hover .teamname{ text-decoration:underline; }
 
-/* Make clickable names feel clickable */
-.teamwrap:hover .teamname{
-  text-decoration:underline;
-}
-
-/* Row hover glow (brighter, league tinted) */
+/* Row hover glow */
 #tbl-leader tbody tr:hover,
 #tbl-gf tbody tr:hover,
 #tbl-ga tbody tr:hover{
   position:relative;z-index:1;
-  box-shadow:0 0 12px rgba(255,255,255,0.07) inset;transition:box-shadow .25s ease, background-color .25s ease;
+  box-shadow:0 0 12px rgba(255,255,255,0.07) inset;
+  transition:box-shadow .25s ease, background-color .25s ease;
 }
 #tbl-leader tbody tr:hover .teamwrap::before,
 #tbl-gf tbody tr:hover .teamwrap::before,
 #tbl-ga tbody tr:hover .teamwrap::before{ transform:scaleX(1.15); }
 
-/* brighter, cross-browser rgba glows per league */
 #tbl-leader tbody tr:hover .teamwrap.Diamond::before,
 #tbl-gf tbody tr:hover .teamwrap.Diamond::before,
 #tbl-ga tbody tr:hover .teamwrap.Diamond::before{ box-shadow:0 0 16px 2px rgba(153,236,255,.85); }
@@ -234,9 +227,7 @@ tr.row-selected{
   column-gap:10px;
   font-size:13px;
 }
-.pg-label{
-  color:var(--muted);
-}
+.pg-label{ color:var(--muted); }
 .pg-value{
   text-align:right;
   font-weight:600;
@@ -248,7 +239,7 @@ tr.row-selected{
   flex-wrap:wrap;
 }
 
-/* Form pills (WWLD) */
+/* Form pills */
 .form-pill{
   display:inline-flex;
   align-items:center;
@@ -278,7 +269,7 @@ tr.row-selected{
   color:#ffd0e4;
 }
 
-/* ========= Player flyout (hover) ========= */
+/* ========= Player flyout (hover near name) ========= */
 .player-flyout{
   position:absolute;
   z-index:9999;
@@ -292,18 +283,10 @@ tr.row-selected{
   display:none;
   pointer-events:none;
 }
-.player-flyout .player-card{
-  gap:8px;
-}
-.player-flyout .player-header{
-  gap:10px;
-}
-.player-flyout .player-badge{
-  height:34px;
-}
-.player-flyout .player-name{
-  font-size:15px;
-}
+.player-flyout .player-card{ gap:8px; }
+.player-flyout .player-header{ gap:10px; }
+.player-flyout .player-badge{ height:34px; }
+.player-flyout .player-name{ font-size:15px; }
 
 /* ========= Per-league comparison cards ========= */
 #league-mini{
@@ -350,37 +333,40 @@ tr.row-selected{
   color:var(--muted);
 }
 
-/* ========= Activity cards ========= */
+/* ========= Weekly Games Played / Matchday visuals ========= */
 .activity-block{
   display:flex;
   flex-direction:column;
-  gap:8px;
+  gap:6px;
+  font-size:13px;
+  color:var(--muted);
 }
 .activity-row{
   display:flex;
   flex-wrap:wrap;
   gap:6px;
+  align-items:center;
 }
 .activity-pill{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:4px 10px;
   border-radius:999px;
-  border:1px solid rgba(249,215,28,.32);
-  font-size:11.5px;
+  border:1px solid var(--line);
+  padding:3px 9px;
+  font-size:12px;
+  background:rgba(0,0,0,.16);
+  color:#fff;
   font-weight:600;
-  white-space:nowrap;
 }
 .activity-pill.accent{
-  background:linear-gradient(90deg, rgba(249,215,28,.18), rgba(249,215,28,.06));
+  border-color:rgba(249,215,28,.65);
+  background:linear-gradient(90deg, rgba(249,215,28,.18), rgba(249,215,28,.05));
+  color:#fff;
 }
 .activity-note{
   font-size:12px;
-  color:var(--muted);
+  opacity:.9;
 }
 .activity-empty{
-  font-size:13px;
+  font-size:12px;
   color:var(--muted);
 }
 
@@ -389,8 +375,8 @@ tr.row-selected{
   .rail{grid-template-columns:repeat(2,1fr)}
 }
 @media (max-width:900px){
-  .two-col{grid-template-columns:1fr}        /* stack Leaderboard + Highlights */
-  .mini{grid-template-columns:1fr}           /* stack bars */
+  .two-col{grid-template-columns:1fr}
+  .mini{grid-template-columns:1fr}
   #league-mini{grid-template-columns:1fr}
 }
 @media (max-width:520px){
@@ -398,39 +384,26 @@ tr.row-selected{
   thead th{padding:8px;font-size:11.5px}
   tbody td{padding:8px;font-size:14px}
   .lg{height:18px}
-  /* Keep the coloured bar visible but tighter */
   .teamwrap{ padding-left:10px; gap:8px; }
   .teamwrap::before{ left:0; top:6px; bottom:6px; width:5px; }
 
-  /* simplify leaderboard to P W GD Pts on small screens */
   #tbl-leader th:nth-child(5),
   #tbl-leader td:nth-child(5),
   #tbl-leader th:nth-child(6),
   #tbl-leader td:nth-child(6){
     display:none !important;
   }
-
-  #tbl-leader{
-    table-layout:auto !important;
-  }
-  #tbl-leader col{
-    width:auto !important;
-  }
+  #tbl-leader{ table-layout:auto !important; }
+  #tbl-leader col{ width:auto !important; }
   #tbl-leader col.c-team{ width:auto !important; }
   #tbl-leader td.right.numeric{
     padding-left:6px !important;
     padding-right:6px !important;
   }
 
-  #player-panel{
-    padding:10px;
-  }
-  .player-name{
-    font-size:16px;
-  }
-  .player-badge{
-    height:32px;
-  }
+  #player-panel{ padding:10px; }
+  .player-name{ font-size:16px; }
+  .player-badge{ height:32px; }
 }
 @media (max-width:360px){
   tbody td{font-size:13px}
@@ -489,24 +462,22 @@ tr.row-selected{
       </div>
     </section>
 
-    <!-- Weekly games + most active days -->
-    <section class="mini" style="margin-top:10px">
+    <!-- Weekly Games Played + Most Active Days (moved up) -->
+    <section class="two-col" style="margin-top:10px">
       <div class="card">
-        <h3 style="margin:0 0 4px">Weekly Games Played</h3>
-        <div class="note" style="margin-bottom:4px">
-          How many matches were completed this week compared to last week.
-        </div>
-        <div id="activity-season" class="activity-block">
+        <h3 style="margin:0 0 8px">Weekly Games Played</h3>
+        <div class="note">How many matches were completed this week compared to the previous week.</div>
+        <div id="season-activity" class="activity-block">
+          <!-- message text updated -->
           <div class="activity-empty">Weekly stats will appear once some matches have been completed.</div>
         </div>
       </div>
       <div class="card">
-        <h3 style="margin:0 0 4px">Most Active Days</h3>
-        <div class="note" style="margin-bottom:4px">
-          Which days players complete the most fixtures on.
-        </div>
-        <div id="activity-trends" class="activity-block">
-          <div class="activity-empty">Most active days will appear once some matches have been completed.</div>
+        <h3 style="margin:0 0 8px">Most Active Days</h3>
+        <div class="note">Which days players complete the most fixtures.</div>
+        <div id="matchday-trends" class="activity-block">
+          <!-- message text updated -->
+          <div class="activity-empty">Most Active Days will appear once some matches have been completed.</div>
         </div>
       </div>
     </section>
@@ -550,26 +521,42 @@ tr.row-selected{
 
         <div class="mini-grid" style="margin-top:10px">
           <div class="card">
-            <strong>Best offence (GF per game – Top 10)</strong>
-            <table id="tbl-gf" style="margin-top:6px">
-              <colgroup>
-                <col class="c-rank"><col class="c-team">
-                <col class="c-gf"><col class="c-pts">
-              </colgroup>
-              <thead><tr><th>#</th><th class="left">Team</th><th>GF / G</th><th>Pts</th></tr></thead>
-              <tbody></tbody>
-            </table>
+           <strong>Best offence (Top 10)</strong>
+<table id="tbl-gf" style="margin-top:6px">
+  <colgroup>
+    <col class="c-rank"><col class="c-team">
+    <col class="c-gf"><col class="c-pts">
+  </colgroup>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th class="left">Team</th>
+      <th>GF</th>
+      <th>P</th>
+      <th>GF / game</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
           </div>
           <div class="card">
-            <strong>Best defence (GA per game – Top 10)</strong>
-            <table id="tbl-ga" style="margin-top:6px">
-              <colgroup>
-                <col class="c-rank"><col class="c-team">
-                <col class="c-ga"><col class="c-pts">
-              </colgroup>
-              <thead><tr><th>#</th><th class="left">Team</th><th>GA / G</th><th>Pts</th></tr></thead>
-              <tbody></tbody>
-            </table>
+            <strong>Best defence (Top 10)</strong>
+<table id="tbl-ga" style="margin-top:6px">
+  <colgroup>
+    <col class="c-rank"><col class="c-team">
+    <col class="c-ga"><col class="c-pts">
+  </colgroup>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th class="left">Team</th>
+      <th>GA</th>
+      <th>P</th>
+      <th>GA / game</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
           </div>
         </div>
       </div>
@@ -586,7 +573,7 @@ tr.row-selected{
 <script>
 /* ====== CONFIG ====== */
 const LEAGUES = [
-  { key:'All',      name:'All Leagues', badge:null, id:null }, // synthetic
+  { key:'All',      name:'All Leagues', badge:null, id:null },
   { key:'Diamond',  name:'Diamond',  badge:'Diamond-League.png',  id:'1vkDOFfwBJJnSHOPM0BFcrNyZd-2nIbiDKNnWGKT3OP0' },
   { key:'Ruby',     name:'Ruby',     badge:'Ruby-League.png',     id:'12Qg5yi3yQtsPSrd6EHxROkPNurVn5ylzELPvU4UOmGU' },
   { key:'Sapphire', name:'Sapphire', badge:'Sapphire-League.png', id:'1qa03hOquzVg8ithFLdhrel2O3k3nTQCQZp81AWFvECg' },
@@ -596,15 +583,15 @@ const LEAGUES = [
 ];
 const BADGE_BASE = 'https://efpl-assets.pages.dev/img/leagues/';
 
-const FX_TAB = 'Fixtures', FX_RANGE='C4:I94';   // Home|HG|-|AG|Away|Completed|Completed On
-const EM_TAB = 'Embed',    EM_RANGE='A15:C105'; // Home|mid|Away  (fixture fallback)
+const FX_TAB = 'Fixtures', FX_RANGE='C4:I94';   // Home|HG|-|AG|Away|Completed|Completed On (I)
+const EM_TAB = 'Embed',    EM_RANGE='A15:C105'; // Home|mid|Away
 const ST_TAB = 'Embed',    ST_RANGE='A1:K50';   // standings-style table with "Form" column
 
 const BUCKET_MS = 5*60*1000, CB = Math.floor(Date.now()/BUCKET_MS);
 
-let TEAM_INDEX = new Map(); // team name -> aggregated object (incl. results)
-let FORM_INDEX = new Map(); // normalised team name -> raw form string from standings
-let CURRENT_TEAM = null;    // for row highlighting
+let TEAM_INDEX = new Map();
+let FORM_INDEX = new Map();
+let CURRENT_TEAM = null;
 
 /* ====== Utils ====== */
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
@@ -613,10 +600,59 @@ function num(x){const n=Number(x);return Number.isFinite(n)?n:null}
 function truthy(v){return v===true || String(v).toLowerCase()==='true' || v==='☑'}
 function pct(p,t){return t?((p*100/t).toFixed(1)+'%'):'0.0%'}
 function fmt(n){return Number.isFinite(n)?n.toLocaleString():'0'}
-function setTxt(id,txt){const el=document.getElementById(id); if(el) el.textContent=txt;}
 function byId(id){return document.getElementById(id)}
-function safeDate(v){const d=new Date(v);return isNaN(d.getTime())?null:d}
 function normTeamName(s){return String(s||'').toLowerCase().replace(/\*/g,'').trim();}
+
+/* Robust date parser for GViz + common text formats */
+function safeDate(v){
+  if(!v && v!==0) return null;
+
+  if(typeof v === 'object'){
+    if(v.v !== undefined) return safeDate(v.v);
+    if(v.f){
+      const d = new Date(v.f);
+      if(!isNaN(d.getTime())) return d;
+    }
+  }
+
+  if(typeof v === 'number'){
+    const base = new Date(Date.UTC(1899,11,30));
+    const d = new Date(base.getTime() + v*86400000);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  if(typeof v === 'string'){
+    const s = v.trim();
+    if(!s) return null;
+
+    if(/^Date\(/i.test(s)){
+      const nums = s.replace(/[^\d,]/g,'').split(',').map(n=>parseInt(n,10));
+      if(nums.length>=3){
+        const d = new Date(nums[0], nums[1], nums[2]);
+        if(!isNaN(d.getTime())) return d;
+      }
+    }
+
+    let m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+    if(m){
+      let day = parseInt(m[1],10), month = parseInt(m[2],10)-1, year = parseInt(m[3],10);
+      if(year < 100) year += 2000;
+      const d = new Date(year,month,day);
+      if(!isNaN(d.getTime())) return d;
+    }
+
+    m = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+    if(m){
+      const d = new Date(parseInt(m[1],10), parseInt(m[2],10)-1, parseInt(m[3],10));
+      if(!isNaN(d.getTime())) return d;
+    }
+
+    const d = new Date(s);
+    if(!isNaN(d.getTime())) return d;
+  }
+
+  return null;
+}
 
 /* ====== Fetchers ====== */
 async function fetchRange(id, sheet, range){
@@ -628,9 +664,12 @@ async function fetchRange(id, sheet, range){
 
 async function loadFromFixtures(id){
   const data=await fetchRange(id, FX_TAB, FX_RANGE);
-  const rows=(data.table.rows||[]).map(r=>(r.c||[]).map(c=>c?c.v:'')); let scheduled=0;
+  const rows=(data.table.rows||[]).map(r=>(r.c||[]).map(c=>c ? (c.f ?? c.v ?? '') : ''));
+  let scheduled=0;
   const items=rows.map(c=>{
-    const home=c[0]??'', hg=num(c[1]), ag=num(c[3]), away=c[4]??'', completed=truthy(c[5]), doneOn=safeDate(c[6]);
+    const home=c[0]??'', hg=num(c[1]), ag=num(c[3]), away=c[4]??'';
+    const completed=truthy(c[5]);
+    const doneOn = safeDate(c[6]);
     if(home&&away) scheduled++;
     return {home,away,hg,ag,completed,doneOn};
   });
@@ -688,13 +727,12 @@ async function loadAll(selectedKeys){
   for(const lg of selected){
     perLeague[lg.key]={matches:[],scheduled:0};
 
-    // Forms for this league
     try{
       const fm = await loadForms(lg.id);
       fm.forEach((val,key)=>{
         if(!formByTeam.has(key)) formByTeam.set(key,val);
       });
-    }catch(e){/* ignore */ }
+    }catch(e){}
 
     let gotAny=false;
     try{
@@ -783,8 +821,8 @@ function aggregate(matches){
   });
 
   const list=Array.from(teams.values()).map(t=>({...t,gd:t.gf-t.ga}));
-  const topGF = [...list].sort((a,b)=> (b.gf/b.gp)-(a.gf/a.gp) || a.team.localeCompare(b.team))[0] || null;
-  const mostGA = [...list].sort((a,b)=> (a.ga/a.gp)-(b.ga/b.gp) || a.team.localeCompare(b.team))[0] || null;
+  const topGF = [...list].sort((a,b)=> b.gf-a.gf || a.team.localeCompare(b.team))[0] || null;
+  const mostGA = [...list].sort((a,b)=> b.ga-a.ga || a.team.localeCompare(b.team))[0] || null;
   const mostCS = [...list].sort((a,b)=> b.cs-a.cs || a.team.localeCompare(b.team))[0] || null;
 
   return {played,goals,avg,homeW,draw,awayW,teams:list,biggest,highest,topGF,mostGA,mostCS};
@@ -806,28 +844,30 @@ function leagueAggregates(perLeague){
   return out.sort((a,b)=>a.league.localeCompare(b.league));
 }
 
-/* ====== Season activity & matchday trends (weekly + day-of-week) ====== */
+/* ====== Weekly Games Played + matchday trends (new Monday-based logic) ====== */
 function buildActivityStats(matches){
-  // Only consider matches that have a completion date
   const dated = (matches || []).filter(m => m.doneOn instanceof Date);
-  if (!dated.length){
-    const emptyWeekly = '<div class="activity-block"><div class="activity-empty">Weekly stats will appear once some matches have been completed.</div></div>';
-    const emptyTrends = '<div class="activity-block"><div class="activity-empty">Most active days will appear once some matches have been completed.</div></div>';
-    return {activityHtml: emptyWeekly, trendHtml: emptyTrends};
+  if(!dated.length){
+    return {
+      activityHtml:
+        '<div class="activity-block"><div class="activity-empty">Weekly stats will appear once some matches have been completed.</div></div>',
+      trendHtml:
+        '<div class="activity-block"><div class="activity-empty">Most Active Days will appear once some matches have been completed.</div></div>'
+    };
   }
 
-  // Sort by completion date (oldest -> newest)
-  dated.sort((a,b)=> a.doneOn - b.doneOn);
+  // sort oldest -> newest
+  dated.sort((a,b)=>a.doneOn - b.doneOn);
 
-  // Work in local time, with weeks running Monday -> Sunday
+  // Use local weeks, Monday -> Sunday
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const day = today.getDay(); // 0 = Sunday, 1 = Monday, ...
-  const offsetToMonday = (day + 6) % 7; // how many days since Monday
-  const startThisWeek = new Date(today.getTime() - offsetToMonday*24*60*60*1000);
-  const endThisWeek   = new Date(startThisWeek.getTime() + 7*24*60*60*1000);
-  const startLastWeek = new Date(startThisWeek.getTime() - 7*24*60*60*1000);
-  const last7Start    = new Date(today.getTime() - 7*24*60*60*1000);
+  const day = today.getDay(); // 0 = Sun, 1 = Mon, ...
+  const offsetToMonday = (day + 6) % 7; // days since Monday
+  const startThisWeek = new Date(today.getTime() - offsetToMonday*86400000);
+  const endThisWeek   = new Date(startThisWeek.getTime() + 7*86400000);
+  const startLastWeek = new Date(startThisWeek.getTime() - 7*86400000);
+  const last7Start    = new Date(today.getTime() - 7*86400000);
 
   let thisWeek = 0, lastWeek = 0, last7 = 0;
   const dowCounts = {0:0,1:0,2:0,3:0,4:0,5:0,6:0};
@@ -837,10 +877,15 @@ function buildActivityStats(matches){
     const dayOnly = new Date(d.getFullYear(), d.getMonth(), d.getDate());
     const t = dayOnly.getTime();
 
-    if(t >= startThisWeek.getTime() && t < endThisWeek.getTime()) thisWeek++;
-    else if(t >= startLastWeek.getTime() && t < startThisWeek.getTime()) lastWeek++;
+    if(t >= startThisWeek.getTime() && t < endThisWeek.getTime()){
+      thisWeek++;
+    }else if(t >= startLastWeek.getTime() && t < startThisWeek.getTime()){
+      lastWeek++;
+    }
 
-    if(t >= last7Start.getTime() && t <= today.getTime()) last7++;
+    if(t >= last7Start.getTime() && t <= today.getTime()){
+      last7++;
+    }
 
     const dow = dayOnly.getDay();
     dowCounts[dow] = (dowCounts[dow] || 0) + 1;
@@ -860,8 +905,8 @@ function buildActivityStats(matches){
     changeLabel = sign + diff + ' ' + word + ' vs last week';
   }
 
-  const thisLabel = fmt(thisWeek) + ' ' + (thisWeek===1 ? 'match' : 'matches') + ' this week';
-  const lastLabel = fmt(lastWeek) + ' ' + (lastWeek===1 ? 'match' : 'matches') + ' last week';
+  const thisLabel  = fmt(thisWeek) + ' ' + (thisWeek===1 ? 'match' : 'matches') + ' this week';
+  const lastLabel  = fmt(lastWeek) + ' ' + (lastWeek===1 ? 'match' : 'matches') + ' last week';
   const last7Label = 'Last 7 days: ' + fmt(last7) + ' ' + (last7===1 ? 'match' : 'matches') + ' played.';
 
   const activityHtml =
@@ -874,8 +919,8 @@ function buildActivityStats(matches){
       '<div class="activity-note">' + last7Label + '</div>' +
     '</div>';
 
-  // Build "Most active days" from day-of-week counts
-  const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  // Most active days from the same completion dates
+  const dayNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   const entries = Object.keys(dowCounts)
     .map(k=>({dayIndex:Number(k), count:dowCounts[k]}))
     .filter(x=>x.count>0)
@@ -883,13 +928,12 @@ function buildActivityStats(matches){
 
   let trendHtml;
   if(!entries.length){
-    trendHtml = '<div class="activity-block"><div class="activity-empty">Most active days will appear once some matches have been completed.</div></div>';
+    trendHtml =
+      '<div class="activity-block"><div class="activity-empty">Most Active Days will appear once some matches have been completed.</div></div>';
   }else{
     const total = entries.reduce((s,x)=>s+x.count,0);
     const top = entries[0];
     const topPct = ((top.count*100)/total).toFixed(1);
-    const mainLabel = 'Top day: ' + dayNames[top.dayIndex];
-    const pctLabel  = topPct + '% of completed games';
 
     if(entries.length>1){
       const next = entries[1];
@@ -897,8 +941,8 @@ function buildActivityStats(matches){
       trendHtml =
         '<div class="activity-block">' +
           '<div class="activity-row">' +
-            '<span class="activity-pill accent">' + mainLabel + '</span>' +
-            '<span class="activity-pill">' + pctLabel + '</span>' +
+            '<span class="activity-pill accent">Top day: ' + dayNames[top.dayIndex] + '</span>' +
+            '<span class="activity-pill">' + topPct + '% of completed games</span>' +
             '<span class="activity-pill">Next: ' + dayNames[next.dayIndex] + ' (' + nextPct + '%)</span>' +
           '</div>' +
           '<div class="activity-note">Based on ' + fmt(total) + ' completed matches so far.</div>' +
@@ -907,8 +951,8 @@ function buildActivityStats(matches){
       trendHtml =
         '<div class="activity-block">' +
           '<div class="activity-row">' +
-            '<span class="activity-pill accent">' + mainLabel + '</span>' +
-            '<span class="activity-pill">' + pctLabel + '</span>' +
+            '<span class="activity-pill accent">Top day: ' + dayNames[top.dayIndex] + '</span>' +
+            '<span class="activity-pill">' + topPct + '% of completed games</span>' +
           '</div>' +
           '<div class="activity-note">Based on ' + fmt(total) + ' completed matches so far.</div>' +
         '</div>';
@@ -921,13 +965,11 @@ function buildActivityStats(matches){
 /* ====== Render ====== */
 function renderBadges(){
   const host=byId('badges'); host.innerHTML='';
-  // "All" pill first
   const all=document.createElement('div');
   all.className='badge active'; all.dataset.key='All';
   all.innerHTML=`<img src="https://efpl-assets.pages.dev/img/logo.png" alt="All"><span>All</span>`;
   all.onclick=()=>selectLeague('All');
   host.appendChild(all);
-  // Leagues
   LEAGUES.filter(x=>x.id).forEach(lg=>{
     const div=document.createElement('div');
     div.className='badge'; div.dataset.key=lg.key;
@@ -951,26 +993,23 @@ function teamCell(t){
 }
 
 function renderRails(agg, leagues, scheduledTotal){
-  setTxt('kpi-matches', fmt(agg.played));
-  setTxt('kpi-goals', fmt(agg.goals));
-  setTxt('kpi-avg', agg.avg.toFixed(2));
-  setTxt('kpi-leagues', leagues.length);
-  byId('split-text').textContent = `${fmt(agg.homeW)} H • ${fmt(agg.draw)} D • ${fmt(agg.awayW)} A • ${pct(agg.homeW,agg.played)} / ${pct(agg.draw,agg.played)} / ${pct(agg.awayW,agg.played)}`;
+  byId('kpi-matches').textContent = fmt(agg.played);
+  byId('kpi-goals').textContent = fmt(agg.goals);
+  byId('kpi-avg').textContent = agg.avg.toFixed(2);
+  byId('kpi-leagues').textContent = leagues.length;
+  byId('split-text').textContent =
+    `${fmt(agg.homeW)} H • ${fmt(agg.draw)} D • ${fmt(agg.awayW)} A `
+    + `• ${pct(agg.homeW,agg.played)} / ${pct(agg.draw,agg.played)} / ${pct(agg.awayW,agg.played)}`;
   byId('seg-home').style.width = (agg.played?agg.homeW*100/agg.played:0) + '%';
   byId('seg-draw').style.width = (agg.played?agg.draw*100/agg.played:0) + '%';
   byId('seg-away').style.width = (agg.played?agg.awayW*100/agg.played:0) + '%';
-  byId('prog-text').textContent = scheduledTotal ? `${fmt(agg.played)} / ${fmt(scheduledTotal)} • ${pct(agg.played,scheduledTotal)}` : '0 / 0 • 0.0%';
+  byId('prog-text').textContent = scheduledTotal
+    ? `${fmt(agg.played)} / ${fmt(scheduledTotal)} • ${pct(agg.played,scheduledTotal)}`
+    : '0 / 0 • 0.0%';
   byId('seg-prog').style.width = scheduledTotal ? (agg.played*100/scheduledTotal)+'%' : '0%';
-
-  const activity = buildActivityStats(agg.teamsMatches || []);
-  const seasonEl = byId('activity-season');
-  const trendsEl = byId('activity-trends');
-  if(seasonEl) seasonEl.innerHTML = activity.activityHtml;
-  if(trendsEl) trendsEl.innerHTML = activity.trendHtml;
 }
 
-function renderLeaderboard(aggTeams){
-  const teams = aggTeams;
+function renderLeaderboard(teams){
   const tbody = byId('tbl-leader').querySelector('tbody'); tbody.innerHTML='';
   const rows=[...teams].sort((a,b)=> b.pts-a.pts || (b.gd-a.gd) || (b.gf-a.gf) || a.team.localeCompare(b.team));
   rows.forEach((t,i)=>{
@@ -991,32 +1030,71 @@ function renderLeaderboard(aggTeams){
 }
 
 function renderHighlights(agg){
-  setTxt('hi-big', agg.biggest ? `${agg.biggest.text} (${agg.biggest.sub})` : '-');
-  setTxt('hi-hsg', agg.highest ? `${agg.highest.text} (${agg.highest.total} goals • ${agg.highest.sub})` : '-');
-  setTxt('hi-topgf', agg.topGF ? `${agg.topGF.team} - ${(agg.topGF.gf/agg.topGF.gp).toFixed(2)} GF/G` : '-');
-  setTxt('hi-mostga', agg.mostGA ? `${agg.mostGA.team} - ${(agg.mostGA.ga/agg.mostGA.gp).toFixed(2)} GA/G` : '-');
-  setTxt('hi-mostcs', agg.mostCS ? `${agg.mostCS.team} - ${agg.mostCS.cs}` : '-');
+  byId('hi-big').textContent = agg.biggest ? `${agg.biggest.text} (${agg.biggest.sub})` : '-';
+  byId('hi-hsg').textContent = agg.highest ? `${agg.highest.text} (${agg.highest.total} goals • ${agg.highest.sub})` : '-';
+  byId('hi-topgf').textContent = agg.topGF ? `${agg.topGF.team} - ${agg.topGF.gf}` : '-';
+  byId('hi-mostga').textContent = agg.mostGA ? `${agg.mostGA.team} - ${agg.mostGA.ga}` : '-';
+  byId('hi-mostcs').textContent = agg.mostCS ? `${agg.mostCS.team} - ${agg.mostCS.cs}` : '-';
 }
 
 function renderTopTables(teams){
-  // Best offence (GF per game)
-  const gf = [...teams].sort((a,b)=> (b.gf/b.gp)-(a.gf/a.gp) || a.team.localeCompare(b.team)).slice(0,10);
-  const gfBody = byId('tbl-gf').querySelector('tbody'); gfBody.innerHTML='';
-  gf.forEach((t,i)=>{
-    const tr=document.createElement('tr');
+  // === Best offence — GF per game ===
+  const gfRows = [...teams]
+    .filter(t => t.gp > 0)
+    .map(t => ({
+      ...t,
+      gfPerGame: t.gf / t.gp
+    }))
+    .sort((a,b)=>
+      b.gfPerGame - a.gfPerGame ||
+      b.gf - a.gf ||
+      b.pts - a.pts ||
+      a.team.localeCompare(b.team)
+    )
+    .slice(0,10);
+
+  const gfBody = byId('tbl-gf').querySelector('tbody');
+  gfBody.innerHTML = '';
+  gfRows.forEach((t,i)=>{
+    const tr = document.createElement('tr');
     tr.dataset.team = t.team;
-    if(CURRENT_TEAM && t.team === CURRENT_TEAM) tr.classList.add('row-selected');
-    tr.innerHTML = `<td class="right numeric">${i+1}</td><td class="left">${teamCell(t)}</td><td class="right numeric">${(t.gf/t.gp).toFixed(2)}</td><td class="right numeric">${t.pts}</td>`;
+    if (CURRENT_TEAM && t.team === CURRENT_TEAM) tr.classList.add('row-selected');
+    tr.innerHTML = `
+      <td class="right numeric">${i+1}</td>
+      <td class="left">${teamCell(t)}</td>
+      <td class="right numeric">${t.gf}</td>
+      <td class="right numeric">${t.gp}</td>
+      <td class="right numeric">${t.gfPerGame.toFixed(2)}</td>`;
     gfBody.appendChild(tr);
   });
-  // Best defence (fewest GA per game)
-  const ga = [...teams].sort((a,b)=> (a.ga/a.gp)-(b.ga/b.gp) || a.team.localeCompare(b.team)).slice(0,10);
-  const gaBody = byId('tbl-ga').querySelector('tbody'); gaBody.innerHTML='';
-  ga.forEach((t,i)=>{
-    const tr=document.createElement('tr');
+
+  // === Best defence — GA per game ===
+  const gaRows = [...teams]
+    .filter(t => t.gp > 0)
+    .map(t => ({
+      ...t,
+      gaPerGame: t.ga / t.gp
+    }))
+    .sort((a,b)=>
+      a.gaPerGame - b.gaPerGame ||
+      a.ga - b.ga ||
+      b.pts - a.pts ||
+      a.team.localeCompare(b.team)
+    )
+    .slice(0,10);
+
+  const gaBody = byId('tbl-ga').querySelector('tbody');
+  gaBody.innerHTML = '';
+  gaRows.forEach((t,i)=>{
+    const tr = document.createElement('tr');
     tr.dataset.team = t.team;
-    if(CURRENT_TEAM && t.team === CURRENT_TEAM) tr.classList.add('row-selected');
-    tr.innerHTML = `<td class="right numeric">${i+1}</td><td class="left">${teamCell(t)}</td><td class="right numeric">${(t.ga/t.gp).toFixed(2)}</td><td class="right numeric">${t.pts}</td>`;
+    if (CURRENT_TEAM && t.team === CURRENT_TEAM) tr.classList.add('row-selected');
+    tr.innerHTML = `
+      <td class="right numeric">${i+1}</td>
+      <td class="left">${teamCell(t)}</td>
+      <td class="right numeric">${t.ga}</td>
+      <td class="right numeric">${t.gp}</td>
+      <td class="right numeric">${t.gaPerGame.toFixed(2)}</td>`;
     gaBody.appendChild(tr);
   });
 }
@@ -1038,7 +1116,7 @@ function renderMini(minis){
   });
 }
 
-/* ====== Form rendering from raw string (from standings) ====== */
+/* ====== Form rendering ====== */
 function buildFormHtmlFromRaw(raw){
   const cleaned = String(raw ?? '')
     .replace(/[,\s\-_/|.]+/g,'')
@@ -1056,7 +1134,6 @@ function buildFormHtmlFromRaw(raw){
   }).join('');
 }
 
-/* ====== Build player profile HTML (shared by panel + flyout) ====== */
 function buildPlayerProfileHtml(team){
   const league = team.league || '';
   const badgeUrl = `${BADGE_BASE}${league || 'Diamond'}-League.png`;
@@ -1118,7 +1195,7 @@ function renderSelectedPlayer(teamName){
   panel.innerHTML = buildPlayerProfileHtml(team);
 }
 
-/* ====== Row highlighting across tables ====== */
+/* ====== Row highlighting ====== */
 function applySelectionHighlight(){
   document.querySelectorAll('tr.row-selected').forEach(tr=>tr.classList.remove('row-selected'));
   if(!CURRENT_TEAM) return;
@@ -1129,7 +1206,7 @@ function applySelectionHighlight(){
   });
 }
 
-/* ====== Player flyout (hover) ====== */
+/* ====== Player flyout ====== */
 let playerFlyout = null;
 function ensureFlyout(){
   if(playerFlyout) return playerFlyout;
@@ -1145,15 +1222,15 @@ function showFlyoutFor(teamName, anchorEl){
   const fly = ensureFlyout();
   fly.innerHTML = buildPlayerProfileHtml(team);
 
+  fly.style.display = 'block';
+
   const rect = anchorEl.getBoundingClientRect();
   const viewportWidth = document.documentElement.clientWidth;
   const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
 
+  const width = fly.offsetWidth || 260;
   let top = rect.top + scrollY - 4;
   let left = rect.right + 8;
-
-  fly.style.display = 'block';
-  const width = fly.offsetWidth || 260;
   const maxLeft = viewportWidth - width - 8;
   if(left > maxLeft) left = Math.max(8, rect.left - width - 8);
 
@@ -1176,10 +1253,8 @@ document.addEventListener('click', (e)=>{
 });
 
 const supportsHover = window.matchMedia && window.matchMedia('(hover:hover)').matches;
-
 if(supportsHover){
   let hoverTimeout = null;
-
   document.addEventListener('mouseover', (e)=>{
     const wrap = e.target.closest('.teamwrap');
     if(!wrap || !wrap.dataset.team) return;
@@ -1187,10 +1262,9 @@ if(supportsHover){
     clearTimeout(hoverTimeout);
     showFlyoutFor(teamName, wrap);
   });
-
   document.addEventListener('mouseout', (e)=>{
     const to = e.relatedTarget;
-    if(to && (to.closest && to.closest('.player-flyout'))) return;
+    if(to && to.closest && to.closest('.player-flyout')) return;
     hoverTimeout = setTimeout(hideFlyout, 80);
   });
 }
@@ -1201,13 +1275,10 @@ async function run(selectedKeys){
   const {matches, leagues, perLeague, scheduledTotal, formByTeam} = await loadAll(selectedKeys);
   const agg = aggregate(matches);
   const minis = leagueAggregates(perLeague);
-
-  // keep matches list available for activity stats
-  agg.teamsMatches = matches;
+  const activity = buildActivityStats(matches);
 
   TEAM_INDEX = new Map();
   agg.teams.forEach(t => TEAM_INDEX.set(t.team, t));
-
   FORM_INDEX = formByTeam;
 
   renderRails(agg, leagues, scheduledTotal);
@@ -1216,6 +1287,13 @@ async function run(selectedKeys){
   renderTopTables(agg.teams);
   renderMini(minis);
   applySelectionHighlight();
+
+  if(activity){
+    const sa = byId('season-activity');
+    const mt = byId('matchday-trends');
+    if(sa) sa.innerHTML = activity.activityHtml;
+    if(mt) mt.innerHTML = activity.trendHtml;
+  }
 }
 
 (function boot(){
