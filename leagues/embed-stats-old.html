@@ -49,51 +49,6 @@ img{max-width:100%;height:auto;display:inline-block}
 /* Stacked by default for embed to avoid tight squeezes */
 .mini-grid{display:grid;grid-template-columns:1fr;gap:10px}
 
-/* ========= Mini hero ========= */
-.mini-hero{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  margin:0 0 12px;
-  padding:8px 10px 4px;
-}
-.mh-left{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-.mh-logo{
-  height:30px;
-  width:auto;
-  border-radius:8px;
-  object-fit:contain;
-  box-shadow:0 0 10px rgba(0,0,0,.6);
-}
-.mh-eyebrow{
-  font-size:11px;
-  text-transform:uppercase;
-  letter-spacing:.12em;
-  color:var(--muted);
-}
-.mh-title{
-  font-size:16px;
-  font-weight:800;
-}
-.mh-right{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-.mh-pill{
-  border-radius:999px;
-  border:1px solid rgba(249,215,28,.6);
-  padding:4px 10px;
-  font-size:11.5px;
-  color:#fff;
-  background:linear-gradient(90deg, rgba(249,215,28,.18), rgba(249,215,28,.06));
-}
-
 /* ========= Tables (stable + readable) ========= */
 table{width:100%;border-collapse:collapse;table-layout:auto}
 thead th{background:var(--accent);color:#0b1b3d;padding:10px 10px;font-size:12px;text-transform:uppercase;letter-spacing:.03em}
@@ -113,14 +68,6 @@ tbody tr:hover{background-color:rgba(255,255,255,0.05)}
 #tbl-leader col.c-l,
 #tbl-leader col.c-gd{width:4.2ch}
 #tbl-leader col.c-pts{width:5ch}
-
-/* Selected row highlight */
-tr.row-selected{
-  outline:2px solid var(--accent);
-  outline-offset:-2px;
-  position:relative;
-  z-index:2;
-}
 
 /* ===== League-coloured left bar + badge glow (text remains white) ===== */
 .teamwrap{
@@ -278,33 +225,6 @@ tr.row-selected{
   color:#ffd0e4;
 }
 
-/* ========= Player flyout (hover near name) ========= */
-.player-flyout{
-  position:absolute;
-  z-index:9999;
-  background:var(--card2);
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:10px;
-  box-shadow:0 16px 32px rgba(0,0,0,.7);
-  min-width:220px;
-  max-width:280px;
-  display:none;
-  pointer-events:none;
-}
-.player-flyout .player-card{
-  gap:8px;
-}
-.player-flyout .player-header{
-  gap:10px;
-}
-.player-flyout .player-badge{
-  height:34px;
-}
-.player-flyout .player-name{
-  font-size:15px;
-}
-
 /* ========= Per-league comparison cards ========= */
 #league-mini{
   display:grid;
@@ -320,7 +240,6 @@ tr.row-selected{
   display:flex;
   align-items:center;
   gap:12px;
-  overflow:hidden;
 }
 .league-mini-bar{
   width:4px;
@@ -406,20 +325,6 @@ tr.row-selected{
 <body>
   <div class="wrap">
 
-    <!-- Mini hero -->
-    <header class="mini-hero">
-      <div class="mh-left">
-        <img src="https://efpl-assets.pages.dev/img/logo.png" alt="eFPL logo" class="mh-logo">
-        <div>
-          <div class="mh-eyebrow">Season 2 live hub</div>
-          <div class="mh-title">eFPL Overall Stats</div>
-        </div>
-      </div>
-      <div class="mh-right">
-        <span class="mh-pill">60 players • 6 leagues • updated automatically</span>
-      </div>
-    </header>
-
     <!-- League badge filter -->
     <nav class="badges" id="badges"></nav>
 
@@ -477,7 +382,7 @@ tr.row-selected{
         <div class="card" id="player-panel">
           <strong>Selected player</strong>
           <div id="player-panel-content" class="note" style="margin-top:4px">
-            Tap or hover a team name in the leaderboard to view their profile here.
+            Tap a team name in the leaderboard to view their profile here.
           </div>
         </div>
 
@@ -548,7 +453,6 @@ const BUCKET_MS = 5*60*1000, CB = Math.floor(Date.now()/BUCKET_MS);
 
 let TEAM_INDEX = new Map(); // team name -> aggregated object (incl. results)
 let FORM_INDEX = new Map(); // normalised team name -> raw form string from standings
-let CURRENT_TEAM = null;    // for row highlighting
 
 /* ====== Utils ====== */
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
@@ -593,7 +497,7 @@ async function loadFromEmbed(id){
   return {items, scheduled};
 }
 
-/* Load form strings from standings-style table */
+/* NEW: load form strings from standings-style Embed table */
 async function loadForms(id){
   const data = await fetchRange(id, ST_TAB, ST_RANGE);
   const cols = data.table.cols || [];
@@ -632,7 +536,7 @@ async function loadAll(selectedKeys){
   for(const lg of selected){
     perLeague[lg.key]={matches:[],scheduled:0};
 
-    // Forms for this league
+    /* load Forms for this league (from standings-style Embed) */
     try{
       const fm = await loadForms(lg.id);
       fm.forEach((val,key)=>{
@@ -682,7 +586,7 @@ function aggregate(matches){
       teams.set(name,{
         team:name,league:null,
         gp:0,w:0,d:0,l:0,gf:0,ga:0,gd:0,pts:0,cs:0,
-        results:[]
+        results:[]  // sequence of 'W','D','L' in some order (fallback)
       });
     }
     return teams.get(name);
@@ -770,7 +674,6 @@ function renderBadges(){
 }
 function selectLeague(key){
   [...document.querySelectorAll('.badge')].forEach(b=>b.classList.toggle('active', b.dataset.key===key));
-  CURRENT_TEAM = null;
   run([key]);
 }
 
@@ -800,8 +703,6 @@ function renderLeaderboard(teams){
   const rows=[...teams].sort((a,b)=> b.pts-a.pts || (b.gd-a.gd) || (b.gf-a.gf) || a.team.localeCompare(b.team));
   rows.forEach((t,i)=>{
     const tr=document.createElement('tr');
-    tr.dataset.team = t.team;
-    if(CURRENT_TEAM && t.team === CURRENT_TEAM) tr.classList.add('row-selected');
     tr.innerHTML = `
       <td class="right numeric">${i+1}</td>
       <td class="left">${teamCell(t)}</td>
@@ -829,8 +730,6 @@ function renderTopTables(teams){
   const gfBody = byId('tbl-gf').querySelector('tbody'); gfBody.innerHTML='';
   gf.forEach((t,i)=>{
     const tr=document.createElement('tr');
-    tr.dataset.team = t.team;
-    if(CURRENT_TEAM && t.team === CURRENT_TEAM) tr.classList.add('row-selected');
     tr.innerHTML = `<td class="right numeric">${i+1}</td><td class="left">${teamCell(t)}</td><td class="right numeric">${t.gf}</td><td class="right numeric">${t.pts}</td>`;
     gfBody.appendChild(tr);
   });
@@ -839,8 +738,6 @@ function renderTopTables(teams){
   const gaBody = byId('tbl-ga').querySelector('tbody'); gaBody.innerHTML='';
   ga.forEach((t,i)=>{
     const tr=document.createElement('tr');
-    tr.dataset.team = t.team;
-    if(CURRENT_TEAM && t.team === CURRENT_TEAM) tr.classList.add('row-selected');
     tr.innerHTML = `<td class="right numeric">${i+1}</td><td class="left">${teamCell(t)}</td><td class="right numeric">${t.ga}</td><td class="right numeric">${t.pts}</td>`;
     gaBody.appendChild(tr);
   });
@@ -870,8 +767,9 @@ function buildFormHtmlFromRaw(raw){
     .toUpperCase()
     .replace(/[^WDL]/g,'');
   if(!cleaned) return '';
-  const seq = [...cleaned].slice(-5);
+  const seq = [...cleaned].slice(-5); // last 5, in the same order as standings
   if(!seq.length) return '';
+
   return seq.map(ch=>{
     let cls='form-pill';
     if(ch==='W') cls+=' win';
@@ -881,15 +779,21 @@ function buildFormHtmlFromRaw(raw){
   }).join('');
 }
 
-/* ====== Build player profile HTML (shared by panel + flyout) ====== */
-function buildPlayerProfileHtml(team){
+/* ====== Selected player panel ====== */
+function renderSelectedPlayer(teamName){
+  const team = TEAM_INDEX.get(teamName);
+  const panel = byId('player-panel-content');
+  if(!panel || !team) return;
+
   const league = team.league || '';
   const badgeUrl = `${BADGE_BASE}${league || 'Diamond'}-League.png`;
   const gdText = (team.gd>=0?'+':'') + team.gd;
 
-  const norm = normTeamName(team.team);
+  // Prefer form from standings (Embed table)
+  const norm = normTeamName(teamName);
   let formHtml = buildFormHtmlFromRaw(FORM_INDEX.get(norm));
 
+  // Fallback: build from results array if no sheet form
   if(!formHtml){
     const results = Array.isArray(team.results) ? team.results : [];
     const lastFive = results.slice(-5);
@@ -906,7 +810,7 @@ function buildPlayerProfileHtml(team){
     }
   }
 
-  return `
+  panel.innerHTML = `
     <div class="player-card">
       <div class="player-header">
         <img src="${badgeUrl}" alt="${esc(league || 'League')}" class="player-badge">
@@ -935,92 +839,13 @@ function buildPlayerProfileHtml(team){
   `;
 }
 
-/* ====== Selected player panel ====== */
-function renderSelectedPlayer(teamName){
-  const team = TEAM_INDEX.get(teamName);
-  const panel = byId('player-panel-content');
-  if(!panel || !team) return;
-  panel.innerHTML = buildPlayerProfileHtml(team);
-}
-
-/* ====== Row highlighting across tables ====== */
-function applySelectionHighlight(){
-  document.querySelectorAll('tr.row-selected').forEach(tr=>tr.classList.remove('row-selected'));
-  if(!CURRENT_TEAM) return;
-  document.querySelectorAll('tr[data-team]').forEach(tr=>{
-    if(tr.dataset.team === CURRENT_TEAM){
-      tr.classList.add('row-selected');
-    }
-  });
-}
-
-/* ====== Player flyout (hover) ====== */
-let playerFlyout = null;
-function ensureFlyout(){
-  if(playerFlyout) return playerFlyout;
-  playerFlyout = document.createElement('div');
-  playerFlyout.className = 'player-flyout';
-  document.body.appendChild(playerFlyout);
-  return playerFlyout;
-}
-
-function showFlyoutFor(teamName, anchorEl){
-  const team = TEAM_INDEX.get(teamName);
-  if(!team) return;
-  const fly = ensureFlyout();
-  fly.innerHTML = buildPlayerProfileHtml(team);
-
-  const rect = anchorEl.getBoundingClientRect();
-  const flyRect = fly.getBoundingClientRect();
-  const viewportWidth = document.documentElement.clientWidth;
-  const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
-
-  let top = rect.top + scrollY - 4;
-  let left = rect.right + 8;
-
-  fly.style.display = 'block';
-  // recalc with actual width
-  const width = fly.offsetWidth || 260;
-  const maxLeft = viewportWidth - width - 8;
-  if(left > maxLeft) left = Math.max(8, rect.left - width - 8);
-
-  fly.style.top = `${top}px`;
-  fly.style.left = `${left}px`;
-}
-
-function hideFlyout(){
-  if(playerFlyout) playerFlyout.style.display = 'none';
-}
-
-/* Click + hover handlers */
+/* Click handler for team names -> selected player panel */
 document.addEventListener('click', (e)=>{
   const wrap = e.target.closest('.teamwrap');
   if(wrap && wrap.dataset.team){
-    CURRENT_TEAM = wrap.dataset.team;
-    renderSelectedPlayer(CURRENT_TEAM);
-    applySelectionHighlight();
+    renderSelectedPlayer(wrap.dataset.team);
   }
 });
-
-const supportsHover = window.matchMedia && window.matchMedia('(hover:hover)').matches;
-
-if(supportsHover){
-  let hoverTimeout = null;
-
-  document.addEventListener('mouseover', (e)=>{
-    const wrap = e.target.closest('.teamwrap');
-    if(!wrap || !wrap.dataset.team) return;
-    const teamName = wrap.dataset.team;
-    clearTimeout(hoverTimeout);
-    showFlyoutFor(teamName, wrap);
-  });
-
-  document.addEventListener('mouseout', (e)=>{
-    const to = e.relatedTarget;
-    if(to && (to.closest && to.closest('.player-flyout'))) return;
-    hoverTimeout = setTimeout(hideFlyout, 80);
-  });
-}
 
 /* ====== Controller ====== */
 async function run(selectedKeys){
@@ -1029,9 +854,11 @@ async function run(selectedKeys){
   const agg = aggregate(matches);
   const minis = leagueAggregates(perLeague);
 
+  // index teams (incl. results) for the profile panel
   TEAM_INDEX = new Map();
   agg.teams.forEach(t => TEAM_INDEX.set(t.team, t));
 
+  // store form from standings for all teams (normalised key)
   FORM_INDEX = formByTeam;
 
   renderRails(agg, leagues, scheduledTotal);
@@ -1039,7 +866,6 @@ async function run(selectedKeys){
   renderHighlights(agg);
   renderTopTables(agg.teams);
   renderMini(minis);
-  applySelectionHighlight();
 }
 
 (function boot(){
