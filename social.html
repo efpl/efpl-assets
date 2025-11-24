@@ -154,13 +154,13 @@ body{
   box-shadow:0 10px 28px rgba(15,23,42,.9);
 }
 .nav-item-btn.active{
-  background:linear-gradient(135deg, rgba(249,215,28,.24), rgba(30,64,175,.97));
+  background:linear-gradient(135deg, rgba(249,215,28,.35), rgba(30,64,175,1));
   border-color:var(--accent-line);
-  color:#111827;
+  color:#f9fafb;
   box-shadow:0 0 0 1px rgba(15,23,42,1),0 18px 40px rgba(0,0,0,.95);
 }
 .nav-item-btn.active span.meta{
-  color:#111827;
+  color:#e5e7eb;
 }
 
 /* Small info footer */
@@ -264,15 +264,16 @@ body{
 }
 .sh-pill{
   border-radius:999px;
-  padding:5px 12px;
-  font-size:11px;
+  padding:5px 14px;
+  font-size:11.5px;
   text-transform:uppercase;
   letter-spacing:.12em;
   border:1px solid var(--accent-line);
-  background:linear-gradient(90deg, rgba(249,215,28,.26), rgba(249,215,28,.08));
+  background:
+    radial-gradient(circle at 30% 20%, #ffffff, #f9d71c 55%, #f59e0b 100%);
   color:#111827;
   font-weight:800;
-  box-shadow:0 0 24px rgba(249,215,28,.5);
+  box-shadow:0 0 24px rgba(249,215,28,.7);
 }
 .sh-small{
   font-size:11px;
@@ -536,6 +537,14 @@ body{
   box-shadow:0 0 26px rgba(56,189,248,.6);
 }
 
+/* League-tinted borders for flavour */
+.results-row[data-league="Diamond"]{border-color:rgba(153,236,255,.8);}
+.results-row[data-league="Ruby"]{border-color:rgba(224,28,113,.8);}
+.results-row[data-league="Sapphire"]{border-color:rgba(0,138,241,.8);}
+.results-row[data-league="Crystal"]{border-color:rgba(134,138,241,.8);}
+.results-row[data-league="Emerald"]{border-color:rgba(61,154,92,.85);}
+.results-row[data-league="Gold"]{border-color:rgba(212,175,55,.9);}
+
 .results-left{
   display:flex;
   flex-direction:column;
@@ -564,6 +573,14 @@ body{
 .results-league-pill[data-league="Emerald"] .results-league-dot{background:var(--emerald);}
 .results-league-pill[data-league="Gold"] .results-league-dot{background:var(--gold);}
 
+.results-league-badge{
+  width:18px;
+  height:18px;
+  border-radius:999px;
+  object-fit:contain;
+  box-shadow:0 0 6px rgba(0,0,0,.7);
+}
+
 .results-teams{
   font-size:13px;
   font-weight:700;
@@ -577,9 +594,10 @@ body{
   padding:4px 12px;
   font-size:13px;
   font-weight:900;
-  background:rgba(15,23,42,1);
-  color:#e5e7eb;
-  border:1px solid rgba(148,163,184,.9);
+  background:radial-gradient(circle at 30% 20%, #ffffff, #f9d71c 55%, #f59e0b 100%);
+  color:#111827;
+  border:1px solid rgba(250,204,21,.95);
+  box-shadow:0 0 18px rgba(249,215,28,.85);
 }
 
 /* ========= Card view switching ========= */
@@ -791,6 +809,7 @@ const LEAGUES = [
   { key:'Emerald',  name:'Emerald',  badge:'Emerald-League.png',  id:'1rD_03y276wGjjlukus6icgwq_FPcOgc70654dOOG6sg' },
   { key:'Gold',     name:'Gold',     badge:'Gold-League.png',     id:'1ACOQ3dffrjczk1LmBmPiC-wV37t9nQKEDwApOEEeFU8' },
 ];
+const BADGE_BASE = 'https://efpl-assets.pages.dev/img/leagues/';
 
 const FX_TAB = 'Fixtures', FX_RANGE='C4:I94';   // Home|HG|-|AG|Away|Completed|Completed On (I)
 const EM_TAB = 'Embed',    EM_RANGE='A15:C105'; // Home|mid|Away
@@ -857,7 +876,7 @@ function safeDate(v){
   return null;
 }
 
-/* ========= Fetch core data (same philosophy as stats page) ========= */
+/* ========= Fetch core data (aligned with stats page) ========= */
 async function fetchRange(id, sheet, range){
   const url=`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheet)}&range=${encodeURIComponent(range)}&cachebust=${CB}`;
   const res=await fetch(url); const txt=await res.text();
@@ -889,33 +908,35 @@ async function loadFromEmbed(id, leagueKey){
     const clean=String(mid).replace(/[^0-9\-]/g,'').trim();
     const m=clean.match(/^(\d+)\s*-\s*(\d+)$/);
     const hg=m?Number(m[1]):null, ag=m?Number(m[2]):null;
-    const completed = m ? true : false;
+    const completed = !!m;
     items.push({league:leagueKey,home,away,hg,ag,completed,doneOn:null});
   });
   return items;
 }
 
+/* EXACT same completed-match logic as stats page */
 async function loadAllMatches(){
   const allMatches=[];
   for(const lg of LEAGUES){
-    let leagueMatches=[];
     try{
-      leagueMatches = await loadFromFixtures(lg.id, lg.key);
+      const fxMatches = await loadFromFixtures(lg.id, lg.key);
+      const completedFx = fxMatches.filter(m => m.completed && Number.isFinite(m.hg) && Number.isFinite(m.ag));
+      if(completedFx.length){
+        allMatches.push(...completedFx);
+        continue;
+      }
     }catch(e){}
-    const anyScored = leagueMatches.some(m=>m.completed && Number.isFinite(m.hg) && Number.isFinite(m.ag));
-    if(anyScored){
-      allMatches.push(...leagueMatches);
-      continue;
-    }
+
     try{
       const emMatches = await loadFromEmbed(lg.id, lg.key);
-      allMatches.push(...emMatches);
+      const completedEm = emMatches.filter(m => m.completed && Number.isFinite(m.hg) && Number.isFinite(m.ag));
+      allMatches.push(...completedEm);
     }catch(e){}
   }
   return allMatches;
 }
 
-/* Build aggregate per-team stats (same as stats page’s idea) */
+/* Build aggregate per-team stats (mirrors stats page behaviour) */
 function aggregateTeams(matches){
   const teams = new Map();
   function addTeam(name, league){
@@ -952,12 +973,13 @@ function aggregateTeams(matches){
   return Array.from(teams.values()).map(t=>({...t, gd:t.gf-t.ga}));
 }
 
-/* ========= Build Power Rankings ========= */
+/* ========= Build Power Rankings (same formula + ordering) ========= */
 function buildPowerData(teamList){
   const eligible = teamList
     .filter(t=>t.gp >= 5)
     .map(t=>({
       ...t,
+      league: t.league || '',
       power: t.gp>0 ? ((t.pts * 2 + t.gd) / t.gp) : 0
     }));
 
@@ -1052,13 +1074,16 @@ function renderLatestCard(matches){
   }
 
   rows.forEach((m,i)=>{
+    const leagueSafe = esc(m.league || '');
     const li = document.createElement('li');
     li.className = 'results-row';
+    li.dataset.league = leagueSafe;
     li.innerHTML = `
       <div class="results-left">
-        <div class="results-league-pill" data-league="${esc(m.league || '')}">
+        <div class="results-league-pill" data-league="${leagueSafe}">
+          <img class="results-league-badge" src="${BADGE_BASE}${leagueSafe}-League.png" alt="${leagueSafe}">
           <span class="results-league-dot"></span>
-          <span>${esc(m.league || '')}</span>
+          <span>${leagueSafe}</span>
         </div>
         <div class="results-teams">
           ${esc(m.home)} ${m.hg}-${m.ag} ${esc(m.away)}
