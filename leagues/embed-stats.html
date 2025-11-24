@@ -522,6 +522,18 @@ tr.row-selected{
 .latest-league-pill.Emerald{  background:var(--emerald); }
 .latest-league-pill.Gold{     background:var(--gold); }
 
+.latest-league-wrapper{
+  min-width: 110px;     /* Fixes alignment */
+  max-width: 110px;     /* Prevents shifting */
+  display: flex;
+  justify-content: flex-end;
+}
+
+.latest-league-pill{
+  white-space: nowrap;  /* Prevents text from wrapping */
+  text-align: center;
+}
+
 /* ========= Power Rankings (Top 10) ========= */
 .power-card{
   margin-top:10px;
