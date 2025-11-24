@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>eFPL – Power Rankings Social Card</title>
+<meta name="color-scheme" content="dark">
+
+<style>
+:root{
+  --bg:#020923;
+  --bg2:#0b1636;
+  --card:#0f1e49;
+  --card2:#13265b;
+  --ink:#ffffff;
+  --muted:#b8c6e3;
+  --accent:#f9d71c;
+  --line:rgba(249,215,28,.3);
+
+  --diamond:#99ecff;
+  --ruby:#e01c71;
+  --sapphire:#008af1;
+  --crystal:#868af1;
+  --emerald:#3d9a5c;
+  --gold:#d4af37;
+}
+
+*,
+*::before,
+*::after{box-sizing:border-box;}
+
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  background:radial-gradient(circle at top,#152a68 0%,#020617 55%,#000 100%);
+  color:var(--ink);
+  font:16px/1.5 system-ui,Segoe UI,Roboto,Arial,sans-serif;
+}
+
+/* Full screen center layout */
+.social-shell{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+}
+
+/* Main framed card (the bit you screenshot) */
+.social-frame{
+  width:min(1080px,100%);
+  max-width:1080px;
+  border-radius:24px;
+  padding:24px 24px 18px;
+  background:
+    radial-gradient(circle at top left,rgba(249,215,28,.20),transparent 55%),
+    radial-gradient(circle at bottom right,rgba(0,138,241,.22),transparent 55%),
+    linear-gradient(135deg, #0b1636 0%, #02061a 50%, #050f2c 100%);
+  border:1px solid rgba(255,255,255,.10);
+  box-shadow:
+    0 0 0 1px rgba(15,23,42,.7),
+    0 30px 80px rgba(0,0,0,.85),
+    0 0 60px rgba(15,23,42,.9);
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+
+/* Top header */
+.social-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+}
+.sh-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.sh-logo{
+  width:46px;
+  height:46px;
+  border-radius:14px;
+  object-fit:cover;
+  box-shadow:0 0 20px rgba(0,0,0,.8);
+}
+.sh-text-top{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.18em;
+  color:var(--muted);
+}
+.sh-title{
+  font-size:22px;
+  font-weight:900;
+}
+.sh-sub{
+  font-size:13px;
+  color:var(--muted);
+}
+
+.sh-tag-wrap{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:8px;
+}
+.sh-pill{
+  border-radius:999px;
+  padding:6px 14px;
+  font-size:11.5px;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  border:1px solid rgba(249,215,28,.7);
+  background:linear-gradient(90deg,rgba(249,215,28,.24),rgba(249,215,28,.08));
+  color:#111827;
+  font-weight:800;
+}
+.sh-tag-league{
+  font-size:12px;
+  color:var(--muted);
+}
+
+/* Body layout */
+.social-body{
+  display:grid;
+  grid-template-columns:3fr 2fr;
+  gap:22px;
+}
+
+/* Power rankings list card */
+.power-card{
+  border-radius:18px;
+  padding:16px 18px 14px;
+  background:linear-gradient(145deg,rgba(15,30,73,.9),rgba(8,16,46,.98));
+  border:1px solid rgba(148,163,184,.5);
+  box-shadow:0 14px 40px rgba(0,0,0,.75);
+}
+.power-heading{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  margin-bottom:10px;
+}
+.power-title{
+  font-size:17px;
+  font-weight:800;
+}
+.power-meta{
+  font-size:11.5px;
+  color:var(--muted);
+}
+.power-formula-pill{
+  border-radius:999px;
+  padding:4px 10px;
+  font-size:11px;
+  border:1px solid rgba(148,163,184,.7);
+  color:var(--muted);
+}
+
+/* List */
+.power-list{
+  margin:8px 0 0;
+  padding:0;
+  list-style:none;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.power-row{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:10px;
+  padding:7px 9px;
+  border-radius:999px;
+  background:rgba(15,23,42,.75);
+  border:1px solid rgba(30,64,175,.3);
+}
+
+/* top 3 special */
+.power-row.rank-1{
+  background:linear-gradient(90deg,rgba(249,215,28,.35),rgba(249,215,28,.08));
+  border-color:var(--accent);
+  box-shadow:0 0 32px rgba(249,215,28,.55);
+}
+.power-row.rank-2,
+.power-row.rank-3{
+  background:linear-gradient(90deg,rgba(249,215,28,.14),rgba(15,23,42,.9));
+  border-color:rgba(249,215,28,.6);
+}
+
+/* Rank pill */
+.power-rank-pill{
+  min-width:34px;
+  height:34px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:15px;
+  font-weight:900;
+  background:radial-gradient(circle at 30% 20%,#fff, #f9d71c 60%, #f59e0b 100%);
+  color:#111827;
+  box-shadow:0 0 0 2px rgba(15,23,42,1),0 0 24px rgba(249,215,28,.7);
+}
+.rank-2 .power-rank-pill,
+.rank-3 .power-rank-pill{
+  background:radial-gradient(circle at 30% 20%,#e5e7eb,#9ca3af 55%,#4b5563 100%);
+  color:#020617;
+}
+
+/* Team / league */
+.power-team-block{
+  display:flex;
+  flex-direction:column;
+}
+.power-team-name{
+  font-size:14px;
+  font-weight:700;
+}
+.power-league-pill{
+  margin-top:2px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:2px 8px;
+  border-radius:999px;
+  font-size:11px;
+  background:rgba(15,23,42,.8);
+}
+.power-league-dot{
+  width:8px;
+  height:8px;
+  border-radius:999px;
+}
+
+/* league colors */
+.power-league-pill[data-league="Diamond"] .power-league-dot{background:var(--diamond);}
+.power-league-pill[data-league="Ruby"] .power-league-dot{background:var(--ruby);}
+.power-league-pill[data-league="Sapphire"] .power-league-dot{background:var(--sapphire);}
+.power-league-pill[data-league="Crystal"] .power-league-dot{background:var(--crystal);}
+.power-league-pill[data-league="Emerald"] .power-league-dot{background:var(--emerald);}
+.power-league-pill[data-league="Gold"] .power-league-dot{background:var(--gold);}
+
+/* Power score pill */
+.power-score-pill{
+  border-radius:999px;
+  padding:4px 12px;
+  font-size:13px;
+  font-weight:900;
+  background:var(--accent);
+  color:#111827;
+  box-shadow:0 0 0 2px rgba(15,23,42,.9),0 0 24px rgba(249,215,28,.65);
+}
+
+/* Side info card */
+.side-card{
+  border-radius:18px;
+  padding:14px 14px 12px;
+  background:radial-gradient(circle at top,#1e293b,#020617);
+  border:1px solid rgba(148,163,184,.5);
+  box-shadow:0 14px 40px rgba(0,0,0,.85);
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.side-title{
+  font-size:14px;
+  font-weight:700;
+}
+.side-note{
+  font-size:12px;
+  color:var(--muted);
+}
+.side-chip-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+.side-chip{
+  border-radius:999px;
+  padding:3px 10px;
+  font-size:11.5px;
+  border:1px solid rgba(148,163,184,.7);
+  background:rgba(15,23,42,.85);
+}
+
+/* Footer bar */
+.social-footer{
+  margin-top:4px;
+  border-radius:14px;
+  padding:8px 14px;
+  background:linear-gradient(90deg,rgba(15,23,42,.95),rgba(15,23,42,.8));
+  border:1px solid rgba(15,23,42,.9);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  font-size:12px;
+  color:var(--muted);
+}
+.footer-left{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.footer-logo-mini{
+  width:24px;
+  height:24px;
+  border-radius:8px;
+  object-fit:cover;
+}
+.footer-mid{
+  text-align:center;
+  flex:1;
+}
+.footer-mid strong{color:#e5e7eb;}
+.footer-right{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  white-space:nowrap;
+}
+.footer-tag{
+  border-radius:999px;
+  padding:3px 8px;
+  border:1px solid rgba(249,215,28,.7);
+  color:var(--accent);
+}
+
+/* Responsive tweaks */
+@media (max-width:800px){
+  .social-frame{
+    padding:18px 14px 14px;
+    border-radius:18px;
+  }
+  .social-body{
+    grid-template-columns:1fr;
+  }
+  .social-header{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  .sh-tag-wrap{
+    align-items:flex-start;
+  }
+  .social-footer{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  .footer-mid{text-align:left;}
+}
+</style>
+</head>
+<body>
+<div class="social-shell">
+  <div class="social-frame">
+
+    <!-- Header -->
+    <header class="social-header">
+      <div class="sh-left">
+        <img src="https://efpl-assets.pages.dev/img/e-avatar.jpg" alt="eFPL logo" class="sh-logo">
+        <div>
+          <div class="sh-text-top">eFPL • Season 2</div>
+          <div class="sh-title">Power Rankings</div>
+          <div class="sh-sub">Live Power Index across all leagues</div>
+        </div>
+      </div>
+      <div class="sh-tag-wrap">
+        <div class="sh-pill">Updated automatically</div>
+        <div class="sh-tag-league">All leagues • Min 5 games</div>
+      </div>
+    </header>
+
+    <!-- Body -->
+    <main class="social-body">
+      <!-- Power rankings list -->
+      <section class="power-card">
+        <div class="power-heading">
+          <div>
+            <div class="power-title">Top 10 Teams</div>
+            <div class="power-meta">(Pts × 2 + GD) ÷ GP</div>
+          </div>
+          <div class="power-formula-pill">Form + goals + consistency</div>
+        </div>
+
+        <ul class="power-list">
+          <!-- Example rows with fake data: later we swap to live data -->
+          <li class="power-row rank-1">
+            <div class="power-rank-pill">1</div>
+            <div class="power-team-block">
+              <div class="power-team-name">Sample FC</div>
+              <div class="power-league-pill" data-league="Diamond">
+                <span class="power-league-dot"></span>
+                <span>Diamond League</span>
+              </div>
+            </div>
+            <div class="power-score-pill">8.92</div>
+          </li>
+
+          <li class="power-row rank-2">
+            <div class="power-rank-pill">2</div>
+            <div class="power-team-block">
+              <div class="power-team-name">Ruby United</div>
+              <div class="power-league-pill" data-league="Ruby">
+                <span class="power-league-dot"></span>
+                <span>Ruby League</span>
+              </div>
+            </div>
+            <div class="power-score-pill">8.60</div>
+          </li>
+
+          <li class="power-row rank-3">
+            <div class="power-rank-pill">3</div>
+            <div class="power-team-block">
+              <div class="power-team-name">Sapphire City</div>
+              <div class="power-league-pill" data-league="Sapphire">
+                <span class="power-league-dot"></span>
+                <span>Sapphire League</span>
+              </div>
+            </div>
+            <div class="power-score-pill">8.45</div>
+          </li>
+
+          <li class="power-row">
+            <div class="power-rank-pill">4</div>
+            <div class="power-team-block">
+              <div class="power-team-name">Crystal Wanderers</div>
+              <div class="power-league-pill" data-league="Crystal">
+                <span class="power-league-dot"></span>
+                <span>Crystal League</span>
+              </div>
+            </div>
+            <div class="power-score-pill">8.12</div>
+          </li>
+
+          <li class="power-row">
+            <div class="power-rank-pill">5</div>
+            <div class="power-team-block">
+              <div class="power-team-name">Emerald Athletic</div>
+              <div class="power-league-pill" data-league="Emerald">
+                <span class="power-league-dot"></span>
+                <span>Emerald League</span>
+              </div>
+            </div>
+            <div class="power-score-pill">7.98</div>
+          </li>
+
+          <li class="power-row">
+            <div class="power-rank-pill">6</div>
+            <div class="power-team-block">
+              <div class="power-team-name">Gold Stars</div>
+              <div class="power-league-pill" data-league="Gold">
+                <span class="power-league-dot"></span>
+                <span>Gold League</span>
+              </div>
+            </div>
+            <div class="power-score-pill">7.84</div>
+          </li>
+
+          <li class="power-row">
+            <div class="power-rank-pill">7</div>
+            <div class="power-team-block">
+              <div class="power-team-name">Another FC</div>
+              <div class="power-league-pill" data-league="Diamond">
+                <span class="power-league-dot"></span>
+                <span>Diamond League</span>
+              </div>
+            </div>
+            <div class="power-score-pill">7.52</div>
+          </li>
+
+          <li class="power-row">
+            <div class="power-rank-pill">8</div>
+            <div class="power-team-block">
+              <div class="power-team-name">Ruby Rovers</div>
+              <div class="power-league-pill" data-league="Ruby">
+                <span class="power-league-dot"></span>
+                <span>Ruby League</span>
+              </div>
+            </div>
+            <div class="power-score-pill">7.38</div>
+          </li>
+
+          <li class="power-row">
+            <div class="power-rank-pill">9</div>
+            <div class="power-team-block">
+              <div class="power-team-name">Sapphire FC</div>
+              <div class="power-league-pill" data-league="Sapphire">
+                <span class="power-league-dot"></span>
+                <span>Sapphire League</span>
+              </div>
+            </div>
+            <div class="power-score-pill">7.20</div>
+          </li>
+
+          <li class="power-row">
+            <div class="power-rank-pill">10</div>
+            <div class="power-team-block">
+              <div class="power-team-name">Crystal Town</div>
+              <div class="power-league-pill" data-league="Crystal">
+                <span class="power-league-dot"></span>
+                <span>Crystal League</span>
+              </div>
+            </div>
+            <div class="power-score-pill">7.05</div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Side info: explainer + hook -->
+      <aside class="side-card">
+        <div class="side-title">What is the Power Index</div>
+        <div class="side-note">
+          Power Score rewards teams that win often, score plenty and stay solid at the back.
+          Only players with at least 5 games are included.
+        </div>
+        <div class="side-chip-row">
+          <div class="side-chip">Form weighted by points</div>
+          <div class="side-chip">Goal difference matters</div>
+          <div class="side-chip">Cross league comparison</div>
+          <div class="side-chip">Updated as matches are played</div>
+        </div>
+        <div class="side-note">
+          Formula: <strong>(Points × 2 + Goal Difference) ÷ Games Played</strong>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Footer -->
+    <footer class="social-footer">
+      <div class="footer-left">
+        <img src="https://efpl-assets.pages.dev/img/e-avatar.jpg" alt="eFPL" class="footer-logo-mini">
+        <span>eFPL – eFootball Fair Play League</span>
+      </div>
+      <div class="footer-mid">
+        <strong>efpl.gg</strong> • Play Fair. Play Football.
+      </div>
+      <div class="footer-right">
+        <span class="footer-tag">Season Partner</span>
+        <span>YOUR SPONSOR LOGO</span>
+      </div>
+    </footer>
+
+  </div>
+</div>
+</body>
+</html>
