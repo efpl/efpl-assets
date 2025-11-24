@@ -434,31 +434,61 @@ tr.row-selected{
   color:var(--muted);
 }
 
-/* ========= Latest Results card ========= */
+/* ========= Latest Results card (new layout) ========= */
 .latest-item{
   display:flex;
   align-items:center;
   gap:10px;
-  padding:8px 0;
+  padding:10px 0;
   border-bottom:1px solid rgba(255,255,255,.05);
 }
 .latest-item:last-child{
   border-bottom:none;
 }
+.latest-meta{
+  width:60px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:flex-start;
+  font-size:11px;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.latest-date{
+  font-weight:600;
+}
+.latest-status{
+  font-size:10px;
+  opacity:.85;
+}
+
 .latest-badge{
   height:26px;
   width:auto;
   object-fit:contain;
   flex:0 0 auto;
 }
-.latest-teams{
+
+.latest-main{
   flex:1;
-  font-size:14px;
-  line-height:1.35;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
 }
-.latest-score{
+.latest-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  line-height:1.4;
+}
+.latest-team{
+  font-size:14px;
+}
+.latest-score-num{
   font-weight:700;
   font-size:15px;
+  margin-left:12px;
 }
 
 /* ========= Power Rankings (Top 10) ========= */
@@ -859,6 +889,17 @@ function safeDate(v){
   }
 
   return null;
+}
+
+// Short date like "22 Nov"
+function formatMatchDate(m){
+  if(m.doneOn instanceof Date){
+    const d = m.doneOn;
+    const day = String(d.getDate()).padStart(2,'0');
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${day} ${months[d.getMonth()]}`;
+  }
+  return '';
 }
 
 //--- *FETCHERS (Sheets ranges)* ---//
@@ -1536,32 +1577,49 @@ if(supportsHover){
   });
 }
 
-//--- *Latest Results (last 5 completed)* ---//
+//--- *Latest Results (last 5 completed, newest first)* ---//
 function renderLatestResults(matches){
   const host = byId('latest-results');
   if(!host) return;
 
   const recent = [...matches]
     .filter(m => Number.isFinite(m.hg) && Number.isFinite(m.ag))
-    .slice(-5)      // last 5 only
-    .reverse();     // latest at the top
+    .sort((a,b)=>{
+      const ta = (a.doneOn instanceof Date) ? a.doneOn.getTime() : 0;
+      const tb = (b.doneOn instanceof Date) ? b.doneOn.getTime() : 0;
+      return tb - ta; // newest first
+    })
+    .slice(0,5);
 
   if(!recent.length){
     host.innerHTML = '<div class="note">No completed matches yet.</div>';
     return;
   }
 
-  host.innerHTML = recent.map(m => `
-    <div class="latest-item">
-      <img class="latest-badge"
-        src="${BADGE_BASE}${m.league}-League.png"
-        alt="${esc(m.league)} badge">
-      <div class="latest-teams">
-        ${esc(m.home)} vs ${esc(m.away)}
+  host.innerHTML = recent.map(m => {
+    const dateLabel = formatMatchDate(m);
+    return `
+      <div class="latest-item">
+        <div class="latest-meta">
+          <div class="latest-date">${esc(dateLabel)}</div>
+          <div class="latest-status">FT</div>
+        </div>
+        <img class="latest-badge"
+          src="${BADGE_BASE}${m.league}-League.png"
+          alt="${esc(m.league)} badge">
+        <div class="latest-main">
+          <div class="latest-row">
+            <span class="latest-team">${esc(m.home)}</span>
+            <span class="latest-score-num">${m.hg}</span>
+          </div>
+          <div class="latest-row">
+            <span class="latest-team">${esc(m.away)}</span>
+            <span class="latest-score-num">${m.ag}</span>
+          </div>
+        </div>
       </div>
-      <div class="latest-score">${m.hg}-${m.ag}</div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 //--- *MAIN CONTROLLER* ---//
