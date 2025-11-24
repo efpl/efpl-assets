@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>eFPL Season 2 — Live Stats (Embed 2)</title>
+<title>eFPL Season 2 - Live Stats (Embed 2)</title>
 <meta name="color-scheme" content="dark">
 
 <style>
@@ -104,7 +104,7 @@ tbody tr:hover{background-color:rgba(255,255,255,0.05)}
 .left{text-align:left}.right{text-align:right}.center{text-align:center}
 .numeric{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
 
-/* Leaderboard — columns incl. GD */
+/* Leaderboard - columns including GD */
 #tbl-leader col.c-rank{width:4.2ch}
 #tbl-leader col.c-team{width:auto}
 #tbl-leader col.c-p,
@@ -122,7 +122,7 @@ tr.row-selected{
   z-index:2;
 }
 
-/* ===== League-coloured left bar + badge glow (text remains white) ===== */
+/* ===== League-coloured left bar + badge glow ===== */
 .teamwrap{
   display:flex;align-items:flex-start;gap:10px;min-width:0;position:relative;padding-left:12px;
   cursor:pointer;
@@ -188,7 +188,7 @@ tr.row-selected{
 #tbl-ga tbody tr:hover .teamwrap.Gold::before,
 #tbl-power tbody tr:hover .teamwrap.Gold::before{ box-shadow:0 0 16px 2px rgba(212,175,55,.85); }
 
-/* Highlights — pill style rows */
+/* Highlights - pill style rows */
 #tbl-hi{
   width:100%;
   border-collapse:separate;
@@ -434,7 +434,7 @@ tr.row-selected{
   color:var(--muted);
 }
 
-/* Latest Results card */
+/* ========= Latest Results card ========= */
 .latest-item{
   display:flex;
   align-items:center;
@@ -460,7 +460,6 @@ tr.row-selected{
   font-weight:700;
   font-size:15px;
 }
-
 
 /* ========= Power Rankings (Top 10) ========= */
 .power-card{
@@ -695,11 +694,11 @@ tr.row-selected{
             </tr>
           </tbody>
         </table>
-		<h3 style="margin:14px 0 8px">Latest Results</h3>
-<div id="latest-results" class="card" style="padding:10px">
-  <div class="note">Loading latest results…</div>
-</div>
 
+        <h3 style="margin:14px 0 8px">Latest Results</h3>
+        <div id="latest-results" class="card" style="padding:10px">
+          <div class="note">Loading latest results…</div>
+        </div>
 
         <!-- Power Rankings -->
         <div class="card power-card">
@@ -778,7 +777,7 @@ tr.row-selected{
   </div>
 
 <script>
-/* ====== CONFIG ====== */
+//--- *CONFIG & GLOBAL STATE* ---//
 const LEAGUES = [
   { key:'All',      name:'All Leagues', badge:null, id:null },
   { key:'Diamond',  name:'Diamond',  badge:'Diamond-League.png',  id:'1vkDOFfwBJJnSHOPM0BFcrNyZd-2nIbiDKNnWGKT3OP0' },
@@ -794,13 +793,14 @@ const FX_TAB = 'Fixtures', FX_RANGE='C4:I94';   // Home|HG|-|AG|Away|Completed|C
 const EM_TAB = 'Embed',    EM_RANGE='A15:C105'; // Home|mid|Away
 const ST_TAB = 'Embed',    ST_RANGE='A1:K50';   // standings-style table with "Form" column
 
-const BUCKET_MS = 5*60*1000, CB = Math.floor(Date.now()/BUCKET_MS);
+const BUCKET_MS = 5*60*1000;
+const CB = Math.floor(Date.now()/BUCKET_MS);
 
 let TEAM_INDEX = new Map();
 let FORM_INDEX = new Map();
 let CURRENT_TEAM = null;
 
-/* ====== Utils ====== */
+//--- *UTILS* ---//
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function parseGviz(txt){const a=txt.indexOf('{'),b=txt.lastIndexOf('}');if(a===-1||b===-1)throw new Error('Bad GViz');return JSON.parse(txt.slice(a,b+1))}
 function num(x){const n=Number(x);return Number.isFinite(n)?n:null}
@@ -810,7 +810,7 @@ function fmt(n){return Number.isFinite(n)?n.toLocaleString():'0'}
 function byId(id){return document.getElementById(id)}
 function normTeamName(s){return String(s||'').toLowerCase().replace(/\*/g,'').trim();}
 
-/* Robust date parser for GViz + common text formats */
+//--- *Date parsing for GViz* ---//
 function safeDate(v){
   if(!v && v!==0) return null;
 
@@ -861,7 +861,7 @@ function safeDate(v){
   return null;
 }
 
-/* ====== Fetchers ====== */
+//--- *FETCHERS (Sheets ranges)* ---//
 async function fetchRange(id, sheet, range){
   const url=`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheet)}&range=${encodeURIComponent(range)}&cachebust=${CB}`;
   const res=await fetch(url); const txt=await res.text();
@@ -895,7 +895,7 @@ async function loadFromEmbed(id){
   return {items, scheduled};
 }
 
-/* Load form strings from standings-style table */
+//--- *Forms from standings-style table* ---//
 async function loadForms(id){
   const data = await fetchRange(id, ST_TAB, ST_RANGE);
   const cols = data.table.cols || [];
@@ -922,14 +922,13 @@ async function loadForms(id){
   return map;
 }
 
-/* Load one league bundle (forms + fixtures in parallel, embed as fallback) */
+//--- *Bundle per league (fixtures + fallback + form)* ---//
 async function loadLeagueBundle(lg){
   const bucket = {matches:[], scheduled:0};
   let leagueMatches = [];
   let scheduledTotal = 0;
   let formMap = new Map();
 
-  // run forms + fixtures together
   const [formResult, fixturesResult] = await Promise.all([
     loadForms(lg.id).catch(()=>new Map()),
     loadFromFixtures(lg.id).catch(()=>null)
@@ -956,7 +955,7 @@ async function loadLeagueBundle(lg){
     });
   }
 
-  // if no completed fixtures, fall back to Embed sheet
+  // Embed fallback
   if(bucket.matches.length === 0){
     try{
       const {items, scheduled} = await loadFromEmbed(lg.id);
@@ -982,7 +981,7 @@ async function loadLeagueBundle(lg){
   return { key: lg.key, bucket, matches: leagueMatches, scheduledTotal, formMap };
 }
 
-/* ====== Aggregation ====== */
+//--- *AGGREGATION (overall + per-league)* ---//
 function aggregate(matches){
   const played=matches.length;
   const goals=matches.reduce((s,m)=>s+m.hg+m.ag,0);
@@ -1065,7 +1064,7 @@ function leagueAggregates(perLeague){
   return out.sort((a,b)=>a.league.localeCompare(b.league));
 }
 
-/* ====== Weekly Games Played + matchday trends ====== */
+//--- *Weekly Games Played + Matchday Trends* ---//
 function buildActivityStats(matches){
   const dated = (matches || []).filter(m => m.doneOn instanceof Date);
   if(!dated.length){
@@ -1180,7 +1179,7 @@ function buildActivityStats(matches){
   return {activityHtml, trendHtml};
 }
 
-/* ====== Render ====== */
+//--- *RENDER: Badge filter* ---//
 function renderBadges(){
   const host=byId('badges'); host.innerHTML='';
   const all=document.createElement('div');
@@ -1202,6 +1201,7 @@ function selectLeague(key){
   run([key]);
 }
 
+//--- *RENDER: Team cell helper* ---//
 function teamCell(t){
   const lg = t.league || 'Diamond';
   return `<span class="teamwrap ${esc(lg)}" data-team="${esc(t.team)}">
@@ -1210,6 +1210,7 @@ function teamCell(t){
   </span>`;
 }
 
+//--- *RENDER: KPIs and progress* ---//
 function renderRails(agg, leagues, scheduledTotal){
   byId('kpi-matches').textContent = fmt(agg.played);
   byId('kpi-goals').textContent = fmt(agg.goals);
@@ -1227,6 +1228,7 @@ function renderRails(agg, leagues, scheduledTotal){
   byId('seg-prog').style.width = scheduledTotal ? (agg.played*100/scheduledTotal)+'%' : '0%';
 }
 
+//--- *RENDER: Leaderboard* ---//
 function renderLeaderboard(teams){
   const tbody = byId('tbl-leader').querySelector('tbody'); tbody.innerHTML='';
   const rows=[...teams].sort((a,b)=> b.pts-a.pts || (b.gd-a.gd) || (b.gf-a.gf) || a.team.localeCompare(b.team));
@@ -1247,6 +1249,7 @@ function renderLeaderboard(teams){
   });
 }
 
+//--- *RENDER: Highlights* ---//
 function renderHighlights(agg){
   byId('hi-big').textContent = agg.biggest ? `${agg.biggest.text} (${agg.biggest.sub})` : '-';
   byId('hi-hsg').textContent = agg.highest ? `${agg.highest.text} (${agg.highest.total} goals • ${agg.highest.sub})` : '-';
@@ -1255,7 +1258,7 @@ function renderHighlights(agg){
   byId('hi-mostcs').textContent = agg.mostCS ? `${agg.mostCS.team} - ${agg.mostCS.cs}` : '-';
 }
 
-/* ====== Power Rankings ====== */
+//--- *Power Rankings* ---//
 function renderPower(teams){
   const tbody = byId('tbl-power').querySelector('tbody');
   if(!tbody) return;
@@ -1301,6 +1304,7 @@ function renderPower(teams){
   }
 }
 
+//--- *Best offence / defence tables* ---//
 function renderTopTables(teams){
   const gfRows = [...teams]
     .filter(t => t.gp > 0)
@@ -1361,6 +1365,7 @@ function renderTopTables(teams){
   });
 }
 
+//--- *Per-league comparison cards* ---//
 function renderMini(minis){
   const host=byId('league-mini'); host.innerHTML='';
   minis.forEach(m=>{
@@ -1378,7 +1383,7 @@ function renderMini(minis){
   });
 }
 
-/* ====== Form rendering ====== */
+//--- *Form rendering helpers* ---//
 function buildFormHtmlFromRaw(raw){
   const cleaned = String(raw ?? '')
     .replace(/[,\s\-_/|.]+/g,'')
@@ -1449,7 +1454,7 @@ function buildPlayerProfileHtml(team){
   `;
 }
 
-/* ====== Selected player panel ====== */
+//--- *Selected player panel* ---//
 function renderSelectedPlayer(teamName){
   const team = TEAM_INDEX.get(teamName);
   const panel = byId('player-panel-content');
@@ -1457,7 +1462,7 @@ function renderSelectedPlayer(teamName){
   panel.innerHTML = buildPlayerProfileHtml(team);
 }
 
-/* ====== Row highlighting ====== */
+//--- *Row highlighting across tables* ---//
 function applySelectionHighlight(){
   document.querySelectorAll('tr.row-selected').forEach(tr=>tr.classList.remove('row-selected'));
   if(!CURRENT_TEAM) return;
@@ -1468,7 +1473,7 @@ function applySelectionHighlight(){
   });
 }
 
-/* ====== Player flyout ====== */
+//--- *Player flyout (hover)* ---//
 let playerFlyout = null;
 function ensureFlyout(){
   if(playerFlyout) return playerFlyout;
@@ -1504,7 +1509,7 @@ function hideFlyout(){
   if(playerFlyout) playerFlyout.style.display = 'none';
 }
 
-/* Click + hover handlers */
+//--- *Global click + hover handlers for team profile* ---//
 document.addEventListener('click', (e)=>{
   const wrap = e.target.closest('.teamwrap');
   if(wrap && wrap.dataset.team){
@@ -1531,7 +1536,35 @@ if(supportsHover){
   });
 }
 
-/* ====== Controller ====== */
+//--- *Latest Results (last 5 completed)* ---//
+function renderLatestResults(matches){
+  const host = byId('latest-results');
+  if(!host) return;
+
+  const recent = [...matches]
+    .filter(m => Number.isFinite(m.hg) && Number.isFinite(m.ag))
+    .slice(-5)      // last 5 only
+    .reverse();     // latest at the top
+
+  if(!recent.length){
+    host.innerHTML = '<div class="note">No completed matches yet.</div>';
+    return;
+  }
+
+  host.innerHTML = recent.map(m => `
+    <div class="latest-item">
+      <img class="latest-badge"
+        src="${BADGE_BASE}${m.league}-League.png"
+        alt="${esc(m.league)} badge">
+      <div class="latest-teams">
+        ${esc(m.home)} vs ${esc(m.away)}
+      </div>
+      <div class="latest-score">${m.hg}-${m.ag}</div>
+    </div>
+  `).join('');
+}
+
+//--- *MAIN CONTROLLER* ---//
 async function run(selectedKeys){
   if(!selectedKeys||!selectedKeys.length) selectedKeys=['All'];
 
@@ -1539,7 +1572,6 @@ async function run(selectedKeys){
     ? LEAGUES.filter(x=>x.id)
     : LEAGUES.filter(x=>x.id && selectedKeys.includes(x.key));
 
-  // load all leagues in parallel
   const leagueResults = await Promise.all(
     selected.map(lg => loadLeagueBundle(lg))
   );
@@ -1584,39 +1616,11 @@ async function run(selectedKeys){
   }
 }
 
+//--- *BOOTSTRAP* ---//
 (function boot(){
   renderBadges();
   run(['All']);
 })();
-/* ====== Power Rankings ====== */
-function renderLatestResults(matches){
-  const host = byId('latest-results');
-  if(!host) return;
-
-  // Filter completed matches only
-  const recent = [...matches]
-    .filter(m => Number.isFinite(m.hg) && Number.isFinite(m.ag))
-    .slice(-5)      // last 5 only
-    .reverse();     // latest at the top
-
-  if(!recent.length){
-    host.innerHTML = '<div class="note">No completed matches yet.</div>';
-    return;
-  }
-
-  host.innerHTML = recent.map(m => `
-    <div class="latest-item">
-      <img class="latest-badge"
-        src="${BADGE_BASE}${m.league}-League.png"
-        alt="${esc(m.league)} badge">
-      <div class="latest-teams">
-        ${esc(m.home)} vs ${esc(m.away)}
-      </div>
-      <div class="latest-score">${m.hg}-${m.ag}</div>
-    </div>
-  `).join('');
-}
-
 </script>
 </body>
 </html>
