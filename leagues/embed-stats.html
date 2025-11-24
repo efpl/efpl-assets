@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>eFPL Season 2 - Live Stats (Embed 2)</title>
+<title>eFPL Season 2 — Live Stats (Embed 2)</title>
 <meta name="color-scheme" content="dark">
 
 <style>
@@ -423,7 +423,7 @@ tr.row-selected{
   color:var(--muted);
 }
 
-/* ========= Latest Results card (stacked date + single league pill) ========= */
+/* ========= Latest Results card (stacked date + aligned scores + single league pill) ========= */
 .latest-item{
   display:flex;
   align-items:center;
@@ -435,7 +435,7 @@ tr.row-selected{
   border-bottom:none;
 }
 
-/* Date: 24 / Nov */
+/* Date: 24 / NOV */
 .latest-meta{
   width:52px;
   display:flex;
@@ -465,7 +465,7 @@ tr.row-selected{
   flex:0 0 auto;
 }
 
-/* main content: Teams | Scores | Pill */
+/* main content: TEAMS | SCORES | PILL */
 .latest-main{
   flex:1;
   display:grid;
@@ -474,6 +474,7 @@ tr.row-selected{
   column-gap:12px;
 }
 
+/* team column */
 .latest-teams{
   display:flex;
   flex-direction:column;
@@ -483,7 +484,7 @@ tr.row-selected{
   font-size:14px;
 }
 
-/* separate score column so all scores line up */
+/* score column */
 .latest-scores{
   display:flex;
   flex-direction:column;
@@ -500,8 +501,6 @@ tr.row-selected{
   display:flex;
   align-items:center;
 }
-
-/* League pill - base */
 .latest-league-pill{
   min-width:70px;
   padding:3px 10px;
@@ -839,7 +838,7 @@ tr.row-selected{
   </div>
 
 <script>
-//--- *CONFIG & GLOBAL STATE* ---//
+/* ===== CONFIG & STATE ===== */
 const LEAGUES = [
   { key:'All',      name:'All Leagues', badge:null, id:null },
   { key:'Diamond',  name:'Diamond',  badge:'Diamond-League.png',  id:'1vkDOFfwBJJnSHOPM0BFcrNyZd-2nIbiDKNnWGKT3OP0' },
@@ -862,7 +861,7 @@ let TEAM_INDEX = new Map();
 let FORM_INDEX = new Map();
 let CURRENT_TEAM = null;
 
-//--- *UTILS* ---//
+/* ===== UTILS ===== */
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function parseGviz(txt){const a=txt.indexOf('{'),b=txt.lastIndexOf('}');if(a===-1||b===-1)throw new Error('Bad GViz');return JSON.parse(txt.slice(a,b+1))}
 function num(x){const n=Number(x);return Number.isFinite(n)?n:null}
@@ -872,7 +871,7 @@ function fmt(n){return Number.isFinite(n)?n.toLocaleString():'0'}
 function byId(id){return document.getElementById(id)}
 function normTeamName(s){return String(s||'').toLowerCase().replace(/\*/g,'').trim();}
 
-//--- *Date parsing for GViz* ---//
+/* Robust date parser for GViz + common text formats */
 function safeDate(v){
   if(!v && v!==0) return null;
 
@@ -923,21 +922,18 @@ function safeDate(v){
   return null;
 }
 
-// Break date into "24" + "Nov" for stacked display
+/* For Latest Results date display */
 function formatLatestDateParts(m){
   if(m.doneOn instanceof Date){
     const d = m.doneOn;
     const day = d.getDate();
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    return {
-      day: String(day),
-      mon: months[d.getMonth()]
-    };
+    return { day:String(day), mon:months[d.getMonth()] };
   }
   return { day:'', mon:'' };
 }
 
-//--- *FETCHERS (Sheets ranges)* ---//
+/* ===== FETCHERS ===== */
 async function fetchRange(id, sheet, range){
   const url=`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheet)}&range=${encodeURIComponent(range)}&cachebust=${CB}`;
   const res=await fetch(url); const txt=await res.text();
@@ -971,7 +967,6 @@ async function loadFromEmbed(id){
   return {items, scheduled};
 }
 
-//--- *Forms from standings-style table* ---//
 async function loadForms(id){
   const data = await fetchRange(id, ST_TAB, ST_RANGE);
   const cols = data.table.cols || [];
@@ -998,7 +993,7 @@ async function loadForms(id){
   return map;
 }
 
-//--- *Bundle per league (fixtures + fallback + form)* ---//
+/* Bundle per league (fixtures + embed fallback + form) */
 async function loadLeagueBundle(lg){
   const bucket = {matches:[], scheduled:0};
   let leagueMatches = [];
@@ -1031,7 +1026,6 @@ async function loadLeagueBundle(lg){
     });
   }
 
-  // Embed fallback
   if(bucket.matches.length === 0){
     try{
       const {items, scheduled} = await loadFromEmbed(lg.id);
@@ -1057,7 +1051,7 @@ async function loadLeagueBundle(lg){
   return { key: lg.key, bucket, matches: leagueMatches, scheduledTotal, formMap };
 }
 
-//--- *AGGREGATION (overall + per-league)* ---//
+/* ===== AGGREGATION ===== */
 function aggregate(matches){
   const played=matches.length;
   const goals=matches.reduce((s,m)=>s+m.hg+m.ag,0);
@@ -1140,7 +1134,7 @@ function leagueAggregates(perLeague){
   return out.sort((a,b)=>a.league.localeCompare(b.league));
 }
 
-//--- *Weekly Games Played + Matchday Trends* ---//
+/* ===== Weekly games + matchday trends ===== */
 function buildActivityStats(matches){
   const dated = (matches || []).filter(m => m.doneOn instanceof Date);
   if(!dated.length){
@@ -1255,7 +1249,7 @@ function buildActivityStats(matches){
   return {activityHtml, trendHtml};
 }
 
-//--- *RENDER: Badge filter* ---//
+/* ===== RENDER HELPERS ===== */
 function renderBadges(){
   const host=byId('badges'); host.innerHTML='';
   const all=document.createElement('div');
@@ -1277,7 +1271,6 @@ function selectLeague(key){
   run([key]);
 }
 
-//--- *RENDER: Team cell helper* ---//
 function teamCell(t){
   const lg = t.league || 'Diamond';
   return `<span class="teamwrap ${esc(lg)}" data-team="${esc(t.team)}">
@@ -1286,7 +1279,6 @@ function teamCell(t){
   </span>`;
 }
 
-//--- *RENDER: KPIs and progress* ---//
 function renderRails(agg, leagues, scheduledTotal){
   byId('kpi-matches').textContent = fmt(agg.played);
   byId('kpi-goals').textContent = fmt(agg.goals);
@@ -1304,7 +1296,6 @@ function renderRails(agg, leagues, scheduledTotal){
   byId('seg-prog').style.width = scheduledTotal ? (agg.played*100/scheduledTotal)+'%' : '0%';
 }
 
-//--- *RENDER: Leaderboard* ---//
 function renderLeaderboard(teams){
   const tbody = byId('tbl-leader').querySelector('tbody'); tbody.innerHTML='';
   const rows=[...teams].sort((a,b)=> b.pts-a.pts || (b.gd-a.gd) || (b.gf-a.gf) || a.team.localeCompare(b.team));
@@ -1325,7 +1316,6 @@ function renderLeaderboard(teams){
   });
 }
 
-//--- *RENDER: Highlights* ---//
 function renderHighlights(agg){
   byId('hi-big').textContent = agg.biggest ? `${agg.biggest.text} (${agg.biggest.sub})` : '-';
   byId('hi-hsg').textContent = agg.highest ? `${agg.highest.text} (${agg.highest.total} goals • ${agg.highest.sub})` : '-';
@@ -1334,7 +1324,7 @@ function renderHighlights(agg){
   byId('hi-mostcs').textContent = agg.mostCS ? `${agg.mostCS.team} - ${agg.mostCS.cs}` : '-';
 }
 
-//--- *Power Rankings* ---//
+/* Power Rankings */
 function renderPower(teams){
   const tbody = byId('tbl-power').querySelector('tbody');
   if(!tbody) return;
@@ -1380,14 +1370,11 @@ function renderPower(teams){
   }
 }
 
-//--- *Best offence / defence tables* ---//
+/* Best offence / defence tables */
 function renderTopTables(teams){
   const gfRows = [...teams]
     .filter(t => t.gp > 0)
-    .map(t => ({
-      ...t,
-      gfPerGame: t.gf / t.gp
-    }))
+    .map(t => ({...t,gfPerGame:t.gf/t.gp}))
     .sort((a,b)=>
       b.gfPerGame - a.gfPerGame ||
       b.gf - a.gf ||
@@ -1413,10 +1400,7 @@ function renderTopTables(teams){
 
   const gaRows = [...teams]
     .filter(t => t.gp > 0)
-    .map(t => ({
-      ...t,
-      gaPerGame: t.ga / t.gp
-    }))
+    .map(t => ({...t,gaPerGame:t.ga/t.gp}))
     .sort((a,b)=>
       a.gaPerGame - b.gaPerGame ||
       a.ga - b.ga ||
@@ -1441,7 +1425,7 @@ function renderTopTables(teams){
   });
 }
 
-//--- *Per-league comparison cards* ---//
+/* Per-league mini cards */
 function renderMini(minis){
   const host=byId('league-mini'); host.innerHTML='';
   minis.forEach(m=>{
@@ -1459,7 +1443,7 @@ function renderMini(minis){
   });
 }
 
-//--- *Form rendering helpers* ---//
+/* Form helpers + player profile */
 function buildFormHtmlFromRaw(raw){
   const cleaned = String(raw ?? '')
     .replace(/[,\s\-_/|.]+/g,'')
@@ -1530,7 +1514,6 @@ function buildPlayerProfileHtml(team){
   `;
 }
 
-//--- *Selected player panel* ---//
 function renderSelectedPlayer(teamName){
   const team = TEAM_INDEX.get(teamName);
   const panel = byId('player-panel-content');
@@ -1538,7 +1521,6 @@ function renderSelectedPlayer(teamName){
   panel.innerHTML = buildPlayerProfileHtml(team);
 }
 
-//--- *Row highlighting across tables* ---//
 function applySelectionHighlight(){
   document.querySelectorAll('tr.row-selected').forEach(tr=>tr.classList.remove('row-selected'));
   if(!CURRENT_TEAM) return;
@@ -1549,7 +1531,7 @@ function applySelectionHighlight(){
   });
 }
 
-//--- *Player flyout (hover)* ---//
+/* Player flyout */
 let playerFlyout = null;
 function ensureFlyout(){
   if(playerFlyout) return playerFlyout;
@@ -1558,7 +1540,6 @@ function ensureFlyout(){
   document.body.appendChild(playerFlyout);
   return playerFlyout;
 }
-
 function showFlyoutFor(teamName, anchorEl){
   const team = TEAM_INDEX.get(teamName);
   if(!team) return;
@@ -1580,12 +1561,11 @@ function showFlyoutFor(teamName, anchorEl){
   fly.style.top = `${top}px`;
   fly.style.left = `${left}px`;
 }
-
 function hideFlyout(){
   if(playerFlyout) playerFlyout.style.display = 'none';
 }
 
-//--- *Global click + hover handlers for team profile* ---//
+/* Click + hover for team profile */
 document.addEventListener('click', (e)=>{
   const wrap = e.target.closest('.teamwrap');
   if(wrap && wrap.dataset.team){
@@ -1612,7 +1592,7 @@ if(supportsHover){
   });
 }
 
-//--- *Latest Results (last 5 completed, newest first, with 1 league pill)* ---//
+/* ===== Latest Results (last 5 completed, aligned scores) ===== */
 function renderLatestResults(matches){
   const host = byId('latest-results');
   if(!host) return;
@@ -1631,12 +1611,19 @@ function renderLatestResults(matches){
     return;
   }
 
-  host.innerHTML = recent.map(m => {
+  host.innerHTML = recent.map(m=>{
     const parts = formatLatestDateParts(m);
     const leagueName = m.league || '';
-    const leagueSafe  = esc(leagueName);
-
+    const leagueSafe = esc(leagueName);
     return `
+      <div class="latest-item">
+        <div class="latest-meta">
+          <div class="latest-date-day">${esc(parts.day)}</div>
+          <div class="latest-date-mon">${esc(parts.mon)}</div>
+        </div>
+        <img class="latest-badge"
+          src="${BADGE_BASE}${leagueName}-League.png"
+          alt="${leagueSafe} badge">
         <div class="latest-main">
           <div class="latest-teams">
             <span class="latest-team">${esc(m.home)}</span>
@@ -1650,12 +1637,12 @@ function renderLatestResults(matches){
             <span class="latest-league-pill ${leagueSafe}">${leagueSafe}</span>
           </div>
         </div>
-
+      </div>
     `;
   }).join('');
 }
 
-//--- *MAIN CONTROLLER* ---//
+/* ===== MAIN CONTROLLER ===== */
 async function run(selectedKeys){
   if(!selectedKeys||!selectedKeys.length) selectedKeys=['All'];
 
@@ -1707,7 +1694,7 @@ async function run(selectedKeys){
   }
 }
 
-//--- *BOOTSTRAP* ---//
+/* ===== BOOT ===== */
 (function boot(){
   renderBadges();
   run(['All']);
