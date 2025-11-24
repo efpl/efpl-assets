@@ -465,37 +465,38 @@ tr.row-selected{
   flex:0 0 auto;
 }
 
-/* main content: teams + scores + pill */
+/* main content: Teams | Scores | Pill */
 .latest-main{
   flex:1;
-  display:flex;
-  align-items:center;       /* pill vertically centred */
-  justify-content:space-between;
-  gap:10px;
+  display:grid;
+  grid-template-columns:1fr auto auto; /* teams | scores | pill */
+  align-items:center;
+  column-gap:12px;
 }
+
 .latest-teams{
-  flex:1;
   display:flex;
   flex-direction:column;
-}
-.latest-row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  line-height:1.4;
+  gap:2px;
 }
 .latest-team{
   font-size:14px;
 }
+
+/* separate score column so all scores line up */
+.latest-scores{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  text-align:right;
+}
 .latest-score-num{
   font-weight:700;
   font-size:15px;
-  margin-left:12px;
 }
 
 /* pill column */
 .latest-league-wrapper{
-  flex:0 0 auto;
   display:flex;
   align-items:center;
 }
@@ -1636,30 +1637,20 @@ function renderLatestResults(matches){
     const leagueSafe  = esc(leagueName);
 
     return `
-      <div class="latest-item">
-        <div class="latest-meta">
-          <div class="latest-date-day">${esc(parts.day)}</div>
-          <div class="latest-date-mon">${esc(parts.mon)}</div>
-        </div>
-        <img class="latest-badge"
-          src="${BADGE_BASE}${leagueName}-League.png"
-          alt="${leagueSafe} badge">
         <div class="latest-main">
           <div class="latest-teams">
-            <div class="latest-row">
-              <span class="latest-team">${esc(m.home)}</span>
-              <span class="latest-score-num">${m.hg}</span>
-            </div>
-            <div class="latest-row">
-              <span class="latest-team">${esc(m.away)}</span>
-              <span class="latest-score-num">${m.ag}</span>
-            </div>
+            <span class="latest-team">${esc(m.home)}</span>
+            <span class="latest-team">${esc(m.away)}</span>
+          </div>
+          <div class="latest-scores">
+            <span class="latest-score-num">${m.hg}</span>
+            <span class="latest-score-num">${m.ag}</span>
           </div>
           <div class="latest-league-wrapper">
             <span class="latest-league-pill ${leagueSafe}">${leagueSafe}</span>
           </div>
         </div>
-      </div>
+
     `;
   }).join('');
 }
