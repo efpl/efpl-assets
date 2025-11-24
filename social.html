@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>eFPL – Season 2 Power Rankings (Social Card)</title>
-<meta name="color-scheme" content="dark">
+<title>eFPL Season 2 — Social Factory</title>
 
 <style>
+/* ========= Base / Palette ========= */
 :root{
   --bg:#020617;
   --bg2:#020822;
@@ -37,9 +37,11 @@ html,body{
   height:100%;
   font:15px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
   color:var(--ink);
+  background:#020617; /* solid base */
 }
 
-/* Stadium / spotlight background */
+/* ========= Page Layout (Factory) ========= */
+/* Stadium / spotlight background behind everything */
 body{
   background:
     radial-gradient(circle at 50% -10%, rgba(255,255,255,.12), transparent 55%),
@@ -47,21 +49,149 @@ body{
     radial-gradient(circle at 100% 120%, rgba(224,28,113,.35), transparent 60%),
     radial-gradient(circle at 50% 50%, #020822 0%, #020617 45%, #000 100%);
   display:flex;
+  align-items:stretch;
+  justify-content:center;
+}
+
+.factory-shell{
+  width:100%;
+  max-width:1400px;
+  height:100vh;
+  padding:16px;
+  display:flex;
+  gap:16px;
+}
+
+/* Left side nav */
+.factory-nav{
+  width:260px;
+  max-width:35%;
+  background:rgba(15,23,42,.95);
+  border-radius:20px;
+  border:1px solid rgba(30,64,175,.7);
+  box-shadow:0 20px 50px rgba(0,0,0,.9);
+  padding:12px 12px 10px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.nav-header{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding-bottom:8px;
+  border-bottom:1px solid rgba(51,65,85,.7);
+}
+.nav-logo{
+  width:32px;
+  height:32px;
+  border-radius:12px;
+  object-fit:cover;
+  box-shadow:0 0 18px rgba(0,0,0,.85);
+}
+.nav-title-block{
+  display:flex;
+  flex-direction:column;
+}
+.nav-title{
+  font-size:14px;
+  font-weight:800;
+}
+.nav-sub{
+  font-size:11px;
+  color:var(--muted);
+}
+
+.nav-section-label{
+  margin-top:6px;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.18em;
+  color:var(--muted);
+}
+
+/* Card picker buttons */
+.nav-list{
+  margin:4px 0 0;
+  padding:0;
+  list-style:none;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.nav-item-btn{
+  width:100%;
+  border:none;
+  outline:none;
+  border-radius:14px;
+  padding:8px 10px;
+  background:rgba(15,23,42,.9);
+  color:var(--muted);
+  font-size:13px;
+  text-align:left;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  cursor:pointer;
+  transition:background .18s ease, border-color .18s ease, transform .12s ease, box-shadow .18s ease, color .18s ease;
+  border:1px solid rgba(30,64,175,.4);
+}
+.nav-item-btn span.label{
+  font-weight:600;
+}
+.nav-item-btn span.meta{
+  font-size:11px;
+  opacity:.8;
+}
+.nav-item-btn:hover{
+  background:rgba(30,64,175,.95);
+  border-color:rgba(59,130,246,.9);
+  color:#e5e7eb;
+  transform:translateY(-1px);
+  box-shadow:0 10px 28px rgba(15,23,42,.9);
+}
+.nav-item-btn.active{
+  background:linear-gradient(135deg, rgba(249,215,28,.24), rgba(30,64,175,.97));
+  border-color:var(--accent-line);
+  color:#111827;
+  box-shadow:0 0 0 1px rgba(15,23,42,1),0 18px 40px rgba(0,0,0,.95);
+}
+.nav-item-btn.active span.meta{
+  color:#111827;
+}
+
+/* Small info footer */
+.nav-foot{
+  margin-top:auto;
+  padding-top:6px;
+  border-top:1px dashed rgba(51,65,85,.7);
+  font-size:11px;
+  color:var(--muted);
+}
+
+/* ========= Right side: Card preview area ========= */
+
+.factory-main{
+  flex:1;
+  min-width:0;
+  display:flex;
   align-items:center;
   justify-content:center;
 }
 
-/* Centered square frame (1080 x 1080 style) */
-.social-shell{
-  width:min(100vw,100vh,1080px);
+/* Centered square frame (1080 style) */
+.card-shell{
+  width:min(100%, min(1080px, 100vh - 32px));
   aspect-ratio:1/1;
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:10px;
 }
 
-.social-frame{
+.card-frame{
   width:100%;
   height:100%;
   border-radius:28px;
@@ -78,7 +208,8 @@ body{
   flex-direction:column;
 }
 
-/* Header */
+/* Shared header/footer inside each social card */
+
 .social-header{
   display:flex;
   align-items:center;
@@ -125,7 +256,6 @@ body{
   font-size:12px;
   color:var(--muted);
 }
-
 .sh-right{
   display:flex;
   flex-direction:column;
@@ -149,163 +279,11 @@ body{
   color:var(--muted);
 }
 
-/* Main content */
 .social-main{
   flex:1;
   display:flex;
   flex-direction:column;
   padding:10px 0 8px;
-}
-
-/* Power list wrapper card */
-.power-wrapper{
-  flex:1;
-  border-radius:20px;
-  padding:10px 12px 8px;
-  background:
-    radial-gradient(circle at top left,rgba(249,215,28,.08),transparent 55%),
-    linear-gradient(135deg, rgba(15,30,73,.98), rgba(8,14,40,.98));
-  border:1px solid rgba(30,64,175,.55);
-  box-shadow:0 18px 40px rgba(0,0,0,.85);
-  display:flex;
-  flex-direction:column;
-}
-
-/* Top line inside card */
-.power-heading-row{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-end;
-  gap:10px;
-  margin-bottom:6px;
-}
-.power-heading-title{
-  font-size:14px;
-  font-weight:800;
-  text-transform:uppercase;
-  letter-spacing:.14em;
-}
-.power-heading-sub{
-  font-size:11px;
-  color:var(--muted);
-}
-.power-formula-pill{
-  border-radius:999px;
-  padding:3px 10px;
-  font-size:11px;
-  border:1px solid rgba(148,163,184,.7);
-  color:var(--muted);
-}
-
-/* list itself */
-.power-list{
-  list-style:none;
-  margin:6px 0 0;
-  padding:0;
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-  overflow:hidden;
-}
-
-/* each row */
-.power-row{
-  display:grid;
-  grid-template-columns:auto 1fr auto;
-  align-items:center;
-  gap:10px;
-  padding:6px 9px;
-  border-radius:999px;
-  background:rgba(15,23,42,.9);
-  border:1px solid rgba(30,64,175,.4);
-}
-
-/* special top 3 */
-.power-row.rank-1{
-  background:linear-gradient(90deg, rgba(249,215,28,.35), rgba(15,23,42,.9));
-  border-color:var(--accent-line);
-  box-shadow:0 0 26px rgba(249,215,28,.55);
-}
-.power-row.rank-2,
-.power-row.rank-3{
-  background:linear-gradient(90deg, rgba(148,163,184,.40), rgba(15,23,42,.95));
-  border-color:rgba(148,163,184,.8);
-}
-
-/* rank pill */
-.power-rank-pill{
-  width:30px;
-  height:30px;
-  border-radius:999px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:14px;
-  font-weight:900;
-  background:radial-gradient(circle at 30% 20%, #ffffff, #f9d71c 60%, #f59e0b 100%);
-  color:#111827;
-  box-shadow:0 0 0 2px rgba(15,23,42,1),0 0 20px rgba(249,215,28,.65);
-}
-.rank-2 .power-rank-pill,
-.rank-3 .power-rank-pill{
-  background:radial-gradient(circle at 30% 20%, #e5e7eb, #9ca3af 60%, #4b5563 100%);
-  color:#020617;
-}
-
-/* Team + league */
-.power-team-block{
-  display:flex;
-  flex-direction:column;
-  min-width:0;
-}
-.power-team-name{
-  font-size:13px;
-  font-weight:700;
-  white-space:nowrap;
-  text-overflow:ellipsis;
-  overflow:hidden;
-}
-.power-league-pill{
-  margin-top:1px;
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  padding:1px 7px;
-  border-radius:999px;
-  font-size:11px;
-  background:rgba(15,23,42,.9);
-  color:var(--muted);
-}
-.power-league-dot{
-  width:8px;
-  height:8px;
-  border-radius:999px;
-}
-
-/* league colours */
-.power-league-pill[data-league="Diamond"] .power-league-dot{background:var(--diamond);}
-.power-league-pill[data-league="Ruby"] .power-league-dot{background:var(--ruby);}
-.power-league-pill[data-league="Sapphire"] .power-league-dot{background:var(--sapphire);}
-.power-league-pill[data-league="Crystal"] .power-league-dot{background:var(--crystal);}
-.power-league-pill[data-league="Emerald"] .power-league-dot{background:var(--emerald);}
-.power-league-pill[data-league="Gold"] .power-league-dot{background:var(--gold);}
-
-/* power score pill */
-.power-score-pill{
-  border-radius:999px;
-  padding:3px 10px;
-  font-size:13px;
-  font-weight:900;
-  background:var(--accent);
-  color:#111827;
-  box-shadow:0 0 0 2px rgba(15,23,42,.95), 0 0 22px rgba(249,215,28,.7);
-}
-
-/* Under-text inside card */
-.power-note{
-  margin-top:6px;
-  font-size:11px;
-  color:var(--muted);
 }
 
 /* Footer */
@@ -351,10 +329,291 @@ body{
   color:var(--accent);
 }
 
-/* responsive safety for small screens */
-@media (max-width:600px){
-  .social-frame{
-    border-radius:18px;
+/* ========= Power Rankings card content ========= */
+
+.power-wrapper{
+  flex:1;
+  border-radius:20px;
+  padding:10px 12px 8px;
+  background:
+    radial-gradient(circle at top left,rgba(249,215,28,.08),transparent 55%),
+    linear-gradient(135deg, rgba(15,30,73,.98), rgba(8,14,40,.98));
+  border:1px solid rgba(30,64,175,.55);
+  box-shadow:0 18px 40px rgba(0,0,0,.85);
+  display:flex;
+  flex-direction:column;
+}
+
+.power-heading-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:10px;
+  margin-bottom:6px;
+}
+.power-heading-title{
+  font-size:14px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.14em;
+}
+.power-heading-sub{
+  font-size:11px;
+  color:var(--muted);
+}
+.power-formula-pill{
+  border-radius:999px;
+  padding:3px 10px;
+  font-size:11px;
+  border:1px solid rgba(148,163,184,.7);
+  color:var(--muted);
+}
+
+.power-list{
+  list-style:none;
+  margin:6px 0 0;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  overflow:hidden;
+}
+
+.power-row{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:10px;
+  padding:6px 9px;
+  border-radius:999px;
+  background:rgba(15,23,42,.9);
+  border:1px solid rgba(30,64,175,.4);
+}
+
+.power-row.rank-1{
+  background:linear-gradient(90deg, rgba(249,215,28,.35), rgba(15,23,42,.9));
+  border-color:var(--accent-line);
+  box-shadow:0 0 26px rgba(249,215,28,.55);
+}
+.power-row.rank-2,
+.power-row.rank-3{
+  background:linear-gradient(90deg, rgba(148,163,184,.40), rgba(15,23,42,.95));
+  border-color:rgba(148,163,184,.8);
+}
+
+.power-rank-pill{
+  width:30px;
+  height:30px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  font-weight:900;
+  background:radial-gradient(circle at 30% 20%, #ffffff, #f9d71c 60%, #f59e0b 100%);
+  color:#111827;
+  box-shadow:0 0 0 2px rgba(15,23,42,1),0 0 20px rgba(249,215,28,.65);
+}
+.rank-2 .power-rank-pill,
+.rank-3 .power-rank-pill{
+  background:radial-gradient(circle at 30% 20%, #e5e7eb, #9ca3af 60%, #4b5563 100%);
+  color:#020617;
+}
+
+.power-team-block{
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+}
+.power-team-name{
+  font-size:13px;
+  font-weight:700;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  overflow:hidden;
+}
+.power-league-pill{
+  margin-top:1px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:1px 7px;
+  border-radius:999px;
+  font-size:11px;
+  background:rgba(15,23,42,.9);
+  color:var(--muted);
+}
+.power-league-dot{
+  width:8px;
+  height:8px;
+  border-radius:999px;
+}
+.power-league-pill[data-league="Diamond"] .power-league-dot{background:var(--diamond);}
+.power-league-pill[data-league="Ruby"] .power-league-dot{background:var(--ruby);}
+.power-league-pill[data-league="Sapphire"] .power-league-dot{background:var(--sapphire);}
+.power-league-pill[data-league="Crystal"] .power-league-dot{background:var(--crystal);}
+.power-league-pill[data-league="Emerald"] .power-league-dot{background:var(--emerald);}
+.power-league-pill[data-league="Gold"] .power-league-dot{background:var(--gold);}
+
+.power-score-pill{
+  border-radius:999px;
+  padding:3px 10px;
+  font-size:13px;
+  font-weight:900;
+  background:var(--accent);
+  color:#111827;
+  box-shadow:0 0 0 2px rgba(15,23,42,.95), 0 0 22px rgba(249,215,28,.7);
+}
+
+.power-note{
+  margin-top:6px;
+  font-size:11px;
+  color:var(--muted);
+}
+
+/* ========= Latest Results card content ========= */
+
+.results-wrapper{
+  flex:1;
+  border-radius:20px;
+  padding:10px 12px 8px;
+  background:
+    radial-gradient(circle at top right,rgba(56,189,248,.20),transparent 55%),
+    linear-gradient(135deg, rgba(15,23,42,.98), rgba(8,14,40,.98));
+  border:1px solid rgba(30,64,175,.55);
+  box-shadow:0 18px 40px rgba(0,0,0,.85);
+  display:flex;
+  flex-direction:column;
+}
+
+.results-heading-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:10px;
+  margin-bottom:6px;
+}
+.results-title{
+  font-size:14px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.14em;
+}
+.results-sub{
+  font-size:11px;
+  color:var(--muted);
+}
+.results-meta-pill{
+  border-radius:999px;
+  padding:3px 10px;
+  font-size:11px;
+  border:1px solid rgba(148,163,184,.7);
+  color:var(--muted);
+}
+
+.results-list{
+  list-style:none;
+  margin:6px 0 0;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.results-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:7px 9px;
+  border-radius:14px;
+  background:rgba(15,23,42,.9);
+  border:1px solid rgba(30,64,175,.45);
+}
+.results-row:nth-child(1){
+  background:linear-gradient(90deg, rgba(56,189,248,.26), rgba(15,23,42,.95));
+  border-color:rgba(56,189,248,.9);
+  box-shadow:0 0 26px rgba(56,189,248,.6);
+}
+
+.results-left{
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+}
+.results-league-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:1px 7px;
+  border-radius:999px;
+  font-size:11px;
+  background:rgba(15,23,42,.95);
+  color:var(--muted);
+  margin-bottom:2px;
+}
+.results-league-dot{
+  width:8px;
+  height:8px;
+  border-radius:999px;
+}
+.results-league-pill[data-league="Diamond"] .results-league-dot{background:var(--diamond);}
+.results-league-pill[data-league="Ruby"] .results-league-dot{background:var(--ruby);}
+.results-league-pill[data-league="Sapphire"] .results-league-dot{background:var(--sapphire);}
+.results-league-pill[data-league="Crystal"] .results-league-dot{background:var(--crystal);}
+.results-league-pill[data-league="Emerald"] .results-league-dot{background:var(--emerald);}
+.results-league-pill[data-league="Gold"] .results-league-dot{background:var(--gold);}
+
+.results-teams{
+  font-size:13px;
+  font-weight:700;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  overflow:hidden;
+}
+
+.results-score-pill{
+  border-radius:999px;
+  padding:4px 12px;
+  font-size:13px;
+  font-weight:900;
+  background:rgba(15,23,42,1);
+  color:#e5e7eb;
+  border:1px solid rgba(148,163,184,.9);
+}
+
+/* ========= Card view switching ========= */
+.card-view{
+  display:none;
+  width:100%;
+  height:100%;
+}
+.card-view.active{
+  display:block;
+}
+
+/* ========= Responsive: narrow screens ========= */
+@media (max-width:900px){
+  .factory-shell{
+    flex-direction:column;
+    height:auto;
+    min-height:100vh;
+  }
+  .factory-nav{
+    width:100%;
+    max-width:none;
+    flex-direction:column;
+  }
+  .factory-main{
+    height:auto;
+  }
+  .card-shell{
+    width:100%;
+    max-width:500px;
+    margin:0 auto 12px;
+  }
+  .card-frame{
+    border-radius:20px;
     padding:14px 10px 12px;
   }
   .social-header{
@@ -373,181 +632,484 @@ body{
 </style>
 </head>
 <body>
-<div class="social-shell">
-  <div class="social-frame">
+<div class="factory-shell">
 
-    <!-- Header -->
-    <header class="social-header">
-      <div class="sh-left">
-        <img src="https://efpl-assets.pages.dev/img/e-avatar.jpg" alt="eFPL logo" class="sh-logo">
-        <div>
-          <div class="sh-meta-top">eFPL • Season 2</div>
-          <div class="sh-title">Power Rankings</div>
-          <div class="sh-sub">Top 10 power index across all leagues</div>
-        </div>
+  <!-- Left: Social Factory Nav -->
+  <aside class="factory-nav">
+    <div class="nav-header">
+      <img src="https://efpl-assets.pages.dev/img/e-avatar.jpg" alt="eFPL" class="nav-logo">
+      <div class="nav-title-block">
+        <div class="nav-title">eFPL Social Factory</div>
+        <div class="nav-sub">Season 2 – internal staff tools</div>
       </div>
-      <div class="sh-right">
-        <div class="sh-pill">Live Power Index</div>
-        <div class="sh-small">Min. 5 games • (Pts × 2 + GD) ÷ GP</div>
-      </div>
-    </header>
+    </div>
 
-    <!-- Main -->
-    <main class="social-main">
-      <section class="power-wrapper">
-        <div class="power-heading-row">
-          <div>
-            <div class="power-heading-title">Top 10 • Overall</div>
-            <div class="power-heading-sub">Rankings update as fixtures are completed</div>
+    <div class="nav-section-label">Social cards</div>
+    <ul class="nav-list">
+      <li>
+        <button class="nav-item-btn active" data-target="card-power">
+          <span class="label">Power Rankings</span>
+          <span class="meta">Top 10 • Power Index</span>
+        </button>
+      </li>
+      <li>
+        <button class="nav-item-btn" data-target="card-latest">
+          <span class="label">Latest Results</span>
+          <span class="meta">Last 5 completed</span>
+        </button>
+      </li>
+      <!-- Later: add buttons for Best Offence, Best Defence, Highlights, etc. -->
+    </ul>
+
+    <div class="nav-foot">
+      Clicking a card type will show a 1080×1080 style graphic on the right.
+      Take a full-window screenshot and post to socials. All stats update from Season 2 live data.
+    </div>
+  </aside>
+
+  <!-- Right: Card preview area -->
+  <main class="factory-main">
+    <div class="card-shell">
+
+      <!-- Power Rankings card -->
+      <section id="card-power" class="card-frame card-view active">
+        <header class="social-header">
+          <div class="sh-left">
+            <img src="https://efpl-assets.pages.dev/img/e-avatar.jpg" alt="eFPL logo" class="sh-logo">
+            <div>
+              <div class="sh-meta-top">eFPL • Season 2</div>
+              <div class="sh-title">Power Rankings</div>
+              <div class="sh-sub">Top 10 power index across all leagues</div>
+            </div>
           </div>
-          <div class="power-formula-pill">Form • Goals • Consistency</div>
+          <div class="sh-right">
+            <div class="sh-pill">Live Power Index</div>
+            <div class="sh-small">Min. 5 games • (Pts × 2 + GD) ÷ GP</div>
+          </div>
+        </header>
+
+        <div class="social-main">
+          <section class="power-wrapper">
+            <div class="power-heading-row">
+              <div>
+                <div class="power-heading-title">Top 10 • Overall</div>
+                <div class="power-heading-sub" id="power-subline">
+                  Rankings update as fixtures are completed.
+                </div>
+              </div>
+              <div class="power-formula-pill">Form • Goals • Consistency</div>
+            </div>
+
+            <ul class="power-list" id="power-list">
+              <!-- Filled by JS -->
+            </ul>
+
+            <div class="power-note">
+              Power Score compares all eFPL players using the same formula, regardless of league tier.
+            </div>
+          </section>
         </div>
 
-        <ul class="power-list">
-          <!-- Dummy sample data for now. Later we can inject live data into these. -->
-          <li class="power-row rank-1">
-            <div class="power-rank-pill">1</div>
-            <div class="power-team-block">
-              <div class="power-team-name">Sample FC</div>
-              <div class="power-league-pill" data-league="Diamond">
-                <span class="power-league-dot"></span>
-                <span>Diamond</span>
-              </div>
-            </div>
-            <div class="power-score-pill">8.92</div>
-          </li>
-
-          <li class="power-row rank-2">
-            <div class="power-rank-pill">2</div>
-            <div class="power-team-block">
-              <div class="power-team-name">Ruby United</div>
-              <div class="power-league-pill" data-league="Ruby">
-                <span class="power-league-dot"></span>
-                <span>Ruby</span>
-              </div>
-            </div>
-            <div class="power-score-pill">8.61</div>
-          </li>
-
-          <li class="power-row rank-3">
-            <div class="power-rank-pill">3</div>
-            <div class="power-team-block">
-              <div class="power-team-name">Sapphire City</div>
-              <div class="power-league-pill" data-league="Sapphire">
-                <span class="power-league-dot"></span>
-                <span>Sapphire</span>
-              </div>
-            </div>
-            <div class="power-score-pill">8.44</div>
-          </li>
-
-          <li class="power-row">
-            <div class="power-rank-pill">4</div>
-            <div class="power-team-block">
-              <div class="power-team-name">Crystal Wanderers</div>
-              <div class="power-league-pill" data-league="Crystal">
-                <span class="power-league-dot"></span>
-                <span>Crystal</span>
-              </div>
-            </div>
-            <div class="power-score-pill">8.10</div>
-          </li>
-
-          <li class="power-row">
-            <div class="power-rank-pill">5</div>
-            <div class="power-team-block">
-              <div class="power-team-name">Emerald Athletic</div>
-              <div class="power-league-pill" data-league="Emerald">
-                <span class="power-league-dot"></span>
-                <span>Emerald</span>
-              </div>
-            </div>
-            <div class="power-score-pill">7.96</div>
-          </li>
-
-          <li class="power-row">
-            <div class="power-rank-pill">6</div>
-            <div class="power-team-block">
-              <div class="power-team-name">Gold Stars</div>
-              <div class="power-league-pill" data-league="Gold">
-                <span class="power-league-dot"></span>
-                <span>Gold</span>
-              </div>
-            </div>
-            <div class="power-score-pill">7.83</div>
-          </li>
-
-          <li class="power-row">
-            <div class="power-rank-pill">7</div>
-            <div class="power-team-block">
-              <div class="power-team-name">Diamond Rovers</div>
-              <div class="power-league-pill" data-league="Diamond">
-                <span class="power-league-dot"></span>
-                <span>Diamond</span>
-              </div>
-            </div>
-            <div class="power-score-pill">7.55</div>
-          </li>
-
-          <li class="power-row">
-            <div class="power-rank-pill">8</div>
-            <div class="power-team-block">
-              <div class="power-team-name">Ruby XI</div>
-              <div class="power-league-pill" data-league="Ruby">
-                <span class="power-league-dot"></span>
-                <span>Ruby</span>
-              </div>
-            </div>
-            <div class="power-score-pill">7.41</div>
-          </li>
-
-          <li class="power-row">
-            <div class="power-rank-pill">9</div>
-            <div class="power-team-block">
-              <div class="power-team-name">Sapphire FC</div>
-              <div class="power-league-pill" data-league="Sapphire">
-                <span class="power-league-dot"></span>
-                <span>Sapphire</span>
-              </div>
-            </div>
-            <div class="power-score-pill">7.26</div>
-          </li>
-
-          <li class="power-row">
-            <div class="power-rank-pill">10</div>
-            <div class="power-team-block">
-              <div class="power-team-name">Crystal Town</div>
-              <div class="power-league-pill" data-league="Crystal">
-                <span class="power-league-dot"></span>
-                <span>Crystal</span>
-              </div>
-            </div>
-            <div class="power-score-pill">7.08</div>
-          </li>
-        </ul>
-
-        <div class="power-note">
-          Power Score compares all eFPL players using the same formula, regardless of league tier.
-        </div>
+        <footer class="social-footer">
+          <div class="footer-left">
+            <img src="https://efpl-assets.pages.dev/img/e-avatar.jpg" alt="eFPL" class="footer-logo-mini">
+            <span>eFootball Fair Play League</span>
+          </div>
+          <div class="footer-mid">
+            <strong>efpl.gg</strong> • Play Fair. Play Football.
+          </div>
+          <div class="footer-right">
+            <span class="footer-tag">Season Partner</span>
+            <span>SPONSOR LOGO</span>
+          </div>
+        </footer>
       </section>
-    </main>
 
-    <!-- Footer -->
-    <footer class="social-footer">
-      <div class="footer-left">
-        <img src="https://efpl-assets.pages.dev/img/e-avatar.jpg" alt="eFPL" class="footer-logo-mini">
-        <span>eFootball Fair Play League</span>
-      </div>
-      <div class="footer-mid">
-        <strong>efpl.gg</strong> • Play Fair. Play Football.
-      </div>
-      <div class="footer-right">
-        <span class="footer-tag">Season Partner</span>
-        <span>SPONSOR LOGO</span>
-      </div>
-    </footer>
+      <!-- Latest Results card -->
+      <section id="card-latest" class="card-frame card-view">
+        <header class="social-header">
+          <div class="sh-left">
+            <img src="https://efpl-assets.pages.dev/img/e-avatar.jpg" alt="eFPL logo" class="sh-logo">
+            <div>
+              <div class="sh-meta-top">eFPL • Season 2</div>
+              <div class="sh-title">Latest Results</div>
+              <div class="sh-sub">Most recent completed fixtures across all leagues</div>
+            </div>
+          </div>
+          <div class="sh-right">
+            <div class="sh-pill">Live Match Feed</div>
+            <div class="sh-small">Last 5 completed • no dates shown</div>
+          </div>
+        </header>
 
-  </div>
+        <div class="social-main">
+          <section class="results-wrapper">
+            <div class="results-heading-row">
+              <div>
+                <div class="results-title">Last 5 Results</div>
+                <div class="results-sub" id="results-subline">
+                  Pulled from all active Season 2 leagues.
+                </div>
+              </div>
+              <div class="results-meta-pill" id="results-count-pill">
+                0 matches loaded
+              </div>
+            </div>
+
+            <ul class="results-list" id="results-list">
+              <!-- Filled by JS -->
+            </ul>
+          </section>
+        </div>
+
+        <footer class="social-footer">
+          <div class="footer-left">
+            <img src="https://efpl-assets.pages.dev/img/e-avatar.jpg" alt="eFPL" class="footer-logo-mini">
+            <span>eFootball Fair Play League</span>
+          </div>
+          <div class="footer-mid">
+            <strong>efpl.gg</strong> • Play Fair. Play Football.
+          </div>
+          <div class="footer-right">
+            <span class="footer-tag">Matchday Recap</span>
+            <span>SPONSOR LOGO</span>
+          </div>
+        </footer>
+      </section>
+
+    </div>
+  </main>
 </div>
+
+<script>
+/* ========= CONFIG (same sources as stats page) ========= */
+const LEAGUES = [
+  { key:'Diamond',  name:'Diamond',  badge:'Diamond-League.png',  id:'1vkDOFfwBJJnSHOPM0BFcrNyZd-2nIbiDKNnWGKT3OP0' },
+  { key:'Ruby',     name:'Ruby',     badge:'Ruby-League.png',     id:'12Qg5yi3yQtsPSrd6EHxROkPNurVn5ylzELPvU4UOmGU' },
+  { key:'Sapphire', name:'Sapphire', badge:'Sapphire-League.png', id:'1qa03hOquzVg8ithFLdhrel2O3k3nTQCQZp81AWFvECg' },
+  { key:'Crystal',  name:'Crystal',  badge:'Crystal-League.png',  id:'1LqRM7ICWpENmsKH5tTuu7Bf7VQa7YoJ-9TAivruymvo' },
+  { key:'Emerald',  name:'Emerald',  badge:'Emerald-League.png',  id:'1rD_03y276wGjjlukus6icgwq_FPcOgc70654dOOG6sg' },
+  { key:'Gold',     name:'Gold',     badge:'Gold-League.png',     id:'1ACOQ3dffrjczk1LmBmPiC-wV37t9nQKEDwApOEEeFU8' },
+];
+
+const FX_TAB = 'Fixtures', FX_RANGE='C4:I94';   // Home|HG|-|AG|Away|Completed|Completed On (I)
+const EM_TAB = 'Embed',    EM_RANGE='A15:C105'; // Home|mid|Away
+const BUCKET_MS = 5*60*1000, CB = Math.floor(Date.now()/BUCKET_MS);
+
+/* ========= Utils ========= */
+function parseGviz(txt){
+  const a=txt.indexOf('{'),b=txt.lastIndexOf('}');
+  if(a===-1||b===-1)throw new Error('Bad GViz');
+  return JSON.parse(txt.slice(a,b+1));
+}
+function num(x){const n=Number(x);return Number.isFinite(n)?n:null;}
+function truthy(v){return v===true || String(v).toLowerCase()==='true' || v==='☑';}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+/* Robust-ish date parser like stats page (needed only for ordering latest results) */
+function safeDate(v){
+  if(!v && v!==0) return null;
+
+  if(typeof v === 'object'){
+    if(v.v !== undefined) return safeDate(v.v);
+    if(v.f){
+      const d = new Date(v.f);
+      if(!isNaN(d.getTime())) return d;
+    }
+  }
+
+  if(typeof v === 'number'){
+    const base = new Date(Date.UTC(1899,11,30));
+    const d = new Date(base.getTime() + v*86400000);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  if(typeof v === 'string'){
+    const s = v.trim();
+    if(!s) return null;
+
+    if(/^Date\(/i.test(s)){
+      const nums = s.replace(/[^\d,]/g,'').split(',').map(n=>parseInt(n,10));
+      if(nums.length>=3){
+        const d = new Date(nums[0], nums[1], nums[2]);
+        if(!isNaN(d.getTime())) return d;
+      }
+    }
+
+    let m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+    if(m){
+      let day = parseInt(m[1],10), month = parseInt(m[2],10)-1, year = parseInt(m[3],10);
+      if(year < 100) year += 2000;
+      const d = new Date(year,month,day);
+      if(!isNaN(d.getTime())) return d;
+    }
+
+    m = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+    if(m){
+      const d = new Date(parseInt(m[1],10), parseInt(m[2],10)-1, parseInt(m[3],10));
+      if(!isNaN(d.getTime())) return d;
+    }
+
+    const d = new Date(s);
+    if(!isNaN(d.getTime())) return d;
+  }
+
+  return null;
+}
+
+/* ========= Fetch core data (same philosophy as stats page) ========= */
+async function fetchRange(id, sheet, range){
+  const url=`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheet)}&range=${encodeURIComponent(range)}&cachebust=${CB}`;
+  const res=await fetch(url); const txt=await res.text();
+  if(!res.ok) throw new Error(res.status+' '+txt.slice(0,160));
+  return parseGviz(txt);
+}
+
+async function loadFromFixtures(id, leagueKey){
+  const data=await fetchRange(id, FX_TAB, FX_RANGE);
+  const rows=(data.table.rows||[]).map(r=>(r.c||[]).map(c=>c ? (c.f ?? c.v ?? '') : ''));
+  const items=[];
+  rows.forEach(c=>{
+    const home=c[0]??'', hg=num(c[1]), ag=num(c[3]), away=c[4]??'';
+    const completed=truthy(c[5]);
+    const doneOn = safeDate(c[6]);
+    if(!home || !away) return;
+    items.push({league:leagueKey,home,away,hg,ag,completed,doneOn});
+  });
+  return items;
+}
+
+async function loadFromEmbed(id, leagueKey){
+  const data=await fetchRange(id, EM_TAB, EM_RANGE);
+  const rows=(data.table.rows||[]).map(r=>(r.c||[]).map(c=>c?c.v:'')).filter(r=>r && !r.every(x=>String(x).trim()===''));
+  const items=[];
+  rows.forEach(r=>{
+    const home=r[0]??'', mid=r[1]??'', away=r[2]??'';
+    if(!home || !away) return;
+    const clean=String(mid).replace(/[^0-9\-]/g,'').trim();
+    const m=clean.match(/^(\d+)\s*-\s*(\d+)$/);
+    const hg=m?Number(m[1]):null, ag=m?Number(m[2]):null;
+    const completed = m ? true : false;
+    items.push({league:leagueKey,home,away,hg,ag,completed,doneOn:null});
+  });
+  return items;
+}
+
+async function loadAllMatches(){
+  const allMatches=[];
+  for(const lg of LEAGUES){
+    let leagueMatches=[];
+    try{
+      leagueMatches = await loadFromFixtures(lg.id, lg.key);
+    }catch(e){}
+    const anyScored = leagueMatches.some(m=>m.completed && Number.isFinite(m.hg) && Number.isFinite(m.ag));
+    if(anyScored){
+      allMatches.push(...leagueMatches);
+      continue;
+    }
+    try{
+      const emMatches = await loadFromEmbed(lg.id, lg.key);
+      allMatches.push(...emMatches);
+    }catch(e){}
+  }
+  return allMatches;
+}
+
+/* Build aggregate per-team stats (same as stats page’s idea) */
+function aggregateTeams(matches){
+  const teams = new Map();
+  function addTeam(name, league){
+    if(!teams.has(name)){
+      teams.set(name,{
+        team:name,
+        league:league || '',
+        gp:0,w:0,d:0,l:0,gf:0,ga:0,gd:0,pts:0
+      });
+    }
+    const t = teams.get(name);
+    if(!t.league && league) t.league = league;
+    return t;
+  }
+
+  matches.forEach(m=>{
+    if(!Number.isFinite(m.hg) || !Number.isFinite(m.ag)) return;
+    const H = addTeam(m.home, m.league);
+    const A = addTeam(m.away, m.league);
+
+    H.gp++; A.gp++;
+    H.gf += m.hg; H.ga += m.ag;
+    A.gf += m.ag; A.ga += m.hg;
+
+    if(m.hg>m.ag){
+      H.w++; H.pts+=3; A.l++;
+    }else if(m.hg<m.ag){
+      A.w++; A.pts+=3; H.l++;
+    }else{
+      H.d++; A.d++; H.pts++; A.pts++;
+    }
+  });
+
+  return Array.from(teams.values()).map(t=>({...t, gd:t.gf-t.ga}));
+}
+
+/* ========= Build Power Rankings ========= */
+function buildPowerData(teamList){
+  const eligible = teamList
+    .filter(t=>t.gp >= 5)
+    .map(t=>({
+      ...t,
+      power: t.gp>0 ? ((t.pts * 2 + t.gd) / t.gp) : 0
+    }));
+
+  eligible.sort((a,b)=>
+    b.power - a.power ||
+    b.pts   - a.pts   ||
+    b.gd    - a.gd    ||
+    b.gf    - a.gf    ||
+    a.team.localeCompare(b.team)
+  );
+
+  return eligible.slice(0,10);
+}
+
+function renderPowerCard(teams){
+  const listEl = document.getElementById('power-list');
+  const subline = document.getElementById('power-subline');
+  if(!listEl) return;
+
+  const rows = buildPowerData(teams);
+  listEl.innerHTML = '';
+
+  if(!rows.length){
+    listEl.innerHTML =
+      '<li class="power-row">' +
+        '<div class="power-team-block">' +
+          '<div class="power-team-name">No eligible teams yet</div>' +
+          '<div class="power-league-pill"><span>Need at least 5 games played.</span></div>' +
+        '</div>' +
+      '</li>';
+    if(subline) subline.textContent = 'No teams have 5 or more games played yet.';
+    return;
+  }
+
+  rows.forEach((t,i)=>{
+    const li = document.createElement('li');
+    li.className = 'power-row rank-' + (i+1);
+    li.innerHTML = `
+      <div class="power-rank-pill">${i+1}</div>
+      <div class="power-team-block">
+        <div class="power-team-name">${esc(t.team)}</div>
+        <div class="power-league-pill" data-league="${esc(t.league || '')}">
+          <span class="power-league-dot"></span>
+          <span>${esc(t.league || '')}</span>
+        </div>
+      </div>
+      <div class="power-score-pill">${t.power.toFixed(2)}</div>
+    `;
+    listEl.appendChild(li);
+  });
+
+  if(subline){
+    subline.textContent = `Showing top ${rows.length} players by Power Score across all Season 2 leagues.`;
+  }
+}
+
+/* ========= Build Latest Results ========= */
+function buildLatestResults(matches, limit){
+  const completed = matches.filter(m=>m.completed && Number.isFinite(m.hg) && Number.isFinite(m.ag));
+  if(!completed.length) return [];
+
+  const dated = completed.filter(m => m.doneOn instanceof Date);
+  let ordered;
+  if(dated.length){
+    ordered = [...dated].sort((a,b)=>b.doneOn - a.doneOn);
+  }else{
+    // fall back to sheet order: assume later entries are later fixtures
+    ordered = [...completed];
+  }
+  return ordered.slice(0, limit);
+}
+
+function renderLatestCard(matches){
+  const listEl = document.getElementById('results-list');
+  const subline = document.getElementById('results-subline');
+  const countPill = document.getElementById('results-count-pill');
+  if(!listEl) return;
+
+  const rows = buildLatestResults(matches, 5);
+  listEl.innerHTML = '';
+
+  if(!rows.length){
+    listEl.innerHTML =
+      '<li class="results-row">' +
+        '<div class="results-left">' +
+          '<div class="results-teams">No completed matches yet.</div>' +
+        '</div>' +
+      '</li>';
+    if(subline) subline.textContent = 'Once results are completed, the latest 5 will appear here.';
+    if(countPill) countPill.textContent = '0 matches loaded';
+    return;
+  }
+
+  rows.forEach((m,i)=>{
+    const li = document.createElement('li');
+    li.className = 'results-row';
+    li.innerHTML = `
+      <div class="results-left">
+        <div class="results-league-pill" data-league="${esc(m.league || '')}">
+          <span class="results-league-dot"></span>
+          <span>${esc(m.league || '')}</span>
+        </div>
+        <div class="results-teams">
+          ${esc(m.home)} ${m.hg}-${m.ag} ${esc(m.away)}
+        </div>
+      </div>
+      <div class="results-score-pill">${m.hg}-${m.ag}</div>
+    `;
+    listEl.appendChild(li);
+  });
+
+  if(subline){
+    subline.textContent = `Showing the latest ${rows.length} completed fixtures across all Season 2 leagues.`;
+  }
+  if(countPill){
+    countPill.textContent = `${rows.length} matches loaded`;
+  }
+}
+
+/* ========= Nav switching ========= */
+document.addEventListener('click', (e)=>{
+  const btn = e.target.closest('.nav-item-btn');
+  if(!btn) return;
+  const targetId = btn.dataset.target;
+  if(!targetId) return;
+
+  document.querySelectorAll('.nav-item-btn').forEach(b=>b.classList.toggle('active', b===btn));
+  document.querySelectorAll('.card-view').forEach(card=>{
+    card.classList.toggle('active', card.id===targetId);
+  });
+});
+
+/* ========= Boot: load data + render cards ========= */
+(async function bootSocialFactory(){
+  try{
+    const matches = await loadAllMatches();
+    const teams = aggregateTeams(matches);
+
+    renderPowerCard(teams);
+    renderLatestCard(matches);
+  }catch(err){
+    console.error('Error loading social data', err);
+    const pl = document.getElementById('power-list');
+    if(pl){
+      pl.innerHTML = '<li class="power-row"><div class="power-team-block"><div class="power-team-name">Error loading data.</div></div></li>';
+    }
+    const rl = document.getElementById('results-list');
+    if(rl){
+      rl.innerHTML = '<li class="results-row"><div class="results-left"><div class="results-teams">Error loading data.</div></div></li>';
+    }
+  }
+})();
+</script>
 </body>
 </html>
