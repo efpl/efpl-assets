@@ -569,7 +569,7 @@ tr.row-selected{
   white-space:nowrap;
 }
 
-/* override generic striping for this table */
+/* reset generic striping on this table */
 #tbl-power tbody tr:nth-child(odd),
 #tbl-power tbody tr:nth-child(even){
   background:none;
@@ -582,22 +582,22 @@ tr.row-selected{
 
 /* league gradient bands (F1 style) */
 #tbl-power tbody tr.league-Diamond{
-  background:linear-gradient(90deg, rgba(153,236,255,.26), rgba(15,30,73,.92));
+  background:linear-gradient(90deg, rgba(153,236,255,.26), rgba(15,30,73,.9));
 }
 #tbl-power tbody tr.league-Ruby{
-  background:linear-gradient(90deg, rgba(224,28,113,.26), rgba(15,30,73,.92));
+  background:linear-gradient(90deg, rgba(224,28,113,.26), rgba(15,30,73,.9));
 }
 #tbl-power tbody tr.league-Sapphire{
-  background:linear-gradient(90deg, rgba(0,138,241,.26), rgba(15,30,73,.92));
+  background:linear-gradient(90deg, rgba(0,138,241,.26), rgba(15,30,73,.9));
 }
 #tbl-power tbody tr.league-Crystal{
-  background:linear-gradient(90deg, rgba(134,138,241,.26), rgba(15,30,73,.92));
+  background:linear-gradient(90deg, rgba(134,138,241,.26), rgba(15,30,73,.9));
 }
 #tbl-power tbody tr.league-Emerald{
-  background:linear-gradient(90deg, rgba(61,154,92,.26), rgba(15,30,73,.92));
+  background:linear-gradient(90deg, rgba(61,154,92,.26), rgba(15,30,73,.9));
 }
 #tbl-power tbody tr.league-Gold{
-  background:linear-gradient(90deg, rgba(212,175,55,.26), rgba(15,30,73,.92));
+  background:linear-gradient(90deg, rgba(212,175,55,.26), rgba(15,30,73,.9));
 }
 
 /* podium emphasis */
@@ -658,7 +658,7 @@ tr.row-selected{
   color:#020617;
 }
 
-/* tighter cell padding */
+/* team cell slightly tighter */
 #tbl-power td{
   padding:9px 10px;
 }
@@ -666,7 +666,7 @@ tr.row-selected{
   padding-left:10px;
 }
 
-/* league pill */
+/* league pill (reusing latest style, smaller) */
 .pr-league-cell{
   text-align:center;
 }
@@ -713,8 +713,7 @@ tr.row-selected{
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  gap:4px;
-  min-width:48px;
+  min-width:42px;
   padding:3px 8px;
   border-radius:999px;
   font-size:11px;
@@ -724,24 +723,15 @@ tr.row-selected{
   color:var(--muted);
   background:rgba(0,0,0,.3);
 }
-.pr-move span.arrow{
-  font-size:12px;
-}
 .pr-move.up{
   border-color:rgba(47,191,113,.9);
   background:rgba(47,191,113,.16);
   color:#b8ffd6;
 }
-.pr-move.up span.arrow{
-  color:#2fbf71;
-}
 .pr-move.down{
   border-color:rgba(224,28,113,.9);
   background:rgba(224,28,113,.16);
   color:#ffd0e4;
-}
-.pr-move.down span.arrow{
-  color:#e01c71;
 }
 .pr-move.new{
   border-color:rgba(249,215,28,.9);
@@ -1035,9 +1025,9 @@ let TEAM_INDEX = new Map();
 let FORM_INDEX = new Map();
 let CURRENT_TEAM = null;
 
-/* Optional movement tracker: set per team when you update rankings */
+/* Optional: movement tracker for Power Rankings (team name => change since last update) */
 const POWER_MOVES = {
-  // 'Player Name': +2,
+  // 'Example Player': +2,
   // 'Another Player': -1,
   // 'New Entry FC': 'NEW'
 };
@@ -1432,41 +1422,32 @@ function buildActivityStats(matches){
 
 /* ===== RENDER HELPERS ===== */
 function renderBadges(){
-  const host = byId('badges');
-  host.innerHTML = '';
-
-  const all = document.createElement('div');
-  all.className = 'badge active';
-  all.dataset.key = 'All';
-  all.innerHTML = `<img src="https://efpl-assets.pages.dev/img/logo.png" alt="All"><span>All</span>`;
-  all.onclick = () => selectLeague('All');
+  const host=byId('badges'); host.innerHTML='';
+  const all=document.createElement('div');
+  all.className='badge active'; all.dataset.key='All';
+  all.innerHTML=`<img src="https://efpl-assets.pages.dev/img/logo.png" alt="All"><span>All</span>`;
+  all.onclick=()=>selectLeague('All');
   host.appendChild(all);
-
-  LEAGUES.filter(x => x.id).forEach(lg => {
-    const div = document.createElement('div');
-    div.className = 'badge';
-    div.dataset.key = lg.key;
-    div.innerHTML = `<img src="${BADGE_BASE}${lg.badge}" alt="${esc(lg.key)}"><span>${esc(lg.key)}</span>`;
-    div.onclick = () => selectLeague(lg.key);
+  LEAGUES.filter(x=>x.id).forEach(lg=>{
+    const div=document.createElement('div');
+    div.className='badge'; div.dataset.key=lg.key;
+    div.innerHTML=`<img src="${BADGE_BASE}${lg.badge}" alt="${esc(lg.key)}"><span>${esc(lg.key)}</span>`;
+    div.onclick=()=>selectLeague(lg.key);
     host.appendChild(div);
   });
 }
-
 function selectLeague(key){
-  [...document.querySelectorAll('.badge')].forEach(b =>
-    b.classList.toggle('active', b.dataset.key === key)
-  );
+  [...document.querySelectorAll('.badge')].forEach(b=>b.classList.toggle('active', b.dataset.key===key));
   CURRENT_TEAM = null;
   run([key]);
 }
 
 function teamCell(t){
   const lg = t.league || 'Diamond';
-  return `
-    <span class="teamwrap ${esc(lg)}" data-team="${esc(t.team)}">
-      <img class="lg ${esc(lg)}" src="${BADGE_BASE}${lg}-League.png" alt="${esc(lg)}">
-      <span class="teamname" title="View profile: ${esc(t.team)}">${esc(t.team)}</span>
-    </span>`;
+  return `<span class="teamwrap ${esc(lg)}" data-team="${esc(t.team)}">
+    <img class="lg ${esc(lg)}" src="${BADGE_BASE}${lg}-League.png" alt="${esc(lg)}">
+    <span class="teamname" title="View profile: ${esc(t.team)}">${esc(t.team)}</span>
+  </span>`;
 }
 
 function renderRails(agg, leagues, scheduledTotal){
@@ -1474,39 +1455,25 @@ function renderRails(agg, leagues, scheduledTotal){
   byId('kpi-goals').textContent = fmt(agg.goals);
   byId('kpi-avg').textContent = agg.avg.toFixed(2);
   byId('kpi-leagues').textContent = leagues.length;
-
   byId('split-text').textContent =
-    `${fmt(agg.homeW)} H • ${fmt(agg.draw)} D • ${fmt(agg.awayW)} A • ${pct(agg.homeW,agg.played)} / ${pct(agg.draw,agg.played)} / ${pct(agg.awayW,agg.played)}`;
-
-  byId('seg-home').style.width = (agg.played ? agg.homeW * 100 / agg.played : 0) + '%';
-  byId('seg-draw').style.width = (agg.played ? agg.draw * 100 / agg.played : 0) + '%';
-  byId('seg-away').style.width = (agg.played ? agg.awayW * 100 / agg.played : 0) + '%';
-
+    `${fmt(agg.homeW)} H • ${fmt(agg.draw)} D • ${fmt(agg.awayW)} A `
+    + `• ${pct(agg.homeW,agg.played)} / ${pct(agg.draw,agg.played)} / ${pct(agg.awayW,agg.played)}`;
+  byId('seg-home').style.width = (agg.played?agg.homeW*100/agg.played:0) + '%';
+  byId('seg-draw').style.width = (agg.played?agg.draw*100/agg.played:0) + '%';
+  byId('seg-away').style.width = (agg.played?agg.awayW*100/agg.played:0) + '%';
   byId('prog-text').textContent = scheduledTotal
-    ? `${fmt(agg.played)} / ${fmt(scheduledTotal)} • ${pct(agg.played, scheduledTotal)}`
+    ? `${fmt(agg.played)} / ${fmt(scheduledTotal)} • ${pct(agg.played,scheduledTotal)}`
     : '0 / 0 • 0.0%';
-
-  byId('seg-prog').style.width = scheduledTotal
-    ? (agg.played * 100 / scheduledTotal) + '%'
-    : '0%';
+  byId('seg-prog').style.width = scheduledTotal ? (agg.played*100/scheduledTotal)+'%' : '0%';
 }
 
 function renderLeaderboard(teams){
-  const tbody = byId('tbl-leader').querySelector('tbody');
-  tbody.innerHTML = '';
-
-  const rows = [...teams].sort((a, b) =>
-    b.pts - a.pts ||
-    (b.gd - a.gd) ||
-    (b.gf - a.gf) ||
-    a.team.localeCompare(b.team)
-  );
-
-  rows.forEach((t, i) => {
-    const tr = document.createElement('tr');
+  const tbody = byId('tbl-leader').querySelector('tbody'); tbody.innerHTML='';
+  const rows=[...teams].sort((a,b)=> b.pts-a.pts || (b.gd-a.gd) || (b.gf-a.gf) || a.team.localeCompare(b.team));
+  rows.forEach((t,i)=>{
+    const tr=document.createElement('tr');
     tr.dataset.team = t.team;
-    if (CURRENT_TEAM && t.team === CURRENT_TEAM) tr.classList.add('row-selected');
-
+    if(CURRENT_TEAM && t.team === CURRENT_TEAM) tr.classList.add('row-selected');
     tr.innerHTML = `
       <td class="right numeric">${i+1}</td>
       <td class="left">${teamCell(t)}</td>
@@ -1515,8 +1482,7 @@ function renderLeaderboard(teams){
       <td class="right numeric">${t.d}</td>
       <td class="right numeric">${t.l}</td>
       <td class="right numeric">${t.gd}</td>
-      <td class="right numeric"><strong>${t.pts}</strong></td>
-    `;
+      <td class="right numeric"><strong>${t.pts}</strong></td>`;
     tbody.appendChild(tr);
   });
 }
@@ -1529,7 +1495,7 @@ function renderHighlights(agg){
   byId('hi-mostcs').textContent = agg.mostCS ? `${agg.mostCS.team} - ${agg.mostCS.cs}` : '-';
 }
 
-/* POWER RANKINGS (your current version — note we will replace this later with the new upgraded version) */
+/* Power Rankings */
 function renderPower(teams){
   const tbody = byId('tbl-power').querySelector('tbody');
   if(!tbody) return;
@@ -1552,30 +1518,70 @@ function renderPower(teams){
     .slice(0,10);
 
   rows.forEach((t,i)=>{
-    const tr = document.createElement('tr');
+    const rank = i + 1;
+    const lg   = t.league || '';
+    const tr   = document.createElement('tr');
     tr.dataset.team = t.team;
 
-    if(i === 0) tr.classList.add('power-1');
-    else if(i === 1 || i === 2) tr.classList.add('power-2-3');
+    if(rank === 1) tr.classList.add('power-1');
+    else if(rank === 2 || rank === 3) tr.classList.add('power-2-3');
+    if(lg) tr.classList.add('league-' + lg);
 
     if(CURRENT_TEAM && t.team === CURRENT_TEAM) tr.classList.add('row-selected');
 
+    let rankCls = 'pr-rank-badge';
+    if(rank === 1) rankCls += ' pr-rank-1';
+    else if(rank === 2) rankCls += ' pr-rank-2';
+    else if(rank === 3) rankCls += ' pr-rank-3';
+
+    const leagueSafe = esc(lg);
+
+    const move = POWER_MOVES[t.team] ?? 0;
+    let moveText = '—';
+    let moveCls  = 'pr-move';
+
+    if(move === 'NEW'){
+      moveText = 'NEW';
+      moveCls += ' new';
+    }else if(typeof move === 'number'){
+      if(move > 0){
+        moveText = '▲' + move;
+        moveCls += ' up';
+      }else if(move < 0){
+        moveText = '▼' + Math.abs(move);
+        moveCls += ' down';
+      }else{
+        moveText = '—';
+      }
+    }
+
     tr.innerHTML = `
-      <td class="right numeric">${i+1}</td>
-      <td class="left">${teamCell(t)}</td>
-      <td class="center">${esc(t.league || '')}</td>
+      <td class="pr-rank-cell">
+        <span class="${rankCls}">${rank}</span>
+      </td>
+      <td class="left">
+        ${teamCell(t)}
+      </td>
+      <td class="pr-league-cell">
+        <span class="pr-league-pill ${leagueSafe}">${leagueSafe}</span>
+      </td>
       <td class="right numeric">
         <span class="power-score-pill">${t.power.toFixed(2)}</span>
       </td>
+      <td class="pr-move-cell">
+        <span class="${moveCls}">${moveText}</span>
+      </td>
     `;
+
     tbody.appendChild(tr);
   });
 
   if(rows.length === 0){
-    tbody.innerHTML = `<tr><td colspan="4" class="center note">Power Rankings will appear once at least 5 games have been played.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5" class="center note">Power Rankings will appear once at least 5 games have been played.</td></tr>`;
   }
 }
 
+/* Best offence / defence tables */
 function renderTopTables(teams){
   const gfRows = [...teams]
     .filter(t => t.gp > 0)
@@ -1590,19 +1596,16 @@ function renderTopTables(teams){
 
   const gfBody = byId('tbl-gf').querySelector('tbody');
   gfBody.innerHTML = '';
-
   gfRows.forEach((t,i)=>{
     const tr = document.createElement('tr');
     tr.dataset.team = t.team;
     if (CURRENT_TEAM && t.team === CURRENT_TEAM) tr.classList.add('row-selected');
-
     tr.innerHTML = `
       <td class="right numeric">${i+1}</td>
       <td class="left">${teamCell(t)}</td>
       <td class="right numeric">${t.gf}</td>
       <td class="right numeric">${t.gp}</td>
-      <td class="right numeric">${t.gfPerGame.toFixed(2)}</td>
-    `;
+      <td class="right numeric">${t.gfPerGame.toFixed(2)}</td>`;
     gfBody.appendChild(tr);
   });
 
@@ -1619,32 +1622,27 @@ function renderTopTables(teams){
 
   const gaBody = byId('tbl-ga').querySelector('tbody');
   gaBody.innerHTML = '';
-
   gaRows.forEach((t,i)=>{
     const tr = document.createElement('tr');
     tr.dataset.team = t.team;
     if (CURRENT_TEAM && t.team === CURRENT_TEAM) tr.classList.add('row-selected');
-
     tr.innerHTML = `
       <td class="right numeric">${i+1}</td>
       <td class="left">${teamCell(t)}</td>
       <td class="right numeric">${t.ga}</td>
       <td class="right numeric">${t.gp}</td>
-      <td class="right numeric">${t.gaPerGame.toFixed(2)}</td>
-    `;
+      <td class="right numeric">${t.gaPerGame.toFixed(2)}</td>`;
     gaBody.appendChild(tr);
   });
 }
 
+/* Per-league mini cards */
 function renderMini(minis){
-  const host = byId('league-mini');
-  host.innerHTML = '';
-
+  const host=byId('league-mini'); host.innerHTML='';
   minis.forEach(m=>{
     const line = `${m.played?m.avg.toFixed(2):'0.00'} avg • ${pct(m.homeW,m.played)} / ${pct(m.draw,m.played)} / ${pct(m.awayW,m.played)} • ${pct(m.played,m.scheduled||0)}`;
-
-    const div = document.createElement('div');
-    div.className = 'league-mini-card ' + esc(m.league);
+    const div=document.createElement('div');
+    div.className='league-mini-card '+esc(m.league);
     div.innerHTML = `
       <div class="league-mini-bar"></div>
       <img class="league-mini-badge" src="${BADGE_BASE}${m.league}-League.png" alt="${esc(m.league)}">
@@ -1656,18 +1654,15 @@ function renderMini(minis){
   });
 }
 
-/* FORM & PLAYER PROFILE */
+/* Form helpers + player profile */
 function buildFormHtmlFromRaw(raw){
   const cleaned = String(raw ?? '')
     .replace(/[,\s\-_/|.]+/g,'')
     .toUpperCase()
     .replace(/[^WDL]/g,'');
-
   if(!cleaned) return '';
-
   const seq = [...cleaned].slice(-5);
   if(!seq.length) return '';
-
   return seq.map(ch=>{
     let cls='form-pill';
     if(ch==='W') cls+=' win';
@@ -1688,7 +1683,6 @@ function buildPlayerProfileHtml(team){
   if(!formHtml){
     const results = Array.isArray(team.results) ? team.results : [];
     const lastFive = results.slice(-5);
-
     if(lastFive.length){
       formHtml = lastFive.map(res=>{
         let cls='form-pill';
@@ -1697,7 +1691,7 @@ function buildPlayerProfileHtml(team){
         else cls+=' loss';
         return `<span class="${cls}">${esc(res)}</span>`;
       }).join('');
-    } else {
+    }else{
       formHtml = '<span class="note">No matches yet</span>';
     }
   }
@@ -1735,15 +1729,12 @@ function renderSelectedPlayer(teamName){
   const team = TEAM_INDEX.get(teamName);
   const panel = byId('player-panel-content');
   if(!panel || !team) return;
-
   panel.innerHTML = buildPlayerProfileHtml(team);
 }
 
 function applySelectionHighlight(){
-  document.querySelectorAll('tr.row-selected').forEach(tr => tr.classList.remove('row-selected'));
-
+  document.querySelectorAll('tr.row-selected').forEach(tr=>tr.classList.remove('row-selected'));
   if(!CURRENT_TEAM) return;
-
   document.querySelectorAll('tr[data-team]').forEach(tr=>{
     if(tr.dataset.team === CURRENT_TEAM){
       tr.classList.add('row-selected');
@@ -1751,9 +1742,8 @@ function applySelectionHighlight(){
   });
 }
 
-/* PLAYER FLYOUT */
+/* Player flyout */
 let playerFlyout = null;
-
 function ensureFlyout(){
   if(playerFlyout) return playerFlyout;
   playerFlyout = document.createElement('div');
@@ -1761,11 +1751,9 @@ function ensureFlyout(){
   document.body.appendChild(playerFlyout);
   return playerFlyout;
 }
-
 function showFlyoutFor(teamName, anchorEl){
   const team = TEAM_INDEX.get(teamName);
   if(!team) return;
-
   const fly = ensureFlyout();
   fly.innerHTML = buildPlayerProfileHtml(team);
 
@@ -1778,19 +1766,17 @@ function showFlyoutFor(teamName, anchorEl){
   const width = fly.offsetWidth || 260;
   let top = rect.top + scrollY - 4;
   let left = rect.right + 8;
-
   const maxLeft = viewportWidth - width - 8;
   if(left > maxLeft) left = Math.max(8, rect.left - width - 8);
 
   fly.style.top = `${top}px`;
   fly.style.left = `${left}px`;
 }
-
 function hideFlyout(){
   if(playerFlyout) playerFlyout.style.display = 'none';
 }
 
-/* CLICK + HOVER HOOKS */
+/* Click + hover for team profile */
 document.addEventListener('click', (e)=>{
   const wrap = e.target.closest('.teamwrap');
   if(wrap && wrap.dataset.team){
@@ -1801,18 +1787,15 @@ document.addEventListener('click', (e)=>{
 });
 
 const supportsHover = window.matchMedia && window.matchMedia('(hover:hover)').matches;
-
 if(supportsHover){
   let hoverTimeout = null;
-
   document.addEventListener('mouseover', (e)=>{
     const wrap = e.target.closest('.teamwrap');
     if(!wrap || !wrap.dataset.team) return;
-
+    const teamName = wrap.dataset.team;
     clearTimeout(hoverTimeout);
-    showFlyoutFor(wrap.dataset.team, wrap);
+    showFlyoutFor(teamName, wrap);
   });
-
   document.addEventListener('mouseout', (e)=>{
     const to = e.relatedTarget;
     if(to && to.closest && to.closest('.player-flyout')) return;
@@ -1820,7 +1803,7 @@ if(supportsHover){
   });
 }
 
-/* LATEST RESULTS */
+/* ===== Latest Results (last 5 completed, aligned scores) ===== */
 function renderLatestResults(matches){
   const host = byId('latest-results');
   if(!host) return;
@@ -1830,7 +1813,7 @@ function renderLatestResults(matches){
     .sort((a,b)=>{
       const ta = (a.doneOn instanceof Date) ? a.doneOn.getTime() : 0;
       const tb = (b.doneOn instanceof Date) ? b.doneOn.getTime() : 0;
-      return tb - ta;
+      return tb - ta; // newest first
     })
     .slice(0,5);
 
@@ -1843,14 +1826,15 @@ function renderLatestResults(matches){
     const parts = formatLatestDateParts(m);
     const leagueName = m.league || '';
     const leagueSafe = esc(leagueName);
-
     return `
       <div class="latest-item">
         <div class="latest-meta">
           <div class="latest-date-day">${esc(parts.day)}</div>
           <div class="latest-date-mon">${esc(parts.mon)}</div>
         </div>
-        <img class="latest-badge" src="${BADGE_BASE}${leagueName}-League.png" alt="${leagueSafe} badge">
+        <img class="latest-badge"
+          src="${BADGE_BASE}${leagueName}-League.png"
+          alt="${leagueSafe} badge">
         <div class="latest-main">
           <div class="latest-teams">
             <span class="latest-team">${esc(m.home)}</span>
@@ -1869,13 +1853,13 @@ function renderLatestResults(matches){
   }).join('');
 }
 
-/* MAIN CONTROLLER */
+/* ===== MAIN CONTROLLER ===== */
 async function run(selectedKeys){
-  if(!selectedKeys || !selectedKeys.length) selectedKeys = ['All'];
+  if(!selectedKeys||!selectedKeys.length) selectedKeys=['All'];
 
   const selected = selectedKeys.includes('All')
-    ? LEAGUES.filter(x => x.id)
-    : LEAGUES.filter(x => x.id && selectedKeys.includes(x.key));
+    ? LEAGUES.filter(x=>x.id)
+    : LEAGUES.filter(x=>x.id && selectedKeys.includes(x.key));
 
   const leagueResults = await Promise.all(
     selected.map(lg => loadLeagueBundle(lg))
@@ -1895,7 +1879,7 @@ async function run(selectedKeys){
     });
   });
 
-  const leagues = selected.map(x => x.key);
+  const leagues = selected.map(x=>x.key);
   const agg = aggregate(matches);
   const minis = leagueAggregates(perLeague);
   const activity = buildActivityStats(matches);
@@ -1921,7 +1905,7 @@ async function run(selectedKeys){
   }
 }
 
-/* BOOT */
+/* ===== BOOT ===== */
 (function boot(){
   renderBadges();
   run(['All']);
