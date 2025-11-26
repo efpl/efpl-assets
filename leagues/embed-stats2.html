@@ -523,221 +523,174 @@ tr.row-selected{
 .latest-league-pill.Gold{     background:var(--gold); }
 
 .latest-league-wrapper{
-  min-width: 110px;
+  min-width: 110px;     /* fixed column width */
   max-width: 110px;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: center;   
+  align-items: center;      
 }
 
 .latest-league-pill{
-  white-space: nowrap;
+  white-space: nowrap;  /* Prevents text from wrapping */
   text-align: center;
 }
 
-/* ========= Power Rankings (Top 10) ========= */
-.power-card{
-  margin-top:10px;
-  position:relative;
-  overflow:hidden;
+/* ========= POWER RANKINGS — COMPLETE UPGRADED CSS ========= */
+
+/* Reset base backgrounds so gradients show */
+#tbl-power tbody tr { background: none !important; }
+
+/* --- F1-style league gradient rows --- */
+#tbl-power tbody tr.league-Diamond {
+  background: linear-gradient(90deg, rgba(153,236,255,0.28), rgba(0,20,59,0.1));
 }
-.power-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-  margin-bottom:8px;
+#tbl-power tbody tr.league-Ruby {
+  background: linear-gradient(90deg, rgba(224,28,113,0.28), rgba(0,20,59,0.1));
 }
-.power-eyebrow{
-  font-size:11px;
-  text-transform:uppercase;
-  letter-spacing:.12em;
-  color:var(--muted);
+#tbl-power tbody tr.league-Sapphire {
+  background: linear-gradient(90deg, rgba(0,138,241,0.28), rgba(0,20,59,0.1));
 }
-.power-title{
-  font-size:16px;
-  font-weight:900;
+#tbl-power tbody tr.league-Crystal {
+  background: linear-gradient(90deg, rgba(134,138,241,0.28), rgba(0,20,59,0.1));
 }
-.power-badge{
-  border-radius:999px;
-  border:1px solid rgba(249,215,28,.7);
-  padding:4px 12px;
-  font-size:11px;
-  font-weight:700;
-  background:linear-gradient(90deg, rgba(249,215,28,.22), rgba(249,215,28,.05));
-  color:#fff;
-  white-space:nowrap;
+#tbl-power tbody tr.league-Emerald {
+  background: linear-gradient(90deg, rgba(61,154,92,0.28), rgba(0,20,59,0.1));
+}
+#tbl-power tbody tr.league-Gold {
+  background: linear-gradient(90deg, rgba(212,175,55,0.28), rgba(0,20,59,0.1));
 }
 
-/* reset generic striping on this table */
-#tbl-power tbody tr:nth-child(odd),
-#tbl-power tbody tr:nth-child(even){
-  background:none;
+/* --- Podium glow --- */
+#tbl-power tbody tr.power-1 {
+  box-shadow: 0 0 25px rgba(249,215,28,0.8);
+}
+#tbl-power tbody tr.power-2-3 {
+  box-shadow: 0 0 14px rgba(249,215,28,0.35);
 }
 
-/* base row style */
-#tbl-power tbody tr{
-  transition:box-shadow .25s ease, transform .12s ease, background .25s ease;
-}
+/* --- Rank circle badge --- */
+.pr-rank-cell { text-align:center; }
 
-/* league gradient bands (F1 style) */
-#tbl-power tbody tr.league-Diamond{
-  background:linear-gradient(90deg, rgba(153,236,255,.26), rgba(15,30,73,.9));
-}
-#tbl-power tbody tr.league-Ruby{
-  background:linear-gradient(90deg, rgba(224,28,113,.26), rgba(15,30,73,.9));
-}
-#tbl-power tbody tr.league-Sapphire{
-  background:linear-gradient(90deg, rgba(0,138,241,.26), rgba(15,30,73,.9));
-}
-#tbl-power tbody tr.league-Crystal{
-  background:linear-gradient(90deg, rgba(134,138,241,.26), rgba(15,30,73,.9));
-}
-#tbl-power tbody tr.league-Emerald{
-  background:linear-gradient(90deg, rgba(61,154,92,.26), rgba(15,30,73,.9));
-}
-#tbl-power tbody tr.league-Gold{
-  background:linear-gradient(90deg, rgba(212,175,55,.26), rgba(15,30,73,.9));
-}
-
-/* podium emphasis */
-#tbl-power tbody tr.power-1{
-  box-shadow:0 0 22px rgba(249,215,28,.6);
-  position:relative;
-}
-#tbl-power tbody tr.power-1 td:first-child{
-  box-shadow:inset 4px 0 0 rgba(249,215,28,.9);
-}
-#tbl-power tbody tr.power-2-3{
-  box-shadow:0 0 14px rgba(249,215,28,.35);
-}
-
-/* hover */
-#tbl-power tbody tr:hover{
-  box-shadow:0 0 18px rgba(0,0,0,.9);
-  transform:translateY(-1px);
-}
-
-/* header */
-#tbl-power thead th{
-  font-size:11.5px;
-  background:var(--card2);
-  border-bottom:1px solid var(--line);
-}
-
-/* rank badge */
-.pr-rank-cell{
-  text-align:center;
-}
-.pr-rank-badge{
+.pr-rank-badge {
   display:inline-flex;
   align-items:center;
   justify-content:center;
   width:30px;
   height:30px;
-  border-radius:999px;
+  border-radius:50%;
+  background:#0b1636;
+  border:2px solid rgba(249,215,28,0.9);
   font-weight:900;
   font-size:15px;
-  border:2px solid rgba(249,215,28,.8);
-  background:#020617;
   color:var(--accent);
-  box-shadow:0 0 0 1px rgba(0,0,0,.6);
 }
-.pr-rank-1{
+
+/* Gold / Silver / Bronze */
+.pr-rank-1 {
+  background:var(--accent) !important;
+  color:#0b1b3d !important;
   width:34px;
   height:34px;
-  background:var(--accent);
-  color:#0b1b3d;
 }
-.pr-rank-2{
-  background:linear-gradient(135deg,#dde3f0,#9aa4b2);
-  color:#020617;
+.pr-rank-2 {
+  background:linear-gradient(135deg,#dde3f0,#9aa4b2) !important;
+  color:#0b1b3d !important;
 }
-.pr-rank-3{
-  background:linear-gradient(135deg,#f6c38b,#b88650);
-  color:#020617;
+.pr-rank-3 {
+  background:linear-gradient(135deg,#f6c38b,#b88650) !important;
+  color:#0b1b3d !important;
 }
 
-/* team cell slightly tighter */
-#tbl-power td{
-  padding:9px 10px;
-}
-#tbl-power td:nth-child(2) .teamwrap{
-  padding-left:10px;
-}
+/* --- League pill column --- */
+.pr-league-cell { text-align:center; }
 
-/* league pill (reusing latest style, smaller) */
-.pr-league-cell{
-  text-align:center;
-}
-.pr-league-pill{
-  min-width:64px;
+.pr-league-pill {
   padding:3px 10px;
+  min-width:65px;
   border-radius:999px;
-  font-size:11px;
   font-weight:700;
+  font-size:11px;
   text-transform:uppercase;
-  letter-spacing:.06em;
-  text-align:center;
+  letter-spacing:.05em;
   color:#0b1b3d;
-  box-shadow:0 0 0 1px rgba(0,0,0,.45);
   white-space:nowrap;
+  box-shadow:0 0 0 1px rgba(0,0,0,0.4);
 }
-.pr-league-pill.Diamond{  background:var(--diamond); }
-.pr-league-pill.Ruby{     background:var(--ruby); }
-.pr-league-pill.Sapphire{ background:var(--sapphire); }
-.pr-league-pill.Crystal{  background:var(--crystal); }
-.pr-league-pill.Emerald{  background:var(--emerald); }
-.pr-league-pill.Gold{     background:var(--gold); }
 
-/* power pill – hero metric */
-.power-score-pill{
+.pr-league-pill.Diamond { background:var(--diamond); }
+.pr-league-pill.Ruby { background:var(--ruby); }
+.pr-league-pill.Sapphire { background:var(--sapphire); }
+.pr-league-pill.Crystal { background:var(--crystal); }
+.pr-league-pill.Emerald { background:var(--emerald); }
+.pr-league-pill.Gold { background:var(--gold); }
+
+/* --- Power Score pill (hero metric) --- */
+.power-score-pill {
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  min-width:4.2ch;
-  padding:4px 12px;
+  padding:5px 14px;
   border-radius:999px;
-  font-size:13px;
-  font-weight:900;
   background:var(--accent);
   color:#0b1b3d;
-  box-shadow:0 0 0 1px rgba(0,0,0,.7), 0 0 18px rgba(249,215,28,.7);
+  font-weight:900;
+  font-size:14px;
+  box-shadow:0 0 0 1px rgba(0,0,0,0.7), 0 0 14px rgba(249,215,28,0.65);
 }
 
-/* movement chip */
-.pr-move-cell{
-  text-align:center;
-}
-.pr-move{
+/* --- Movement Arrow Column --- */
+.pr-move-cell { text-align:center; }
+
+.pr-move {
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  min-width:42px;
-  padding:3px 8px;
+  gap:4px;
+  padding:3px 9px;
+  min-width:44px;
   border-radius:999px;
   font-size:11px;
   font-weight:700;
-  letter-spacing:.04em;
-  border:1px solid rgba(154,164,178,.5);
-  color:var(--muted);
-  background:rgba(0,0,0,.3);
+  border:1px solid rgba(255,255,255,0.18);
 }
-.pr-move.up{
-  border-color:rgba(47,191,113,.9);
-  background:rgba(47,191,113,.16);
+
+/* neutral */
+.pr-move.neutral {
+  background:rgba(255,255,255,0.06);
+  color:var(--muted);
+}
+
+/* UP with CSS green arrow */
+.pr-move.up {
+  background:rgba(47,191,113,0.18);
+  border-color:rgba(47,191,113,0.9);
   color:#b8ffd6;
 }
-.pr-move.down{
-  border-color:rgba(224,28,113,.9);
-  background:rgba(224,28,113,.16);
+.pr-move.up::before {
+  content:"▲";
+  color:#2fbf71;
+  font-size:12px;
+}
+
+/* DOWN with CSS red arrow */
+.pr-move.down {
+  background:rgba(224,28,113,0.18);
+  border-color:rgba(224,28,113,0.9);
   color:#ffd0e4;
 }
-.pr-move.new{
-  border-color:rgba(249,215,28,.9);
-  background:rgba(249,215,28,.2);
+.pr-move.down::before {
+  content:"▼";
+  color:#e01c71;
+  font-size:12px;
+}
+
+/* NEW entry */
+.pr-move.new {
+  background:rgba(249,215,28,0.22);
+  border-color:rgba(249,215,28,0.9);
   color:var(--accent);
 }
+
 
 /* ========= Responsive ========= */
 @media (max-width:1100px){
@@ -933,18 +886,25 @@ tr.row-selected{
             </div>
             <div class="power-badge">Min. 5 games • (Pts × 2 + GD) ÷ GP</div>
           </div>
-          <table id="tbl-power">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th class="left">Team</th>
-                <th>LG</th>
-                <th>Power</th>
-                <th>Δ</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
+<table id="tbl-power">
+  <colgroup>
+    <col style="width: 4.2ch;">   <!-- Rank -->
+    <col style="width: 6ch;">     <!-- Movement -->
+    <col style="width: auto;">    <!-- Team -->
+    <col style="width: 8ch;">     <!-- League pill -->
+    <col style="width: 8ch;">     <!-- Power -->
+  </colgroup>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th class="center">Δ</th>
+      <th class="left">Team</th>
+      <th>LG</th>
+      <th>Power</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
           <div class="note" style="margin-top:4px">
             Power Score rewards form, goal difference and consistency across all leagues.
           </div>
@@ -1025,13 +985,8 @@ let TEAM_INDEX = new Map();
 let FORM_INDEX = new Map();
 let CURRENT_TEAM = null;
 
-/* Optional: movement tracker for Power Rankings (team name => change since last update) */
-const POWER_MOVES = {
-  // 'Example Player': +2,
-  // 'Another Player': -1,
-  // 'New Entry FC': 'NEW'
-};
-
+/* Store previous power ranking positions so we can show movement arrows */
+let PREV_POWER_RANKS = new Map();
 /* ===== UTILS ===== */
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function parseGviz(txt){const a=txt.indexOf('{'),b=txt.lastIndexOf('}');if(a===-1||b===-1)throw new Error('Bad GViz');return JSON.parse(txt.slice(a,b+1))}
@@ -1496,11 +1451,13 @@ function renderHighlights(agg){
 }
 
 /* Power Rankings */
+/* Power Rankings with movement + league pill + league row classes */
 function renderPower(teams){
   const tbody = byId('tbl-power').querySelector('tbody');
   if(!tbody) return;
   tbody.innerHTML = '';
 
+  // Build rows with power score
   const rows = [...teams]
     .filter(t => t.gp >= 5)
     .map(t => ({
@@ -1510,76 +1467,93 @@ function renderPower(teams){
     }))
     .sort((a,b)=>
       b.power - a.power ||
-      b.pts - a.pts ||
-      b.gd  - a.gd  ||
-      b.gf  - a.gf  ||
+      b.pts  - a.pts  ||
+      b.gd   - a.gd   ||
+      b.gf   - a.gf   ||
       a.team.localeCompare(b.team)
     )
     .slice(0,10);
 
-  rows.forEach((t,i)=>{
+  // New map we’ll fill with this render’s positions (1–10)
+  const nextRanks = new Map();
+
+  rows.forEach((t, i) => {
     const rank = i + 1;
-    const lg   = t.league || '';
-    const tr   = document.createElement('tr');
-    tr.dataset.team = t.team;
+    const league = t.league || '';
+    const leagueClass = league ? 'league-' + league : '';
 
-    if(rank === 1) tr.classList.add('power-1');
-    else if(rank === 2 || rank === 3) tr.classList.add('power-2-3');
-    if(lg) tr.classList.add('league-' + lg);
+    // Save for next render
+    nextRanks.set(t.team, rank);
 
-    if(CURRENT_TEAM && t.team === CURRENT_TEAM) tr.classList.add('row-selected');
+    // Movement vs previous render
+    const prevRank = PREV_POWER_RANKS.has(t.team) ? PREV_POWER_RANKS.get(t.team) : null;
+    let moveHtml = '<span class="pr-move pr-move-same">•</span>';
 
-    let rankCls = 'pr-rank-badge';
-    if(rank === 1) rankCls += ' pr-rank-1';
-    else if(rank === 2) rankCls += ' pr-rank-2';
-    else if(rank === 3) rankCls += ' pr-rank-3';
-
-    const leagueSafe = esc(lg);
-
-    const move = POWER_MOVES[t.team] ?? 0;
-    let moveText = '—';
-    let moveCls  = 'pr-move';
-
-    if(move === 'NEW'){
-      moveText = 'NEW';
-      moveCls += ' new';
-    }else if(typeof move === 'number'){
-      if(move > 0){
-        moveText = '▲' + move;
-        moveCls += ' up';
-      }else if(move < 0){
-        moveText = '▼' + Math.abs(move);
-        moveCls += ' down';
-      }else{
-        moveText = '—';
+    if (prevRank === null) {
+      // First time appearing in top 10
+      moveHtml = '<span class="pr-move pr-move-new">NEW</span>';
+    } else {
+      const delta = prevRank - rank; // positive = moved up
+      if (delta > 0) {
+        // Up (green)
+        moveHtml =
+          `<span class="pr-move pr-move-up">▲ <span class="pr-move-val">+${delta}</span></span>`;
+      } else if (delta < 0) {
+        // Down (red)
+        moveHtml =
+          `<span class="pr-move pr-move-down">▼ <span class="pr-move-val">${delta}</span></span>`;
+      } else {
+        // Same position
+        moveHtml = '<span class="pr-move pr-move-same">•</span>';
       }
     }
 
+    const tr = document.createElement('tr');
+    tr.dataset.team = t.team;
+
+    // League-based row class for F1 style gradients (e.g. league-Diamond)
+    if (leagueClass) tr.classList.add(leagueClass);
+
+    // Extra emphasis for #1 / #2–3 like before
+    if (i === 0) tr.classList.add('power-1');
+    else if (i === 1 || i === 2) tr.classList.add('power-2-3');
+
+    if (CURRENT_TEAM && t.team === CURRENT_TEAM) tr.classList.add('row-selected');
+
     tr.innerHTML = `
-      <td class="pr-rank-cell">
-        <span class="${rankCls}">${rank}</span>
+      <td class="right numeric">
+        <span class="pr-rank-badge">${rank}</span>
+      </td>
+      <td class="center">
+        ${moveHtml}
       </td>
       <td class="left">
         ${teamCell(t)}
       </td>
-      <td class="pr-league-cell">
-        <span class="pr-league-pill ${leagueSafe}">${leagueSafe}</span>
+      <td class="center">
+        <span class="pr-league-pill pr-lg-${esc(league || 'All')}">
+          ${esc(league || '-')}
+        </span>
       </td>
       <td class="right numeric">
         <span class="power-score-pill">${t.power.toFixed(2)}</span>
-      </td>
-      <td class="pr-move-cell">
-        <span class="${moveCls}">${moveText}</span>
       </td>
     `;
 
     tbody.appendChild(tr);
   });
 
-  if(rows.length === 0){
-    tbody.innerHTML = `<tr><td colspan="5" class="center note">Power Rankings will appear once at least 5 games have been played.</td></tr>`;
+  // Store for next run() so movement works
+  PREV_POWER_RANKS = nextRanks;
+
+  if (rows.length === 0) {
+    tbody.innerHTML =
+      `<tr><td colspan="5" class="center note">
+        Power Rankings will appear once at least 5 games have been played.
+      </td></tr>`;
   }
 }
+
 
 /* Best offence / defence tables */
 function renderTopTables(teams){
