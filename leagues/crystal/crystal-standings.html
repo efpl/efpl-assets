@@ -156,6 +156,35 @@ tbody tr.pos-9-10 td {
   vertical-align: middle;
   margin: 0 6px;
 }
+
+/* Key/Legend */
+.qual-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+  padding: 8px 12px 0;
+  margin: 2px 0 4px;
+  color: var(--muted);
+  font-size: 12px;
+  opacity: .9;
+}
+.k-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+.k-swatch {
+  display: inline-block;
+  width: 22px;
+  height: 10px;
+  border-radius: 3px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.15);
+}
+.k-top4 { background: var(--row-top); border: 1px solid var(--accent-strong); }
+.k-mid8 { background: var(--row-mid); border: 1px solid var(--accent-strong); }
+.k-bot2 { background: var(--row-bot); border: 1px solid var(--accent-strong); }
 </style>
 </head>
 <body>
@@ -170,6 +199,16 @@ tbody tr.pos-9-10 td {
     </div>
 
     <table id="standings-table"></table>
+
+    <div class="qual-key" aria-label="Qualification color key">
+      <div class="k-item"><span class="k-swatch k-top4"></span><span>Champions Cup qualification</span></div>
+      <div class="k-item"><span class="k-swatch k-mid8"></span><span>Continental Cup qualification</span></div>
+      <div class="k-item"><span class="k-swatch k-bot2"></span><span>Conference Cup qualification</span></div>
+    </div>
+
+    <p id="deductions-note" style="display:none;color:#cbd5e1;font-size:13px;text-align:left;margin:6px 12px 0;opacity:.85">
+      * denotes points deduction
+    </p>
 
     <div class="footer">
       This league is sponsored by
@@ -202,6 +241,11 @@ function renderForm(s) {
   if (!raw) return '';
   return '<span class="form">' + [...raw].map(ch => `<span class="fpill f-${ch}">${ch}</span>`).join('') + '</span>';
 }
+function checkForDeductions(){
+  const note=document.getElementById('deductions-note');
+  const hasStar=document.getElementById('standings-table').textContent.includes('*');
+  if(note) note.style.display=hasStar?'block':'none';
+}
 async function loadTable() {
   const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_TAB)}&range=${encodeURIComponent(RANGE)}&cachebust=${CB}`;
   const res = await fetch(url);
@@ -228,6 +272,7 @@ async function loadTable() {
   document.getElementById('standings-table').innerHTML = html;
   const now = new Date(), pad = n => String(n).padStart(2, '0');
   document.getElementById('updated').textContent = `Updated ${pad(now.getDate())}/${pad(now.getMonth()+1)}/${String(now.getFullYear()).slice(-2)}`;
+  checkForDeductions();
 }
 loadTable();
 </script>
