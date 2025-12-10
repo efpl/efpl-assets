@@ -60,6 +60,14 @@
   .team.right{text-align:right}
   .vs{opacity:.85;font-weight:900}
 
+  /* Method line under score (AET / Pens winner) */
+  .method-line{
+    font-size:12px;
+    margin-top:4px;
+    color:var(--muted);
+    text-align:center;
+  }
+
   /* Path caption */
   .path{
     margin-top:6px;
@@ -149,6 +157,7 @@
               <span class="vs"   id="QF1-score">vs</span>
               <span class="team right" id="QF1-away">Team 2</span>
             </div>
+            <div class="method-line" id="QF1-method"></div>
             <div class="path">Quarter-final 1</div>
           </div>
 
@@ -158,6 +167,7 @@
               <span class="vs"   id="QF2-score">vs</span>
               <span class="team right" id="QF2-away">Team 4</span>
             </div>
+            <div class="method-line" id="QF2-method"></div>
             <div class="path">Quarter-final 2</div>
           </div>
         </div>
@@ -170,6 +180,7 @@
               <span class="vs"   id="SF1-score">vs</span>
               <span class="team right" id="SF1-away">Winner QF2</span>
             </div>
+            <div class="method-line" id="SF1-method"></div>
             <div class="path" id="SF1-path">Winners of QF1 & QF2</div>
           </div>
         </div>
@@ -178,7 +189,6 @@
       <!-- CENTER -->
       <div class="center">
         <h3>Final</h3>
-        <!-- Swap trophy image URL if needed -->
         <img class="trophy" alt="Conference Cup Trophy"
              src="https://efpl-assets.pages.dev/img/conference-cup.png" />
         <div class="final">
@@ -200,6 +210,7 @@
               <span class="vs"   id="QF3-score">vs</span>
               <span class="team right" id="QF3-away">Team 6</span>
             </div>
+            <div class="method-line" id="QF3-method"></div>
             <div class="path">Quarter-final 3</div>
           </div>
 
@@ -209,6 +220,7 @@
               <span class="vs"   id="QF4-score">vs</span>
               <span class="team right" id="QF4-away">Team 8</span>
             </div>
+            <div class="method-line" id="QF4-method"></div>
             <div class="path">Quarter-final 4</div>
           </div>
         </div>
@@ -221,6 +233,7 @@
               <span class="vs"   id="SF2-score">vs</span>
               <span class="team right" id="SF2-away">Winner QF4</span>
             </div>
+            <div class="method-line" id="SF2-method"></div>
             <div class="path" id="SF2-path">Winners of QF3 & QF4</div>
           </div>
         </div>
@@ -263,7 +276,6 @@
 
     let championText = "🏆 Champion: TBD";
 
-    // set default final text before data (in case F1 row missing)
     const finalMainEl   = document.getElementById("final-main");
     const finalMethodEl = document.getElementById("final-method");
     if (finalMainEl) finalMainEl.textContent = "Final: Winner SF1 vs Winner SF2";
@@ -275,9 +287,10 @@
       const key = keyByIndex(i);
       if (!key) return;
 
-      const elHome  = document.getElementById(`${key}-home`);
-      const elAway  = document.getElementById(`${key}-away`);
-      const elScore = document.getElementById(`${key}-score`);
+      const elHome    = document.getElementById(`${key}-home`);
+      const elAway    = document.getElementById(`${key}-away`);
+      const elScore   = document.getElementById(`${key}-score`);
+      const methodEl  = document.getElementById(`${key}-method`);
 
       if (elHome) elHome.textContent = home || "TBD";
       if (elAway) elAway.textContent = away || "TBD";
@@ -285,26 +298,32 @@
       const isDone   = (done === true || done === "TRUE");
       const hasScore = isDone && hs !== "" && as !== "" && !isNaN(+hs) && !isNaN(+as);
 
-      // Build AET / Pens tag for non-final matches (keep inline)
-      let tag = "";
-      if (method === "AET") {
-        tag = " AET";
-      } else if (method === "Pens") {
-        const m = /(\d+)\s*-\s*(\d+)/i.exec(note || "");
-        if (m && winner) {
-          tag = ` (${winner} wins ${m[1]}-${m[2]} on pens)`;
-        } else {
-          tag = " (pens)";
+      // base score text (no AET/Pens here)
+      if (elScore) {
+        elScore.textContent = hasScore ? `${hs} - ${as}` : "vs";
+      }
+
+      // Build method line (Option B: winner-focused)
+      let methodText = "";
+      if (hasScore) {
+        if (method === "AET") {
+          methodText = "After Extra Time";
+        } else if (method === "Pens") {
+          const m = /(\d+)\s*-\s*(\d+)/i.exec(note || "");
+          if (m && winner) {
+            methodText = `${winner} wins ${m[1]}-${m[2]} on pens`;
+          } else {
+            methodText = "Penalty Shootout";
+          }
         }
       }
 
-      if (key !== "F1") {
-        if (elScore) {
-          elScore.textContent = hasScore ? `${hs} - ${as}${tag}` : "vs";
-        }
+      // For non-final matches, use the per-card method line
+      if (key !== "F1" && methodEl) {
+        methodEl.textContent = methodText;
       }
 
-      // Final line + Champion (split into two lines)
+      // Final line + Champion (use dedicated final-main/final-method)
       if (key === "F1") {
         const h = home || "Winner SF1";
         const a = away || "Winner SF2";
@@ -314,19 +333,9 @@
             ? `Final: ${h} ${hs} - ${as} ${a}`
             : `Final: ${h} vs ${a}`;
         }
-
-        let methodText = "";
-        if (method === "AET" && hasScore) {
-          methodText = "After Extra Time";
-        } else if (method === "Pens" && hasScore) {
-          const m = /(\d+)\s*-\s*(\d+)/i.exec(note || "");
-          if (m && winner) {
-            methodText = `${winner} wins ${m[1]}-${m[2]} on pens`;
-          } else {
-            methodText = "Penalty Shootout";
-          }
+        if (finalMethodEl) {
+          finalMethodEl.textContent = methodText;
         }
-        if (finalMethodEl) finalMethodEl.textContent = methodText;
 
         if (hasScore && winner) {
           championText = `🏆 Champion: ${winner}`;
