@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>eFPL — Continental Cup</title>
+<title>eFPL — Conference Cup</title>
 <style>
   :root{
     --bg:#00143b; --card:#05225a; --ink:#fff; --muted:#cbd5e1;
@@ -60,7 +60,7 @@
   .team.right{text-align:right}
   .vs{opacity:.85;font-weight:900}
 
-  /* Path/route caption under each match */
+  /* Path caption */
   .path{
     margin-top:6px;
     font-size:11px;
@@ -71,14 +71,14 @@
   }
 
   /* Stepping toward center */
-  .left  .r16{margin-right:70px} .left  .qf{margin-right:35px} .left  .sf{margin-right:0}
-  .right .r16{margin-left:70px} .right .qf{margin-left:35px} .right .sf{margin-left:0}
+  .left  .qf{margin-right:35px} .left  .sf{margin-right:0}
+  .right .qf{margin-left:35px}  .right .sf{margin-left:0}
 
   /* Connector bars pointing inward */
-  .left  .match::after {content:"";display:block;height:0;border-top:2px solid var(--line);margin-left:auto;width:24px;transform:translateY(8px)}
-  .left  .qf .match::after{width:34px} .left  .sf .match::after{width:44px}
-  .right .match::before{content:"";display:block;height:0;border-top:2px solid var(--line);margin-right:auto;width:24px;transform:translateY(8px)}
-  .right .qf .match::before{width:34px} .right .sf .match::before{width:44px}
+  .left  .match::after {content:"";display:block;height:0;border-top:2px solid var(--line);margin-left:auto;width:34px;transform:translateY(8px)}
+  .left  .sf .match::after{width:44px}
+  .right .match::before{content:"";display:block;height:0;border-top:2px solid var(--line);margin-right:auto;width:34px;transform:translateY(8px)}
+  .right .sf .match::before{width:44px}
 
   /* Center column (trophy + final + champion) */
   .center{display:flex;flex-direction:column;align-items:center;gap:14px;padding:8px 0}
@@ -115,66 +115,55 @@
     .wrap{padding:12px}
     .stage{grid-template-columns:1fr;gap:12px}
     .center{order:-1}
-    .left .r16,.left .qf,.left .sf,.right .r16,.right .qf,.right .sf{margin:0}
+    .left .qf,.left .sf,.right .qf,.right .sf{margin:0}
     .left .match::after,.right .match::before{display:none}
     .match{min-width:auto}
     .final{min-width:auto;width:100%}
     .champion{width:100%}
-    .stack h2{text-align:center;color:var(--accent);margin:12px 0 6px}
   }
 </style>
 </head>
 <body>
   <div class="wrap">
     <div class="title">
-      <span class="eyebrow">Continental Cup</span>
+      <span class="eyebrow">Conference Cup</span>
       <h1>Road to the Final</h1>
     </div>
 
     <div class="stage">
       <!-- LEFT -->
       <div class="side left">
-        <div class="group r16">
-          <h3>Round of 16</h3>
-
-          <div class="match">
-            <div class="fixture"><span class="team" id="R16A-home">Team 1</span><span class="vs" id="R16A-score">vs</span><span class="team right" id="R16A-away">Team 2</span></div>
-            <div class="path">Match 1</div>
-          </div>
-
-          <div class="match">
-            <div class="fixture"><span class="team" id="R16B-home">Team 3</span><span class="vs" id="R16B-score">vs</span><span class="team right" id="R16B-away">Team 4</span></div>
-            <div class="path">Match 2</div>
-          </div>
-
-          <div class="match">
-            <div class="fixture"><span class="team" id="R16C-home">Team 5</span><span class="vs" id="R16C-score">vs</span><span class="team right" id="R16C-away">Team 6</span></div>
-            <div class="path">Match 3</div>
-          </div>
-
-          <div class="match">
-            <div class="fixture"><span class="team" id="R16D-home">Team 7</span><span class="vs" id="R16D-score">vs</span><span class="team right" id="R16D-away">Team 8</span></div>
-            <div class="path">Match 4</div>
-          </div>
-        </div>
-
         <div class="group qf">
-          <h3>Quarter-finals (1 & 2)</h3>
+          <h3>Quarter-finals</h3>
+
           <div class="match">
-            <div class="fixture"><span class="team" id="Q1-home">Winner A</span><span class="vs" id="Q1-score">vs</span><span class="team right" id="Q1-away">Winner B</span></div>
-            <div class="path" id="Q1-path">Winners of Matches 1 & 2</div>
+            <div class="fixture">
+              <span class="team" id="QF1-home">Team 1</span>
+              <span class="vs"   id="QF1-score">vs</span>
+              <span class="team right" id="QF1-away">Team 2</span>
+            </div>
+            <div class="path">Quarter-final 1</div>
           </div>
+
           <div class="match">
-            <div class="fixture"><span class="team" id="Q2-home">Winner C</span><span class="vs" id="Q2-score">vs</span><span class="team right" id="Q2-away">Winner D</span></div>
-            <div class="path" id="Q2-path">Winners of Matches 3 & 4</div>
+            <div class="fixture">
+              <span class="team" id="QF2-home">Team 3</span>
+              <span class="vs"   id="QF2-score">vs</span>
+              <span class="team right" id="QF2-away">Team 4</span>
+            </div>
+            <div class="path">Quarter-final 2</div>
           </div>
         </div>
 
         <div class="group sf">
           <h3>Semi-final (1)</h3>
           <div class="match">
-            <div class="fixture"><span class="team" id="S1-home">Winner Q1</span><span class="vs" id="S1-score">vs</span><span class="team right" id="S1-away">Winner Q2</span></div>
-            <div class="path" id="S1-path">Winners of Quarter-finals 1 & 2</div>
+            <div class="fixture">
+              <span class="team" id="SF1-home">Winner QF1</span>
+              <span class="vs"   id="SF1-score">vs</span>
+              <span class="team right" id="SF1-away">Winner QF2</span>
+            </div>
+            <div class="path" id="SF1-path">Winners of QF1 & QF2</div>
           </div>
         </div>
       </div>
@@ -182,55 +171,47 @@
       <!-- CENTER -->
       <div class="center">
         <h3>Final</h3>
-        <img class="trophy" alt="Continental Cup Trophy" src="https://efpl-assets.pages.dev/img/Continetal.png" />
-        <div class="final" id="final-line">Final: Winner S1 vs Winner S2</div>
+        <!-- Swap trophy image URL if needed -->
+        <img class="trophy" alt="Conference Cup Trophy"
+             src="https://efpl-assets.pages.dev/img/Conference.png" />
+        <div class="final" id="final-line">Final: Winner SF1 vs Winner SF2</div>
         <div class="note" id="final-path">Winners of both Semi-finals</div>
         <div class="champion" id="champion"><span class="cup">🏆</span> Champion: TBD</div>
       </div>
 
       <!-- RIGHT -->
       <div class="side right">
-        <div class="group r16">
-          <h3>Round of 16</h3>
-
-          <div class="match">
-            <div class="fixture"><span class="team" id="R16E-home">Team 9</span><span class="vs" id="R16E-score">vs</span><span class="team right" id="R16E-away">Team 10</span></div>
-            <div class="path">Match 5</div>
-          </div>
-
-          <div class="match">
-            <div class="fixture"><span class="team" id="R16F-home">Team 11</span><span class="vs" id="R16F-score">vs</span><span class="team right" id="R16F-away">Team 12</span></div>
-            <div class="path">Match 6</div>
-          </div>
-
-          <div class="match">
-            <div class="fixture"><span class="team" id="R16G-home">Team 13</span><span class="vs" id="R16G-score">vs</span><span class="team right" id="R16G-away">Team 14</span></div>
-            <div class="path">Match 7</div>
-          </div>
-
-          <div class="match">
-            <div class="fixture"><span class="team" id="R16H-home">Team 15</span><span class="vs" id="R16H-score">vs</span><span class="team right" id="R16H-away">Team 16</span></div>
-            <div class="path">Match 8</div>
-          </div>
-        </div>
-
         <div class="group qf">
-          <h3>Quarter-finals (3 & 4)</h3>
+          <h3>Quarter-finals</h3>
+
           <div class="match">
-            <div class="fixture"><span class="team" id="Q3-home">Winner E</span><span class="vs" id="Q3-score">vs</span><span class="team right" id="Q3-away">Winner F</span></div>
-            <div class="path" id="Q3-path">Winners of Matches 5 & 6</div>
+            <div class="fixture">
+              <span class="team" id="QF3-home">Team 5</span>
+              <span class="vs"   id="QF3-score">vs</span>
+              <span class="team right" id="QF3-away">Team 6</span>
+            </div>
+            <div class="path">Quarter-final 3</div>
           </div>
+
           <div class="match">
-            <div class="fixture"><span class="team" id="Q4-home">Winner G</span><span class="vs" id="Q4-score">vs</span><span class="team right" id="Q4-away">Winner H</span></div>
-            <div class="path" id="Q4-path">Winners of Matches 7 & 8</div>
+            <div class="fixture">
+              <span class="team" id="QF4-home">Team 7</span>
+              <span class="vs"   id="QF4-score">vs</span>
+              <span class="team right" id="QF4-away">Team 8</span>
+            </div>
+            <div class="path">Quarter-final 4</div>
           </div>
         </div>
 
         <div class="group sf">
           <h3>Semi-final (2)</h3>
           <div class="match">
-            <div class="fixture"><span class="team" id="S2-home">Winner Q3</span><span class="vs" id="S2-score">vs</span><span class="team right" id="S2-away">Winner Q4</span></div>
-            <div class="path" id="S2-path">Winners of Quarter-finals 3 & 4</div>
+            <div class="fixture">
+              <span class="team" id="SF2-home">Winner QF3</span>
+              <span class="vs"   id="SF2-score">vs</span>
+              <span class="team right" id="SF2-away">Winner QF4</span>
+            </div>
+            <div class="path" id="SF2-path">Winners of QF3 & QF4</div>
           </div>
         </div>
       </div>
@@ -239,32 +220,24 @@
 
 <script>
 (function(){
-  const SHEET_ID = "1L8WUBHN9ijf_ileyAFAmo-u-zYbJdRCm5hrvWj77lec"; // new Continental Cup sheet
+  const SHEET_ID = "1QpCTtKSUBXl6aLjLNIIk0T3beaMzs4hLo534EwZ3jmE"; // Conference Cup sheet
   const GID = "0"; // Cup Bracket tab
   const tq = "select A,B,C,D,E,F,G,H,I,J where A is not null";
   const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${GID}&tqx=out:json&tq=`+
               encodeURIComponent(tq)+`&cachebust=`+Date.now();
 
+  // Map 7 rows -> QF1–4, SF1–2, Final
   function keyByIndex(i){
-    // 8 x R16, 4 x QF, 2 x SF, 1 x F = 15 rows
-    if (i >= 0 && i <= 7) {
-      const L=["A","B","C","D","E","F","G","H"];
-      return "R16"+L[i];
-    }
-    if (i >= 8 && i <= 11) return "Q"+(i-7);   // 8–11 => Q1..Q4
-    if (i >= 12 && i <= 13) return "S"+(i-11); // 12–13 => S1..S2
-    if (i === 14)          return "F1";        // 14 => Final
+    if (i >= 0 && i <= 3) return "QF" + (i + 1);   // 0–3 => QF1..QF4
+    if (i === 4 || i === 5) return "SF" + (i - 3); // 4–5 => SF1..SF2
+    if (i === 6) return "F1";                      // 6   => Final
     return "";
   }
 
   function setPathCaptions(){
     const map = {
-      "Q1-path":"Winners of Matches 1 & 2",
-      "Q2-path":"Winners of Matches 3 & 4",
-      "Q3-path":"Winners of Matches 5 & 6",
-      "Q4-path":"Winners of Matches 7 & 8",
-      "S1-path":"Winners of Quarter-finals 1 & 2",
-      "S2-path":"Winners of Quarter-finals 3 & 4",
+      "SF1-path":"Winners of Quarter-finals 1 & 2",
+      "SF2-path":"Winners of Quarter-finals 3 & 4",
       "final-path":"Winners of both Semi-finals"
     };
     Object.entries(map).forEach(([id,text])=>{
@@ -278,7 +251,7 @@
     const json = JSON.parse(t.substring(t.indexOf('{'), t.lastIndexOf('}')+1));
     const rows = (json.table && json.table.rows) ? json.table.rows : [];
 
-    let finalText = "Final: Winner S1 vs Winner S2";
+    let finalText = "Final: Winner SF1 vs Winner SF2";
     let championText = "🏆 Champion: TBD";
 
     rows.forEach((row, i) => {
@@ -316,8 +289,8 @@
 
       // Final line + Champion
       if (key === "F1") {
-        const h = home || "Winner S1";
-        const a = away || "Winner S2";
+        const h = home || "Winner SF1";
+        const a = away || "Winner SF2";
         let finalTag = "";
         if (method === "AET") {
           finalTag = " AET";
