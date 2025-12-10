@@ -110,6 +110,13 @@
   .champion .cup{font-size:22px;margin-right:6px}
   .note{color:var(--muted);font-size:12px;text-align:center}
 
+  /* Final method text */
+  #final-method{
+    font-size:12px;
+    margin-top:4px;
+    opacity:.8;
+  }
+
   /* Mobile: stack rounds, trophy first */
   @media (max-width:860px){
     .wrap{padding:12px}
@@ -174,7 +181,10 @@
         <!-- Swap trophy image URL if needed -->
         <img class="trophy" alt="Conference Cup Trophy"
              src="https://efpl-assets.pages.dev/img/conference-cup.png" />
-        <div class="final" id="final-line">Final: Winner SF1 vs Winner SF2</div>
+        <div class="final">
+          <div id="final-main">Final: Winner SF1 vs Winner SF2</div>
+          <div id="final-method"></div>
+        </div>
         <div class="note" id="final-path">Winners of both Semi-finals</div>
         <div class="champion" id="champion"><span class="cup">🏆</span> Champion: TBD</div>
       </div>
@@ -251,8 +261,13 @@
     const json = JSON.parse(t.substring(t.indexOf('{'), t.lastIndexOf('}')+1));
     const rows = (json.table && json.table.rows) ? json.table.rows : [];
 
-    let finalText = "Final: Winner SF1 vs Winner SF2";
     let championText = "🏆 Champion: TBD";
+
+    // set default final text before data (in case F1 row missing)
+    const finalMainEl   = document.getElementById("final-main");
+    const finalMethodEl = document.getElementById("final-method");
+    if (finalMainEl) finalMainEl.textContent = "Final: Winner SF1 vs Winner SF2";
+    if (finalMethodEl) finalMethodEl.textContent = "";
 
     rows.forEach((row, i) => {
       const [round, slot, home, away, hs, as, done, winner, method, note] =
@@ -270,7 +285,7 @@
       const isDone   = (done === true || done === "TRUE");
       const hasScore = isDone && hs !== "" && as !== "" && !isNaN(+hs) && !isNaN(+as);
 
-      // Build AET / Pens tag
+      // Build AET / Pens tag for non-final matches (keep inline)
       let tag = "";
       if (method === "AET") {
         tag = " AET";
@@ -283,32 +298,41 @@
         }
       }
 
-      if (elScore) {
-        elScore.textContent = hasScore ? `${hs} - ${as}${tag}` : "vs";
+      if (key !== "F1") {
+        if (elScore) {
+          elScore.textContent = hasScore ? `${hs} - ${as}${tag}` : "vs";
+        }
       }
 
-      // Final line + Champion
+      // Final line + Champion (split into two lines)
       if (key === "F1") {
         const h = home || "Winner SF1";
         const a = away || "Winner SF2";
-        let finalTag = "";
-        if (method === "AET") {
-          finalTag = " AET";
-        } else if (method === "Pens") {
+
+        if (finalMainEl) {
+          finalMainEl.textContent = hasScore
+            ? `Final: ${h} ${hs} - ${as} ${a}`
+            : `Final: ${h} vs ${a}`;
+        }
+
+        let methodText = "";
+        if (method === "AET" && hasScore) {
+          methodText = "After Extra Time";
+        } else if (method === "Pens" && hasScore) {
           const m = /(\d+)\s*-\s*(\d+)/i.exec(note || "");
           if (m && winner) {
-            finalTag = ` (${winner} wins ${m[1]}-${m[2]} on pens)`;
+            methodText = `${winner} wins ${m[1]}-${m[2]} on pens`;
           } else {
-            finalTag = " (pens)";
+            methodText = "Penalty Shootout";
           }
         }
-        finalText = hasScore ? `Final: ${h} ${hs} - ${as} ${a}${finalTag}` : `Final: ${h} vs ${a}`;
-        if (hasScore && winner) championText = `🏆 Champion: ${winner}`;
+        if (finalMethodEl) finalMethodEl.textContent = methodText;
+
+        if (hasScore && winner) {
+          championText = `🏆 Champion: ${winner}`;
+        }
       }
     });
-
-    const finalEl = document.getElementById("final-line");
-    if (finalEl) finalEl.textContent = finalText;
 
     const champEl = document.getElementById("champion");
     if (champEl) champEl.textContent = championText;
