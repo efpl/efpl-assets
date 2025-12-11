@@ -60,6 +60,14 @@
   .team.right{text-align:right}
   .vs{opacity:.85;font-weight:900}
 
+  /* Method line under score (AET / Pens winner) */
+  .method-line{
+    font-size:12px;
+    margin-top:4px;
+    color:var(--muted);
+    text-align:center;
+  }
+
   /* Path/route caption under each match */
   .path{
     margin-top:6px;
@@ -110,6 +118,13 @@
   .champion .cup{font-size:22px;margin-right:6px}
   .note{color:var(--muted);font-size:12px;text-align:center}
 
+  /* Final method text */
+  #final-method{
+    font-size:12px;
+    margin-top:4px;
+    opacity:.8;
+  }
+
   /* Mobile: stack rounds, trophy first */
   @media (max-width:860px){
     .wrap{padding:12px}
@@ -139,21 +154,25 @@
 
           <div class="match">
             <div class="fixture"><span class="team" id="R16A-home">Team 1</span><span class="vs" id="R16A-score">vs</span><span class="team right" id="R16A-away">Team 2</span></div>
+            <div class="method-line" id="R16A-method"></div>
             <div class="path">Match 1</div>
           </div>
 
           <div class="match">
             <div class="fixture"><span class="team" id="R16B-home">Team 3</span><span class="vs" id="R16B-score">vs</span><span class="team right" id="R16B-away">Team 4</span></div>
+            <div class="method-line" id="R16B-method"></div>
             <div class="path">Match 2</div>
           </div>
 
           <div class="match">
             <div class="fixture"><span class="team" id="R16C-home">Team 5</span><span class="vs" id="R16C-score">vs</span><span class="team right" id="R16C-away">Team 6</span></div>
+            <div class="method-line" id="R16C-method"></div>
             <div class="path">Match 3</div>
           </div>
 
           <div class="match">
             <div class="fixture"><span class="team" id="R16D-home">Team 7</span><span class="vs" id="R16D-score">vs</span><span class="team right" id="R16D-away">Team 8</span></div>
+            <div class="method-line" id="R16D-method"></div>
             <div class="path">Match 4</div>
           </div>
         </div>
@@ -162,10 +181,12 @@
           <h3>Quarter-finals (1 & 2)</h3>
           <div class="match">
             <div class="fixture"><span class="team" id="Q1-home">Winner A</span><span class="vs" id="Q1-score">vs</span><span class="team right" id="Q1-away">Winner B</span></div>
+            <div class="method-line" id="Q1-method"></div>
             <div class="path" id="Q1-path">Winners of Matches 1 & 2</div>
           </div>
           <div class="match">
             <div class="fixture"><span class="team" id="Q2-home">Winner C</span><span class="vs" id="Q2-score">vs</span><span class="team right" id="Q2-away">Winner D</span></div>
+            <div class="method-line" id="Q2-method"></div>
             <div class="path" id="Q2-path">Winners of Matches 3 & 4</div>
           </div>
         </div>
@@ -174,6 +195,7 @@
           <h3>Semi-final (1)</h3>
           <div class="match">
             <div class="fixture"><span class="team" id="S1-home">Winner Q1</span><span class="vs" id="S1-score">vs</span><span class="team right" id="S1-away">Winner Q2</span></div>
+            <div class="method-line" id="S1-method"></div>
             <div class="path" id="S1-path">Winners of Quarter-finals 1 & 2</div>
           </div>
         </div>
@@ -183,7 +205,10 @@
       <div class="center">
         <h3>Final</h3>
         <img class="trophy" alt="Continental Cup Trophy" src="https://efpl-assets.pages.dev/img/continental-cup.png" />
-        <div class="final" id="final-line">Final: Winner S1 vs Winner S2</div>
+        <div class="final">
+          <div id="final-main">Final: Winner S1 vs Winner S2</div>
+          <div id="final-method"></div>
+        </div>
         <div class="note" id="final-path">Winners of both Semi-finals</div>
         <div class="champion" id="champion"><span class="cup">🏆</span> Champion: TBD</div>
       </div>
@@ -195,21 +220,25 @@
 
           <div class="match">
             <div class="fixture"><span class="team" id="R16E-home">Team 9</span><span class="vs" id="R16E-score">vs</span><span class="team right" id="R16E-away">Team 10</span></div>
+            <div class="method-line" id="R16E-method"></div>
             <div class="path">Match 5</div>
           </div>
 
           <div class="match">
             <div class="fixture"><span class="team" id="R16F-home">Team 11</span><span class="vs" id="R16F-score">vs</span><span class="team right" id="R16F-away">Team 12</span></div>
+            <div class="method-line" id="R16F-method"></div>
             <div class="path">Match 6</div>
           </div>
 
           <div class="match">
             <div class="fixture"><span class="team" id="R16G-home">Team 13</span><span class="vs" id="R16G-score">vs</span><span class="team right" id="R16G-away">Team 14</span></div>
+            <div class="method-line" id="R16G-method"></div>
             <div class="path">Match 7</div>
           </div>
 
           <div class="match">
             <div class="fixture"><span class="team" id="R16H-home">Team 15</span><span class="vs" id="R16H-score">vs</span><span class="team right" id="R16H-away">Team 16</span></div>
+            <div class="method-line" id="R16H-method"></div>
             <div class="path">Match 8</div>
           </div>
         </div>
@@ -218,10 +247,12 @@
           <h3>Quarter-finals (3 & 4)</h3>
           <div class="match">
             <div class="fixture"><span class="team" id="Q3-home">Winner E</span><span class="vs" id="Q3-score">vs</span><span class="team right" id="Q3-away">Winner F</span></div>
+            <div class="method-line" id="Q3-method"></div>
             <div class="path" id="Q3-path">Winners of Matches 5 & 6</div>
           </div>
           <div class="match">
             <div class="fixture"><span class="team" id="Q4-home">Winner G</span><span class="vs" id="Q4-score">vs</span><span class="team right" id="Q4-away">Winner H</span></div>
+            <div class="method-line" id="Q4-method"></div>
             <div class="path" id="Q4-path">Winners of Matches 7 & 8</div>
           </div>
         </div>
@@ -230,6 +261,7 @@
           <h3>Semi-final (2)</h3>
           <div class="match">
             <div class="fixture"><span class="team" id="S2-home">Winner Q3</span><span class="vs" id="S2-score">vs</span><span class="team right" id="S2-away">Winner Q4</span></div>
+            <div class="method-line" id="S2-method"></div>
             <div class="path" id="S2-path">Winners of Quarter-finals 3 & 4</div>
           </div>
         </div>
@@ -239,7 +271,7 @@
 
 <script>
 (function(){
-  const SHEET_ID = "1L8WUBHN9ijf_ileyAFAmo-u-zYbJdRCm5hrvWj77lec"; // new Continental Cup sheet
+  const SHEET_ID = "1L8WUBHN9ijf_ileyAFAmo-u-zYbJdRCm5hrvWj77lec"; // Continental Cup sheet
   const GID = "0"; // Cup Bracket tab
   const tq = "select A,B,C,D,E,F,G,H,I,J where A is not null";
   const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${GID}&tqx=out:json&tq=`+
@@ -278,8 +310,12 @@
     const json = JSON.parse(t.substring(t.indexOf('{'), t.lastIndexOf('}')+1));
     const rows = (json.table && json.table.rows) ? json.table.rows : [];
 
-    let finalText = "Final: Winner S1 vs Winner S2";
     let championText = "🏆 Champion: TBD";
+
+    const finalMainEl   = document.getElementById("final-main");
+    const finalMethodEl = document.getElementById("final-method");
+    if (finalMainEl) finalMainEl.textContent = "Final: Winner S1 vs Winner S2";
+    if (finalMethodEl) finalMethodEl.textContent = "";
 
     rows.forEach((row, i) => {
       const [round, slot, home, away, hs, as, done, winner, method, note] =
@@ -287,9 +323,10 @@
       const key = keyByIndex(i);
       if (!key) return;
 
-      const elHome  = document.getElementById(`${key}-home`);
-      const elAway  = document.getElementById(`${key}-away`);
-      const elScore = document.getElementById(`${key}-score`);
+      const elHome    = document.getElementById(`${key}-home`);
+      const elAway    = document.getElementById(`${key}-away`);
+      const elScore   = document.getElementById(`${key}-score`);
+      const methodEl  = document.getElementById(`${key}-method`);
 
       if (elHome) elHome.textContent = home || "TBD";
       if (elAway) elAway.textContent = away || "TBD";
@@ -297,45 +334,50 @@
       const isDone   = (done === true || done === "TRUE");
       const hasScore = isDone && hs !== "" && as !== "" && !isNaN(+hs) && !isNaN(+as);
 
-      // Build AET / Pens tag
-      let tag = "";
-      if (method === "AET") {
-        tag = " AET";
-      } else if (method === "Pens") {
-        const m = /(\d+)\s*-\s*(\d+)/i.exec(note || "");
-        if (m && winner) {
-          tag = ` (${winner} wins ${m[1]}-${m[2]} on pens)`;
-        } else {
-          tag = " (pens)";
-        }
-      }
-
+      // Base score text (no AET/Pens in this line)
       if (elScore) {
-        elScore.textContent = hasScore ? `${hs} - ${as}${tag}` : "vs";
+        elScore.textContent = hasScore ? `${hs} - ${as}` : "vs";
       }
 
-      // Final line + Champion
-      if (key === "F1") {
-        const h = home || "Winner S1";
-        const a = away || "Winner S2";
-        let finalTag = "";
+      // Build method line (Option B: winner-focused)
+      let methodText = "";
+      if (hasScore) {
         if (method === "AET") {
-          finalTag = " AET";
+          methodText = "After Extra Time";
         } else if (method === "Pens") {
           const m = /(\d+)\s*-\s*(\d+)/i.exec(note || "");
           if (m && winner) {
-            finalTag = ` (${winner} wins ${m[1]}-${m[2]} on pens)`;
+            methodText = `${winner} wins ${m[1]}-${m[2]} on pens`;
           } else {
-            finalTag = " (pens)";
+            methodText = "Penalty Shootout";
           }
         }
-        finalText = hasScore ? `Final: ${h} ${hs} - ${as} ${a}${finalTag}` : `Final: ${h} vs ${a}`;
-        if (hasScore && winner) championText = `🏆 Champion: ${winner}`;
+      }
+
+      // For non-final matches, use the card's method line
+      if (key !== "F1" && methodEl) {
+        methodEl.textContent = methodText;
+      }
+
+      // Final line + Champion (use dedicated final-main/final-method)
+      if (key === "F1") {
+        const h = home || "Winner S1";
+        const a = away || "Winner S2";
+
+        if (finalMainEl) {
+          finalMainEl.textContent = hasScore
+            ? `Final: ${h} ${hs} - ${as} ${a}`
+            : `Final: ${h} vs ${a}`;
+        }
+        if (finalMethodEl) {
+          finalMethodEl.textContent = methodText;
+        }
+
+        if (hasScore && winner) {
+          championText = `🏆 Champion: ${winner}`;
+        }
       }
     });
-
-    const finalEl = document.getElementById("final-line");
-    if (finalEl) finalEl.textContent = finalText;
 
     const champEl = document.getElementById("champion");
     if (champEl) champEl.textContent = championText;
