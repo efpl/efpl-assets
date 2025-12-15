@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>eFPL Crystal Standings — Season 2</title>
+
+<link rel="preconnect" href="https://docs.google.com" crossorigin>
+<link rel="preconnect" href="https://www.google.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --primary:#f9d71c;
+  --primary-dark:#d4b817;
+  --navy:#00143b;
+  --navy-light:#001a4d;
+  --navy-lighter:#002060;
+  --text-primary:#ffffff;
+  --text-secondary:#cbd5e1;
+  --text-muted:#94a3b8;
+  --success:#10b981;
+  --danger:#ef4444;
+  --neutral:#e5e7eb;
+  --shadow-sm:0 1px 2px 0 rgba(0,0,0,0.05);
+  --shadow:0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+  --shadow-lg:0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+  --shadow-xl:0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,body{
+  background: linear-gradient(135deg, #0a0f1f 0%, #001234 100%);
+  min-height: 100vh;
+}
+
+body{
+  margin:0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  color:var(--text-primary);
+  line-height:1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.wrap{
+  max-width:1200px;
+  margin:0 auto;
+  padding:32px 16px;
+}
+
+.header-section{
+  margin-bottom:32px;
+  text-align:center;
+}
+
+.league-title{
+  font-size:36px;
+  font-weight:800;
+  margin:0 0 8px;
+  background: linear-gradient(135deg, var(--primary) 0%, #fff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing:-0.02em;
+}
+
+.league-subtitle{
+  font-size:18px;
+  font-weight:500;
+  color:var(--text-secondary);
+  margin:0 0 24px;
+}
+
+.sponsor-header{
+  display:inline-flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 24px;
+  background:rgba(249,215,28,0.1);
+  border:1px solid rgba(249,215,28,0.3);
+  border-radius:12px;
+  backdrop-filter:blur(10px);
+  transition:all 0.3s ease;
+}
+
+.sponsor-header:hover{
+  background:rgba(249,215,28,0.15);
+  border-color:rgba(249,215,28,0.5);
+  transform:translateY(-2px);
+  box-shadow:var(--shadow-lg);
+}
+
+.sponsor-header img{
+  height:32px;
+  transition:transform 0.3s ease;
+}
+
+.sponsor-header:hover img{
+  transform:scale(1.05);
+}
+
+.sponsor-text{
+  font-size:14px;
+  color:var(--text-secondary);
+  font-weight:500;
+}
+
+.card{
+  background:var(--navy);
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:var(--shadow-xl);
+  border:1px solid rgba(255,255,255,0.05);
+}
+
+.card-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:24px 28px;
+  background:linear-gradient(135deg, rgba(249,215,28,0.1) 0%, rgba(249,215,28,0.05) 100%);
+  border-bottom:1px solid rgba(249,215,28,0.2);
+}
+
+.card-title{
+  font-size:20px;
+  font-weight:700;
+  color:var(--text-primary);
+  margin:0;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.badge{
+  background:var(--primary);
+  color:var(--navy);
+  padding:6px 14px;
+  border-radius:8px;
+  font-weight:700;
+  font-size:13px;
+  letter-spacing:0.02em;
+  box-shadow:var(--shadow);
+}
+
+/* Enhanced Table Styles */
+.table-container{
+  overflow-x:auto;
+  position:relative;
+}
+
+table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+}
+
+thead th{
+  background:var(--navy-light);
+  color:var(--text-secondary);
+  font-size:12px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.05em;
+  padding:16px 20px;
+  text-align:left;
+  position:sticky;
+  top:0;
+  z-index:10;
+  border-bottom:2px solid rgba(249,215,28,0.3);
+}
+
+thead th:first-child{
+  border-top-left-radius:12px;
+  padding-left:28px;
+}
+
+thead th:last-child{
+  border-top-right-radius:12px;
+  padding-right:28px;
+}
+
+thead th:not(:first-child):not(:nth-child(2)){
+  text-align:center;
+}
+
+tbody td{
+  padding:18px 20px;
+  font-weight:500;
+  font-size:15px;
+  border-bottom:1px solid rgba(255,255,255,0.03);
+  transition:all 0.2s ease;
+}
+
+tbody td:first-child{
+  padding-left:28px;
+  font-weight:700;
+  font-size:16px;
+  color:var(--text-secondary);
+}
+
+tbody td:nth-child(2){
+  font-weight:600;
+  color:var(--text-primary);
+}
+
+tbody td:not(:first-child):not(:nth-child(2)){
+  text-align:center;
+  color:var(--text-secondary);
+}
+
+tbody td.points{
+  font-weight:800;
+  font-size:17px;
+  color:var(--text-primary);
+}
+
+tbody tr{
+  background:var(--navy-light);
+  transition:all 0.2s ease;
+}
+
+tbody tr:nth-child(even){
+  background:var(--navy-lighter);
+}
+
+tbody tr:hover{
+  background:rgba(249,215,28,0.08);
+  transform:translateX(4px);
+}
+
+tbody tr:hover td{
+  color:var(--text-primary);
+}
+
+/* Position Indicators */
+tbody tr.pos-1 td{
+  background:linear-gradient(90deg, rgba(249,215,28,0.25) 0%, rgba(249,215,28,0.05) 100%) !important;
+  border-bottom:1px solid rgba(249,215,28,0.2);
+}
+
+tbody tr.pos-1 td:first-child{
+  position:relative;
+  color:var(--primary);
+}
+
+tbody tr.pos-1 td:first-child::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:4px;
+  background:var(--primary);
+  box-shadow:0 0 10px rgba(249,215,28,0.5);
+}
+
+tbody tr.pos-1 td:nth-child(2)::before{
+  content:"👑";
+  margin-right:10px;
+  font-size:18px;
+  display:inline-block;
+  animation:crown 2s ease-in-out infinite;
+}
+
+@keyframes crown{
+  0%, 100%{transform:translateY(0px) rotate(0deg);}
+  50%{transform:translateY(-3px) rotate(-5deg);}
+}
+
+tbody tr.pos-2-4 td:first-child::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:4px;
+  background:linear-gradient(180deg, var(--primary) 0%, rgba(249,215,28,0.5) 100%);
+}
+
+tbody tr.pos-5-8 td:first-child::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:4px;
+  background:linear-gradient(180deg, #94a3b8 0%, rgba(148,163,184,0.5) 100%);
+}
+
+tbody tr.pos-9-10 td:first-child::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:4px;
+  background:linear-gradient(180deg, #64748b 0%, rgba(100,116,139,0.5) 100%);
+}
+
+tbody tr.pos-2-4 td:first-child,
+tbody tr.pos-5-8 td:first-child,
+tbody tr.pos-9-10 td:first-child{
+  position:relative;
+}
+
+/* Cut lines */
+tbody tr.after-top4 td{
+  border-top:2px dashed rgba(249,215,28,0.3);
+}
+
+tbody tr.after-mid8 td{
+  border-top:2px dashed rgba(148,163,184,0.3);
+}
+
+/* Form Pills - Enhanced */
+.form{
+  display:inline-flex;
+  gap:5px;
+  align-items:center;
+  justify-content:center;
+}
+
+.fpill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:24px;
+  height:24px;
+  border-radius:6px;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:0.02em;
+  box-shadow:var(--shadow-sm);
+  transition:all 0.2s ease;
+}
+
+.fpill:hover{
+  transform:translateY(-2px) scale(1.1);
+  box-shadow:var(--shadow);
+}
+
+.f-W{
+  background:var(--success);
+  color:#fff;
+}
+
+.f-D{
+  background:#64748b;
+  color:#fff;
+}
+
+.f-L{
+  background:var(--danger);
+  color:#fff;
+}
+
+/* Qualification Key */
+.qual-key{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  padding:24px 28px;
+  background:rgba(255,255,255,0.02);
+  border-top:1px solid rgba(255,255,255,0.05);
+}
+
+.k-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:13px;
+  color:var(--text-secondary);
+  font-weight:500;
+}
+
+.k-swatch{
+  width:32px;
+  height:12px;
+  border-radius:3px;
+  box-shadow:var(--shadow-sm);
+}
+
+.k-top4{
+  background:linear-gradient(90deg, var(--primary) 0%, rgba(249,215,28,0.7) 100%);
+}
+
+.k-mid8{
+  background:linear-gradient(90deg, #94a3b8 0%, rgba(148,163,184,0.7) 100%);
+}
+
+.k-bot2{
+  background:linear-gradient(90deg, #64748b 0%, rgba(100,116,139,0.7) 100%);
+}
+
+/* Footer */
+.sponsor-footer{
+  text-align:center;
+  padding:28px;
+  background:rgba(255,255,255,0.02);
+  border-top:1px solid rgba(255,255,255,0.05);
+  color:var(--text-secondary);
+  font-size:14px;
+  line-height:1.8;
+}
+
+.sponsor-footer a{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin:0 4px;
+  padding:8px 16px;
+  background:rgba(249,215,28,0.1);
+  border:1px solid rgba(249,215,28,0.2);
+  border-radius:8px;
+  text-decoration:none;
+  transition:all 0.3s ease;
+}
+
+.sponsor-footer a:hover{
+  background:rgba(249,215,28,0.15);
+  border-color:rgba(249,215,28,0.4);
+  transform:translateY(-2px);
+  box-shadow:var(--shadow);
+}
+
+.footer-logo{
+  height:24px;
+}
+
+.sponsor-footer strong{
+  color:var(--primary);
+  font-weight:700;
+}
+
+/* Deductions Note */
+#deductions-note{
+  padding:16px 28px;
+  margin:0;
+  background:rgba(239,68,68,0.1);
+  border-left:3px solid var(--danger);
+  color:var(--text-secondary);
+  font-size:13px;
+  font-style:italic;
+}
+
+/* Loading States */
+.skeleton{
+  background:linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+  background-size:200% 100%;
+  animation:shimmer 1.5s infinite;
+  border-radius:20px;
+  min-height:400px;
+}
+
+@keyframes shimmer{
+  0%{background-position:200% 0}
+  100%{background-position:-200% 0}
+}
+
+.fade-in{
+  opacity:0;
+  transition:opacity 0.4s ease;
+}
+
+.fade-in.ready{
+  opacity:1;
+}
+
+/* Mobile Responsive */
+.table-desktop{display:block}
+.table-mobile{display:none}
+
+@media(max-width:768px){
+  .wrap{padding:20px 12px}
+  
+  .league-title{font-size:28px}
+  .league-subtitle{font-size:16px}
+  
+  .card{border-radius:16px}
+  .card-header{padding:20px 20px}
+  
+  thead th, tbody td{padding:14px 16px}
+  thead th:first-child, tbody td:first-child{padding-left:20px}
+  thead th:last-child, tbody td:last-child{padding-right:20px}
+  
+  .table-desktop{display:none}
+  .table-mobile{display:block}
+  
+  .fpill{width:20px; height:20px; font-size:10px}
+  
+  .qual-key{flex-direction:column; gap:12px; align-items:flex-start}
+  
+  tbody tr:hover{transform:none}
+}
+
+@media(max-width:480px){
+  .league-title{font-size:24px}
+  .sponsor-header{flex-direction:column; gap:8px; padding:12px 16px}
+  .sponsor-header img{height:28px}
+  
+  .card-header{flex-direction:column; gap:12px; align-items:flex-start}
+  
+  thead th{font-size:11px; padding:12px 12px}
+  tbody td{font-size:14px; padding:12px 12px}
+  thead th:first-child, tbody td:first-child{padding-left:16px}
+  
+  .form{gap:3px}
+  .fpill{width:18px; height:18px; font-size:9px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header-section">
+    <h1 class="league-title">eFPL Crystal League</h1>
+    <p class="league-subtitle">Season 2 Standings</p>
+    <a href="https://www.instant-gaming.com/?igr=eFPL"
+       target="_blank" rel="sponsored noopener noreferrer nofollow"
+       class="sponsor-header"
+       aria-label="Instant Gaming - save on games">
+      <img src="https://efpl-assets.pages.dev/img/instant-gaming.png"
+           alt="Instant Gaming">
+      <span class="sponsor-text">League Partner</span>
+    </a>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 3v18h18"/>
+          <path d="M18 17V9"/>
+          <path d="M13 17V5"/>
+          <path d="M8 17v-3"/>
+        </svg>
+        League Table
+      </h2>
+      <span class="badge" id="updated">Loading…</span>
+    </div>
+
+    <div id="sk-standings" class="skeleton"></div>
+
+    <div class="table-container table-desktop fade-in">
+      <table id="t"></table>
+    </div>
+    
+    <div class="table-container table-mobile fade-in">
+      <table id="t-compact"></table>
+    </div>
+
+    <div class="qual-key" aria-label="Qualification color key">
+      <div class="k-item">
+        <span class="k-swatch k-top4" aria-hidden="true"></span>
+        <span class="k-label">Champions Cup qualification</span>
+      </div>
+      <div class="k-item">
+        <span class="k-swatch k-mid8" aria-hidden="true"></span>
+        <span class="k-label">Continental Cup qualification</span>
+      </div>
+      <div class="k-item">
+        <span class="k-swatch k-bot2" aria-hidden="true"></span>
+        <span class="k-label">Conference Cup qualification</span>
+      </div>
+    </div>
+
+    <p id="deductions-note" style="display:none">
+      * denotes points deduction
+    </p>
+
+    <div class="sponsor-footer">
+      League sponsored by
+      <a href="https://www.instant-gaming.com/?igr=eFPL"
+         target="_blank" rel="sponsored noopener noreferrer nofollow"
+         aria-label="Instant Gaming - save on games">
+        <img src="https://efpl-assets.pages.dev/img/instant-gaming.png"
+             alt="Instant Gaming" class="footer-logo">
+      </a>
+      <br>
+      Save up to <strong>90%</strong> on all digital games!
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== CONFIG (Crystal) ===== */
+const SHEET_ID='1LqRM7ICWpENmsKH5tTuu7Bf7VQa7YoJ-9TAivruymvo';
+const SHEET_TAB='Embed';
+const RANGE='A1:K11';
+const BUCKET_MS=5*60*1000;
+const CB=Math.floor(Date.now()/BUCKET_MS);
+
+/* Helpers */
+function isNumeric(v){return /^-?\d+(\.\d+)?$/.test(String(v));}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function parseGviz(t){const a=t.indexOf('{'),b=t.lastIndexOf('}');if(a===-1||b===-1)throw new Error('Invalid GViz');return JSON.parse(t.slice(a,b+1));}
+
+function setTableMode(){
+  const compact=window.matchMedia('(max-width:768px)').matches;
+  document.querySelector('.table-desktop').style.display=compact?'none':'block';
+  document.querySelector('.table-mobile').style.display=compact?'block':'none';
+}
+window.addEventListener('resize',setTableMode);
+window.addEventListener('orientationchange',setTableMode);
+
+function checkForDeductions(){
+  const note=document.getElementById('deductions-note');
+  if(!note)return;
+  const hasStar=(document.getElementById('t').textContent.includes('*')||
+                 document.getElementById('t-compact').textContent.includes('*'));
+  note.style.display=hasStar?'block':'none';
+}
+
+/* Normalised W/D/L pills */
+function renderFormLetters(s){
+  const raw = String(s ?? "")
+    .replace(/[,\s\-_/|.]+/g,"")
+    .toUpperCase()
+    .replace(/[^WDL]/g,"")
+    .slice(-5);
+  if(!raw) return '';
+  const aria = 'Form: ' + [...raw].join(' ');
+  return '<span class="form" aria-label="'+esc(aria)+'">'+
+    [...raw].map(ch=>{
+      const cls = ch==='W' ? 'f-W' : ch==='D' ? 'f-D' : 'f-L';
+      return `<span class="fpill ${cls}">${ch}</span>`;
+    }).join('')+
+  '</span>';
+}
+
+async function loadStandings(){
+  const statusEl=document.getElementById('updated');
+  try{
+    const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_TAB)}&range=${encodeURIComponent(RANGE)}&cachebust=${CB}`;
+    const res=await fetch(url);
+    const text=await res.text();
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const json=parseGviz(text);
+
+    const headers=json.table.cols.map(c=>c.label||'');
+    const rows=(json.table.rows||[]).map(r=>(r.c||[]).map(c=>c?(c.f ?? c.v ?? ''):''));
+    const iForm=headers.findIndex(h=>String(h||'').toLowerCase().trim().includes('form'));
+
+    let html='<thead><tr>'+headers.map(h=>`<th>${esc(h)}</th>`).join('')+'</tr></thead><tbody>';
+    for(let idx=0; idx<rows.length; idx++){
+      const r=rows[idx]; if(!r || r.every(x=>String(x).trim()==='')) continue;
+
+      const posClass=(idx===0)?'pos-1':(idx>=1&&idx<=3)?'pos-2-4':(idx>=4&&idx<=7)?'pos-5-8':'pos-9-10';
+      const cutA=(idx===4)?'after-top4':''; const cutB=(idx===8)?'after-mid8':'';
+      const rowClass=[posClass,cutA,cutB].filter(Boolean).join(' ');
+
+      html+=`<tr class="${rowClass}">`;
+      r.forEach((cell,i)=>{
+        const s=esc(cell??'');
+        const right=isNumeric(s)?' right':'';
+        const pts=(headers[i]||'').toLowerCase().includes('pts')?' points':'';
+        const val=(i===iForm)?renderFormLetters(cell):s;
+        html+=`<td class="${right}${pts}">${val}</td>`;
+      });
+      html+='</tr>';
+    }
+    html+='</tbody>';
+    document.getElementById('t').innerHTML=html;
+
+    buildCompact(headers,rows);
+
+    document.querySelectorAll('.fade-in').forEach(n=>n.classList.add('ready'));
+    document.getElementById('sk-standings').style.display='none';
+    const d=new Date(),pad=n=>String(n).padStart(2,'0'),yy=String(d.getFullYear()).slice(-2);
+    statusEl.textContent=`Updated ${pad(d.getDate())}/${pad(d.getMonth()+1)}/${yy}`;
+    checkForDeductions(); setTableMode();
+  }catch(e){
+    statusEl.textContent='Error - '+e.message;
+  }
+}
+
+function buildCompact(headers,rows){
+  function findCol(names){
+    const lower=headers.map(h=>(h||'').toLowerCase());
+    for(const n of names){const i=lower.indexOf(n); if(i!==-1) return i;}
+    return -1;
+  }
+  const iPos=findCol(['pos','#','position','rank']);
+  const iTeam=findCol(['team','club','name']);
+  const iP=findCol(['p','pl','played']);
+  const iPts=findCol(['pts','points']);
+  const cols=[iPos,iTeam,iP,iPts].map((i,k)=>i!==-1?i:k);
+
+  let out='<thead><tr><th>POS</th><th>Team</th><th>P</th><th>PTS</th></tr></thead><tbody>';
+  for(let idx=0; idx<rows.length; idx++){
+    const r=rows[idx]; if(!r || r.every(x=>String(x).trim()==='')) continue;
+
+    const pos=r[cols[0]]??'', team=r[cols[1]]??'', p=r[cols[2]]??'', pts=r[cols[3]]??'';
+
+    const posClass=(idx===0)?'pos-1':(idx>=1&&idx<=3)?'pos-2-4':(idx>=4&&idx<=7)?'pos-5-8':'pos-9-10';
+    const cutA=(idx===4)?'after-top4':''; const cutB=(idx===8)?'after-mid8':'';
+    const rowClass=[posClass,cutA,cutB].filter(Boolean).join(' ');
+
+    out+=`<tr class="${rowClass}">
+      <td class="right">${esc(pos)}</td>
+      <td>${esc(team)}</td>
+      <td class="right">${esc(p)}</td>
+      <td class="right points">${esc(pts)}</td>
+    </tr>`;
+  }
+  out+='</tbody>';
+  document.getElementById('t-compact').innerHTML=out;
+}
+
+loadStandings();
+</script>
+</body>
+</html>
