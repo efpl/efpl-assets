@@ -4,227 +4,522 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>eFPL Hall of Fame</title>
-
 <link rel="preconnect" href="https://docs.google.com" crossorigin>
 <link rel="preconnect" href="https://www.google.com" crossorigin>
 
 <style>
 :root{
-  --bg: transparent;
-  --card:#00143b;
-  --text:#ffffff;
-  --muted:#cbd5e1;
-
-  --header-bg:#f9d71c;
-  --header-text:#00143b;
-
-  --row1:#001a4d;
-  --row2:#002060;
-  --hover:#002b80;
-
-  --accent:#f9d71c;
-  --fx-border:rgba(249,215,28,.55);
+  --navy-dark: #00143b;
+  --navy-medium: #001a4d;
+  --navy-light: #002060;
+  --navy-lighter: #002b80;
+  --yellow: #f9d71c;
+  --yellow-dim: rgba(249, 215, 28, 0.85);
+  --bg-primary: #000820;
+  --text-primary: #ffffff;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border: rgba(249, 215, 28, 0.15);
+  --border-strong: rgba(249, 215, 28, 0.35);
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
 
-html,body{background:var(--bg);}
-body{margin:0;font:15px/1.5 "Segoe UI",Arial,sans-serif;color:var(--text);}
+*, *::before, *::after { box-sizing: border-box; }
 
-.wrap{max-width:1100px;margin:24px auto;padding:16px;}
-.card{background:var(--card);border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.25);}
-
-.title{
-  display:flex;justify-content:space-between;align-items:center;
-  margin:0;padding:12px 14px;border-bottom:1px solid rgba(249,215,28,.22);
-}
-.title h1{font-size:20px;margin:0;display:flex;align-items:center;gap:10px}
-.badge{background:var(--accent);color:#000;padding:4px 12px;border-radius:999px;font-weight:800;font-size:12px}
-
-.tabs{
-  display:flex;gap:10px;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.08);
-  background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0));
-}
-.tab{
-  appearance:none;border:1px solid rgba(249,215,28,.25);
-  background:rgba(5,34,90,.35);
-  color:var(--text);
-  padding:8px 12px;border-radius:999px;
-  font-weight:800;cursor:pointer;
-  transition:transform .15s ease, background .15s ease, border-color .15s ease;
-}
-.tab:hover{transform:translateY(-1px);border-color:rgba(249,215,28,.5)}
-.tab.active{
-  background:rgba(249,215,28,.16);
-  border-color:rgba(249,215,28,.75);
+html { 
+  background: linear-gradient(135deg, var(--bg-primary) 0%, #000a1a 100%);
+  min-height: 100vh;
 }
 
-.panel{padding:12px 14px 16px;}
-.panel[hidden]{display:none;}
-
-.skeleton{
-  background:linear-gradient(90deg, rgba(255,255,255,.05), rgba(255,255,255,.12), rgba(255,255,255,.05));
-  background-size:200% 100%;
-  animation:sk 1.1s infinite;
-  border-radius:12px;min-height:220px;
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
-@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
-.table-wrap{
-  margin-top:12px;
-  border-radius:12px;
-  overflow:auto;
-  border:1px solid rgba(255,255,255,.08);
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header */
+.header {
+  background: var(--navy-dark);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+}
+
+.header-title h1 {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0;
+  color: var(--text-primary);
+  text-shadow: 0 2px 10px rgba(249, 215, 28, 0.3);
+}
+
+.trophy-icon {
+  font-size: 32px;
+  filter: drop-shadow(0 2px 8px rgba(249, 215, 28, 0.5));
+}
+
+.badge {
+  background: linear-gradient(135deg, var(--yellow), var(--yellow-dim));
+  color: var(--navy-dark);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 13px;
+  box-shadow: 0 4px 12px rgba(249, 215, 28, 0.4);
+  letter-spacing: 0.02em;
+}
+
+/* Tabs */
+.tabs-wrapper {
+  background: var(--navy-dark);
+  border-radius: 16px;
+  padding: 8px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+}
+
+.tab {
+  flex: 1;
+  appearance: none;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.tab:hover {
+  color: var(--text-primary);
+  background: rgba(249, 215, 28, 0.08);
+  border-color: var(--border);
+}
+
+.tab.active {
+  background: linear-gradient(135deg, rgba(249, 215, 28, 0.2), rgba(249, 215, 28, 0.12));
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+  box-shadow: 0 2px 8px rgba(249, 215, 28, 0.2);
+}
+
+/* Panel */
+.panel {
+  background: var(--navy-dark);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.panel[hidden] { display: none; }
+
+/* Table Container */
+.table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Tables */
-table{width:100%;border-collapse:collapse;min-width:720px}
-thead th{
-  position:sticky; top:0;
-  background:var(--header-bg);color:var(--header-text);
-  font-size:12px;text-transform:uppercase;letter-spacing:.03em;
-  padding:10px;text-align:center;
-  z-index:1;
-}
-tbody td{
-  padding:12px;
-  text-align:center;
-  font-weight:600;
-  white-space:nowrap;
-}
-tbody tr:nth-child(odd){background:var(--row1)}
-tbody tr:nth-child(even){background:var(--row2)}
-tbody tr:hover{background:var(--hover)}
-td.left{text-align:left}
-td.right{text-align:right}
-td:first-child{font-weight:900}
-
-/* Leaderboard top highlight (based on Rank column values 1/2/3) */
-tbody tr.pos-1 td{
-  background:linear-gradient(90deg, rgba(249,215,28,.18), rgba(249,215,28,.08)) !important;
-  font-weight:900;
-}
-tbody tr.pos-1 td:first-child{position:relative}
-tbody tr.pos-1 td:first-child::before{
-  content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--accent);
-}
-tbody tr.pos-2 td{opacity:.98}
-tbody tr.pos-3 td{opacity:.96}
-
-.note{margin:10px 0 0;color:var(--muted);font-size:13px;opacity:.9}
-.err{
-  margin-top:12px;
-  padding:10px 12px;
-  border-radius:10px;
-  background:rgba(220,38,38,.12);
-  border:1px solid rgba(220,38,38,.35);
-  color:#fecaca;
-  font-weight:700;
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 14px;
 }
 
-@media(max-width:680px){
-  .wrap{padding:12px}
-  .title{flex-wrap:wrap;gap:8px}
-  .title h1{font-size:18px}
-  table{min-width:820px} /* History is wide, allow horizontal scroll */
+thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
+
+thead th {
+  background: var(--yellow);
+  color: var(--navy-dark);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 800;
+  padding: 14px 12px;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 3px solid var(--navy-dark);
+}
+
+thead th:first-child {
+  padding-left: 24px;
+  border-radius: 16px 0 0 0;
+}
+
+thead th:last-child {
+  padding-right: 24px;
+  border-radius: 0 16px 0 0;
+}
+
+tbody tr {
+  transition: all 0.15s ease;
+}
+
+tbody tr:nth-child(odd) {
+  background: var(--navy-medium);
+}
+
+tbody tr:nth-child(even) {
+  background: var(--navy-light);
+}
+
+tbody tr:hover {
+  background: var(--navy-lighter);
+  transform: scale(1.002);
+}
+
+tbody td {
+  padding: 16px 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+tbody td:first-child {
+  padding-left: 24px;
+  font-weight: 900;
+}
+
+tbody td:last-child {
+  padding-right: 24px;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+tbody tr:last-child td:first-child {
+  border-radius: 0 0 0 16px;
+}
+
+tbody tr:last-child td:last-child {
+  border-radius: 0 0 16px 0;
+}
+
+/* Column alignment */
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+/* Top 3 styling with yellow accents */
+.rank-1 {
+  background: linear-gradient(90deg, rgba(249, 215, 28, 0.25), var(--navy-medium)) !important;
+  position: relative;
+}
+
+.rank-1 td:first-child::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  background: linear-gradient(180deg, var(--yellow), var(--yellow-dim));
+  border-radius: 0 4px 4px 0;
+  box-shadow: 0 0 10px rgba(249, 215, 28, 0.6);
+}
+
+.rank-1 td:first-child {
+  color: var(--yellow);
+  font-size: 16px;
+  text-shadow: 0 0 10px rgba(249, 215, 28, 0.5);
+}
+
+.rank-2 {
+  background: linear-gradient(90deg, rgba(249, 215, 28, 0.15), var(--navy-light)) !important;
+}
+
+.rank-2 td:first-child {
+  color: var(--yellow-dim);
+}
+
+.rank-3 {
+  background: linear-gradient(90deg, rgba(249, 215, 28, 0.08), var(--navy-light)) !important;
+}
+
+.rank-3 td:first-child {
+  color: var(--text-secondary);
+}
+
+/* Loading skeleton */
+.skeleton {
+  background: linear-gradient(90deg, 
+    var(--navy-medium), 
+    var(--navy-light), 
+    var(--navy-medium)
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 12px;
+  min-height: 400px;
+  margin: 24px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Error message */
+.error {
+  margin: 24px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: rgba(220, 38, 38, 0.15);
+  border: 1px solid rgba(220, 38, 38, 0.4);
+  color: #fca5a5;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Note */
+.note {
+  padding: 16px 24px;
+  color: var(--text-muted);
+  font-size: 13px;
+  border-top: 1px solid var(--border);
+  background: rgba(249, 215, 28, 0.03);
+}
+
+/* Responsive columns - hide on mobile */
+@media (max-width: 768px) {
+  .container { padding: 12px; }
+  
+  .header {
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .header-title h1 {
+    font-size: 24px;
+  }
+  
+  .tabs-wrapper {
+    margin-bottom: 16px;
+  }
+  
+  .tab {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+  
+  thead th,
+  tbody td {
+    padding: 12px 8px;
+    font-size: 13px;
+  }
+  
+  thead th:first-child,
+  tbody td:first-child {
+    padding-left: 16px;
+  }
+  
+  thead th:last-child,
+  tbody td:last-child {
+    padding-right: 16px;
+  }
+  
+  /* Hide less important columns on mobile */
+  .hide-mobile {
+    display: none;
+  }
+  
+  table {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-title h1 {
+    font-size: 20px;
+  }
+  
+  .trophy-icon {
+    font-size: 24px;
+  }
+  
+  .badge {
+    font-size: 11px;
+    padding: 6px 12px;
+  }
+}
+
+/* Utility classes */
+.hidden { display: none !important; }
 </style>
 </head>
 
 <body>
-<div class="wrap">
-  <div class="card">
-    <div class="title">
-      <h1>🏆 eFPL Hall of Fame</h1>
+<div class="container">
+  <header class="header">
+    <div class="header-content">
+      <div class="header-title">
+        <span class="trophy-icon">🏆</span>
+        <h1>eFPL Hall of Fame</h1>
+      </div>
       <span class="badge" id="updated">Loading…</span>
     </div>
+  </header>
 
-    <div class="tabs" role="tablist" aria-label="Hall of Fame tabs">
-      <button class="tab active" id="tab-history" role="tab" aria-selected="true" aria-controls="panel-history">Season History</button>
-      <button class="tab" id="tab-leaderboard" role="tab" aria-selected="false" aria-controls="panel-leaderboard">Leaderboard</button>
-    </div>
+  <div class="tabs-wrapper">
+    <button class="tab active" id="tab-history" role="tab">
+      Season History
+    </button>
+    <button class="tab" id="tab-leaderboard" role="tab">
+      Leaderboard
+    </button>
+  </div>
 
-    <div class="panel" id="panel-history" role="tabpanel" aria-labelledby="tab-history">
-      <div id="sk-history" class="skeleton"></div>
-      <div id="err-history" class="err" hidden></div>
-      <div class="table-wrap" id="wrap-history" hidden>
+  <div class="panel" id="panel-history">
+    <div id="sk-history" class="skeleton"></div>
+    <div id="err-history" class="error hidden"></div>
+    <div id="wrap-history" class="hidden">
+      <div class="table-container">
         <table id="t-history"></table>
       </div>
-      <div class="note">Tip: scroll sideways on mobile to view all competitions.</div>
+      <div class="note">
+        💡 Scroll horizontally to view all competitions on smaller screens
+      </div>
     </div>
+  </div>
 
-    <div class="panel" id="panel-leaderboard" role="tabpanel" aria-labelledby="tab-leaderboard" hidden>
-      <div id="sk-leader" class="skeleton"></div>
-      <div id="err-leader" class="err" hidden></div>
-      <div class="table-wrap" id="wrap-leader" hidden>
+  <div class="panel hidden" id="panel-leaderboard">
+    <div id="sk-leader" class="skeleton"></div>
+    <div id="err-leader" class="error hidden"></div>
+    <div id="wrap-leader" class="hidden">
+      <div class="table-container">
         <table id="t-leader"></table>
       </div>
-      <div class="note">Ranked by total trophies won (highest first).</div>
+      <div class="note">
+        🎯 Ranked by total trophies won (highest first)
+      </div>
     </div>
-
   </div>
 </div>
 
 <script>
 /* ===== CONFIG ===== */
 const SHEET_ID = "1DaYTkVVWiQVg7aianACoIfxXBZSKYqtycyuofX8WXj8";
-
-/* Lock to gid (reliable) */
 const HISTORY_GID = "1032615815";
 const LEADERBOARD_GID = "1964938799";
-
-/* Ranges */
-const HISTORY_RANGE = "A1:L";   // season history grid
-const LEADER_RANGE  = "A1:E";   // leaderboard (auto grows)
-
-/* Cache bucket */
+const HISTORY_RANGE = "A1:L";
+const LEADER_RANGE = "A1:E";
 const BUCKET_MS = 5 * 60 * 1000;
 const CB = Math.floor(Date.now() / BUCKET_MS);
 
 /* ===== Helpers ===== */
-function esc(s){
+function esc(s) {
   return String(s ?? "")
-    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
-function parseGviz(text){
+
+function parseGviz(text) {
   const a = text.indexOf("{");
   const b = text.lastIndexOf("}");
-  if(a === -1 || b === -1) throw new Error("Invalid GViz response");
-  return JSON.parse(text.slice(a, b+1));
+  if (a === -1 || b === -1) throw new Error("Invalid GViz response");
+  return JSON.parse(text.slice(a, b + 1));
 }
-function cellVal(c){
-  if(!c) return "";
+
+function cellVal(c) {
+  if (!c) return "";
   return (c.f ?? c.v ?? "");
 }
-function isNumeric(v){
+
+function isNumeric(v) {
   return /^-?\d+(\.\d+)?$/.test(String(v).trim());
 }
 
-function renderTable(tableEl, cols, rows, opts={}){
+function renderTable(tableEl, cols, rows, opts = {}) {
   const headers = cols.map(c => c.label || "");
-  let html = "<thead><tr>" + headers.map(h => `<th>${esc(h)}</th>`).join("") + "</tr></thead><tbody>";
+  const isMobile = window.innerWidth <= 768;
+  
+  let html = "<thead><tr>";
+  
+  headers.forEach((h, i) => {
+    // Mark columns that should hide on mobile (customize based on your needs)
+    let hideClass = "";
+    if (isMobile && opts.history && i > 2 && i < headers.length - 1) {
+      // On mobile history view, keep first 3 and last column visible
+      hideClass = "hide-mobile";
+    }
+    
+    const align = i === 0 ? "text-left" : (i === 1 ? "text-left" : "text-center");
+    html += `<th class="${align} ${hideClass}">${esc(h)}</th>`;
+  });
+  
+  html += "</tr></thead><tbody>";
 
-  for(let r=0; r<rows.length; r++){
+  for (let r = 0; r < rows.length; r++) {
     const row = rows[r].c || [];
     const vals = row.map(cellVal);
 
-    if(vals.every(v => String(v).trim()==="")) continue;
+    if (vals.every(v => String(v).trim() === "")) continue;
 
     let trClass = "";
-    if(opts.leaderboard){
+    if (opts.leaderboard) {
       const pos = parseInt(String(vals[0]).trim(), 10);
-      if(pos === 1) trClass = "pos-1";
-      else if(pos === 2) trClass = "pos-2";
-      else if(pos === 3) trClass = "pos-3";
+      if (pos === 1) trClass = "rank-1";
+      else if (pos === 2) trClass = "rank-2";
+      else if (pos === 3) trClass = "rank-3";
     }
 
     html += `<tr class="${trClass}">`;
-    for(let i=0; i<vals.length; i++){
+    
+    for (let i = 0; i < vals.length; i++) {
       const v = vals[i];
-      const cls =
-        (i === 1 ? "left " : "") +
-        (isNumeric(v) ? "right " : "");
-      html += `<td class="${cls.trim()}">${esc(v)}</td>`;
+      let hideClass = "";
+      if (isMobile && opts.history && i > 2 && i < vals.length - 1) {
+        hideClass = "hide-mobile";
+      }
+      
+      const align = i === 0 ? "text-left" : (i === 1 ? "text-left" : (isNumeric(v) ? "text-right" : "text-center"));
+      html += `<td class="${align} ${hideClass}">${esc(v)}</td>`;
     }
+    
     html += "</tr>";
   }
 
@@ -232,96 +527,114 @@ function renderTable(tableEl, cols, rows, opts={}){
   tableEl.innerHTML = html;
 }
 
-async function fetchGvizJSONByGid(gid, range){
+async function fetchGvizJSONByGid(gid, range) {
   const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?` +
-              `tqx=out:json&gid=${encodeURIComponent(gid)}` +
-              `&range=${encodeURIComponent(range)}&cachebust=${CB}`;
+    `tqx=out:json&gid=${encodeURIComponent(gid)}` +
+    `&range=${encodeURIComponent(range)}&cachebust=${CB}`;
   const res = await fetch(url);
   const text = await res.text();
-  if(!res.ok) throw new Error("HTTP " + res.status);
+  if (!res.ok) throw new Error("HTTP " + res.status);
   return parseGviz(text);
 }
 
-function setUpdatedBadge(ok=true){
+function setUpdatedBadge(ok = true) {
   const el = document.getElementById("updated");
-  if(!ok){ el.textContent = "Check sharing"; return; }
+  if (!ok) {
+    el.textContent = "⚠️ Check sharing";
+    return;
+  }
   const d = new Date();
-  const pad = n => String(n).padStart(2,"0");
-  el.textContent = `Updated ${pad(d.getDate())}/${pad(d.getMonth()+1)}/${String(d.getFullYear()).slice(-2)}`;
+  const pad = n => String(n).padStart(2, "0");
+  el.textContent = `Updated ${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${String(d.getFullYear()).slice(-2)}`;
 }
 
 /* ===== Loaders ===== */
-async function loadHistory(){
+async function loadHistory() {
   const sk = document.getElementById("sk-history");
   const err = document.getElementById("err-history");
   const wrap = document.getElementById("wrap-history");
   const t = document.getElementById("t-history");
 
-  try{
+  try {
     const json = await fetchGvizJSONByGid(HISTORY_GID, HISTORY_RANGE);
-    renderTable(t, json.table.cols, json.table.rows || []);
-    sk.hidden = true;
-    wrap.hidden = false;
-    err.hidden = true;
+    renderTable(t, json.table.cols, json.table.rows || [], { history: true });
+    sk.classList.add("hidden");
+    wrap.classList.remove("hidden");
+    err.classList.add("hidden");
     setUpdatedBadge(true);
-  }catch(e){
-    sk.hidden = true;
-    wrap.hidden = true;
-    err.hidden = false;
-    err.textContent = "History load error: " + e.message + " (Make sure the sheet is shared or published.)";
+  } catch (e) {
+    sk.classList.add("hidden");
+    wrap.classList.add("hidden");
+    err.classList.remove("hidden");
+    err.textContent = "⚠️ Could not load season history: " + e.message + " (Ensure the sheet is shared or published)";
     setUpdatedBadge(false);
   }
 }
 
-async function loadLeaderboard(){
+async function loadLeaderboard() {
   const sk = document.getElementById("sk-leader");
   const err = document.getElementById("err-leader");
   const wrap = document.getElementById("wrap-leader");
   const t = document.getElementById("t-leader");
 
-  try{
+  try {
     const json = await fetchGvizJSONByGid(LEADERBOARD_GID, LEADER_RANGE);
-    renderTable(t, json.table.cols, json.table.rows || [], { leaderboard:true });
-    sk.hidden = true;
-    wrap.hidden = false;
-    err.hidden = true;
+    renderTable(t, json.table.cols, json.table.rows || [], { leaderboard: true });
+    sk.classList.add("hidden");
+    wrap.classList.remove("hidden");
+    err.classList.add("hidden");
     setUpdatedBadge(true);
-  }catch(e){
-    sk.hidden = true;
-    wrap.hidden = true;
-    err.hidden = false;
-    err.textContent = "Leaderboard load error: " + e.message + " (Make sure the sheet is shared or published.)";
+  } catch (e) {
+    sk.classList.add("hidden");
+    wrap.classList.add("hidden");
+    err.classList.remove("hidden");
+    err.textContent = "⚠️ Could not load leaderboard: " + e.message + " (Ensure the sheet is shared or published)";
     setUpdatedBadge(false);
   }
 }
 
 /* ===== Tabs ===== */
 const tabHistory = document.getElementById("tab-history");
-const tabLeader  = document.getElementById("tab-leaderboard");
+const tabLeader = document.getElementById("tab-leaderboard");
 const panelHistory = document.getElementById("panel-history");
-const panelLeader  = document.getElementById("panel-leaderboard");
+const panelLeader = document.getElementById("panel-leaderboard");
 
 let leaderLoaded = false;
 
-function activate(which){
+function activate(which) {
   const isHistory = which === "history";
+  
   tabHistory.classList.toggle("active", isHistory);
   tabLeader.classList.toggle("active", !isHistory);
-  tabHistory.setAttribute("aria-selected", isHistory ? "true":"false");
-  tabLeader.setAttribute("aria-selected", !isHistory ? "true":"false");
-  panelHistory.hidden = !isHistory;
-  panelLeader.hidden = isHistory;
+  
+  panelHistory.classList.toggle("hidden", !isHistory);
+  panelLeader.classList.toggle("hidden", isHistory);
 
-  if(!isHistory && !leaderLoaded){
+  if (!isHistory && !leaderLoaded) {
     leaderLoaded = true;
     loadLeaderboard();
   }
 }
 
-tabHistory.addEventListener("click", ()=>activate("history"));
-tabLeader.addEventListener("click", ()=>activate("leader"));
+tabHistory.addEventListener("click", () => activate("history"));
+tabLeader.addEventListener("click", () => activate("leader"));
 
-/* initial */
+// Handle window resize for responsive tables
+let resizeTimer;
+window.addEventListener("resize", () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    // Re-render active table on resize
+    const activePanel = document.querySelector(".panel:not(.hidden)");
+    if (activePanel.id === "panel-history" && !document.getElementById("wrap-history").classList.contains("hidden")) {
+      loadHistory();
+    } else if (leaderLoaded && !document.getElementById("wrap-leader").classList.contains("hidden")) {
+      loadLeaderboard();
+    }
+  }, 250);
+});
+
+// Initial load
 loadHistory();
 </script>
 </body>
