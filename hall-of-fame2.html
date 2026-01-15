@@ -166,34 +166,50 @@ function gv(gid,range){
     .then(t=>JSON.parse(t.slice(t.indexOf('{'),t.lastIndexOf('}')+1)));
 }
 
-function esc(s){return String(s||'').replace(/[&<>"]/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[m]));}
+function esc(s){
+  return String(s ?? '').replace(/[&<>"]/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[m]));
+}
+
+/* Preserve 0, only blank null/undefined */
+function val(c){
+  return (c && (c.v ?? c.f)) ?? "";
+}
+
+/* Normalize for filtering (handles numbers/strings/spaces) */
+function key(x){
+  return String(x ?? "").trim();
+}
 
 function renderHistory(filter="all"){
-  const cols=historyData.table.cols.map(c=>c.label);
-  const rows=historyData.table.rows.map(r=>r.c.map(c=>c?.v||""));
-  const frows=rows.filter(r=>filter==="all"||r[0]===filter);
+  const cols = (historyData.table.cols || []).map(c => c.label || "");
+  const rows = (historyData.table.rows || []).map(r => (r.c || []).map(val));
+  const frows = rows.filter(r => filter === "all" || key(r[0]) === key(filter));
 
   // desktop table
-  let h="<thead><tr>"+cols.map(c=>`<th>${esc(c)}</th>`).join("")+"</tr></thead><tbody>";
+  let h = "<thead><tr>" + cols.map(c=>`<th>${esc(c)}</th>`).join("") + "</tr></thead><tbody>";
   frows.forEach(r=>{
-    h+="<tr>"+r.map(v=>`<td>${esc(v)}</td>`).join("")+"</tr>";
+    h += "<tr>" + r.map(v=>`<td>${esc(v)}</td>`).join("") + "</tr>";
   });
-  h+="</tbody>";
-  document.getElementById("t-history").innerHTML=h;
+  h += "</tbody>";
+  document.getElementById("t-history").innerHTML = h;
 
-  // mobile cards
-  let m="";
+  // mobile cards (accordion)
+  let m = "";
   frows.forEach(r=>{
-    m+=`<div class="history-card">
+    m += `<div class="history-card">
       <div class="history-header" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display?'':'block'">
         ${esc(r[0])} <span>▼</span>
       </div><div class="history-body">`;
+
     r.slice(1).forEach((v,i)=>{
-      if(v) m+=`<div class="history-item"><span>${esc(cols[i+1])}</span><strong>${esc(v)}</strong></div>`;
+      if(String(v).trim() !== ""){
+        m += `<div class="history-item"><span>${esc(cols[i+1])}</span><strong>${esc(v)}</strong></div>`;
+      }
     });
-    m+="</div></div>";
+
+    m += "</div></div>";
   });
-  document.getElementById("historyCards").innerHTML=m;
+  document.getElementById("historyCards").innerHTML = m;
 }
 
 function applyFilter(){
@@ -201,28 +217,39 @@ function applyFilter(){
 }
 
 function showTab(id){
-  document.getElementById("history").hidden=id!=="history";
-  document.getElementById("leaderboard").hidden=id!=="leaderboard";
+  document.getElementById("history").hidden = id !== "history";
+  document.getElementById("leaderboard").hidden = id !== "leaderboard";
 }
 
 (async()=>{
-  historyData=await gv(HISTORY_GID,"A1:L");
-  const seasons=[...new Set(historyData.table.rows.map(r=>r.c[0]?.v))];
-  const sel=document.getElementById("seasonFilter");
-  seasons.forEach(s=>sel.innerHTML+=`<option value="${s}">${s}</option>`);
+  historyData = await gv(HISTORY_GID, "A1:L");
+
+  const seasons = [...new Set(
+    (historyData.table.rows || []).map(r => key(val((r.c || [])[0])))
+  )].filter(s => s);
+
+  const sel = document.getElementById("seasonFilter");
+  seasons.forEach(s => {
+    sel.innerHTML += `<option value="${esc(s)}">${esc(s)}</option>`;
+  });
+
   renderHistory();
 
-  const lb=await gv(LEADER_GID,"A1:E");
-  let l="<thead><tr>"+lb.table.cols.map(c=>`<th>${c.label}</th>`).join("")+"</tr></thead><tbody>";
-  lb.table.rows.forEach((r,i)=>{
-    l+=`<tr class="${i===0?'pos-1':''}">`+r.c.map(c=>`<td>${c?.v||""}</td>`).join("")+"</tr>";
-  });
-  l+="</tbody>";
-  document.getElementById("t-leader").innerHTML=l;
+  const lb = await gv(LEADER_GID, "A1:E");
+  let l = "<thead><tr>" + (lb.table.cols || []).map(c=>`<th>${esc(c.label || "")}</th>`).join("") + "</tr></thead><tbody>";
 
-  document.getElementById("updated").textContent="Updated";
+  (lb.table.rows || []).forEach((r,i)=>{
+    const cells = (r.c || []).map(val);
+    l += `<tr class="${i===0?'pos-1':''}">` + cells.map(v=>`<td>${esc(v)}</td>`).join("") + "</tr>";
+  });
+
+  l += "</tbody>";
+  document.getElementById("t-leader").innerHTML = l;
+
+  document.getElementById("updated").textContent = "Updated";
 })();
 </script>
+
 
 </body>
 </html>
