@@ -24,7 +24,6 @@
 
   --accent:#f9d71c;
   --fx-border:rgba(249,215,28,.55);
-  --tab:#05225a;
 }
 
 html,body{background:var(--bg);}
@@ -85,7 +84,12 @@ thead th{
   padding:10px;text-align:center;
   z-index:1;
 }
-tbody td{padding:12px;text-align:center;font-weight:600;white-space:nowrap}
+tbody td{
+  padding:12px;
+  text-align:center;
+  font-weight:600;
+  white-space:nowrap;
+}
 tbody tr:nth-child(odd){background:var(--row1)}
 tbody tr:nth-child(even){background:var(--row2)}
 tbody tr:hover{background:var(--hover)}
@@ -93,11 +97,12 @@ td.left{text-align:left}
 td.right{text-align:right}
 td:first-child{font-weight:900}
 
-/* Leaderboard top highlight */
+/* Leaderboard top highlight (based on Rank column values 1/2/3) */
 tbody tr.pos-1 td{
   background:linear-gradient(90deg, rgba(249,215,28,.18), rgba(249,215,28,.08)) !important;
   font-weight:900;
 }
+tbody tr.pos-1 td:first-child{position:relative}
 tbody tr.pos-1 td:first-child::before{
   content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--accent);
 }
@@ -119,7 +124,7 @@ tbody tr.pos-3 td{opacity:.96}
   .wrap{padding:12px}
   .title{flex-wrap:wrap;gap:8px}
   .title h1{font-size:18px}
-  table{min-width:820px} /* history is wide – allow scroll */
+  table{min-width:820px} /* History is wide, allow horizontal scroll */
 }
 </style>
 </head>
@@ -162,15 +167,15 @@ tbody tr.pos-3 td{opacity:.96}
 /* ===== CONFIG ===== */
 const SHEET_ID = "1DaYTkVVWiQVg7aianACoIfxXBZSKYqtycyuofX8WXj8";
 
-/* History: load by sheet name */
-const HISTORY_SHEET = "History";
-const HISTORY_RANGE = "A1:L";
-
-/* Leaderboard: load by GID (per your message) */
+/* Lock to gid (reliable) */
+const HISTORY_GID = "1032615815";
 const LEADERBOARD_GID = "1964938799";
-const LEADERBOARD_RANGE = "A1:E"; // make this "A1:E" later if you want it unlimited
 
-/* cache bucket to reduce spam */
+/* Ranges */
+const HISTORY_RANGE = "A1:L";   // season history grid
+const LEADER_RANGE  = "A1:E";   // leaderboard (auto grows)
+
+/* Cache bucket */
 const BUCKET_MS = 5 * 60 * 1000;
 const CB = Math.floor(Date.now() / BUCKET_MS);
 
@@ -202,10 +207,8 @@ function renderTable(tableEl, cols, rows, opts={}){
     const row = rows[r].c || [];
     const vals = row.map(cellVal);
 
-    // skip fully blank rows
     if(vals.every(v => String(v).trim()==="")) continue;
 
-    // optional row classes (leaderboard top 3)
     let trClass = "";
     if(opts.leaderboard){
       const pos = parseInt(String(vals[0]).trim(), 10);
@@ -227,16 +230,6 @@ function renderTable(tableEl, cols, rows, opts={}){
 
   html += "</tbody>";
   tableEl.innerHTML = html;
-}
-
-async function fetchGvizJSONBySheet(sheetName, range){
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?` +
-              `tqx=out:json&sheet=${encodeURIComponent(sheetName)}` +
-              `&range=${encodeURIComponent(range)}&cachebust=${CB}`;
-  const res = await fetch(url);
-  const text = await res.text();
-  if(!res.ok) throw new Error("HTTP " + res.status);
-  return parseGviz(text);
 }
 
 async function fetchGvizJSONByGid(gid, range){
@@ -265,7 +258,7 @@ async function loadHistory(){
   const t = document.getElementById("t-history");
 
   try{
-    const json = await fetchGvizJSONBySheet(HISTORY_SHEET, HISTORY_RANGE);
+    const json = await fetchGvizJSONByGid(HISTORY_GID, HISTORY_RANGE);
     renderTable(t, json.table.cols, json.table.rows || []);
     sk.hidden = true;
     wrap.hidden = false;
@@ -287,7 +280,7 @@ async function loadLeaderboard(){
   const t = document.getElementById("t-leader");
 
   try{
-    const json = await fetchGvizJSONByGid(LEADERBOARD_GID, LEADERBOARD_RANGE);
+    const json = await fetchGvizJSONByGid(LEADERBOARD_GID, LEADER_RANGE);
     renderTable(t, json.table.cols, json.table.rows || [], { leaderboard:true });
     sk.hidden = true;
     wrap.hidden = false;
