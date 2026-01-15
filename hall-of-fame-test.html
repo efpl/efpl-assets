@@ -22,10 +22,6 @@
   --line:rgba(249,215,28,.28);
   --hover:rgba(255,255,255,.05);
   --shadow:0 16px 32px rgba(0,0,0,.55);
-
-  --ok:#2fbf71;
-  --mid:#9aa4b2;
-  --bad:#e01c71;
 }
 
 *{box-sizing:border-box}
@@ -40,7 +36,6 @@ img{max-width:100%;height:auto;display:inline-block}
   box-shadow:var(--shadow);
   overflow:hidden;
 }
-.pad{padding:12px}
 .note{color:var(--muted);font-size:12px}
 
 /* Mini hero (stats-style) */
@@ -83,7 +78,6 @@ img{max-width:100%;height:auto;display:inline-block}
 
 .panel{padding:12px}
 .panel[hidden]{display:none}
-
 .sep{height:1px;background:rgba(255,255,255,.08);margin:10px 0}
 
 /* Tables */
@@ -135,7 +129,7 @@ tbody tr:hover{background:var(--hover)}
   background:linear-gradient(90deg, rgba(249,215,28,.18), rgba(249,215,28,.06));
 }
 
-/* Player link styling (both tabs) */
+/* Player link styling */
 .player-link{
   cursor:pointer;
   font-weight:1000;
@@ -150,7 +144,7 @@ tr.top1 td{
   font-weight:1000;
 }
 
-/* ===== Season cards (desktop + mobile) ===== */
+/* ===== Season cards ===== */
 .season-list{display:grid;gap:10px}
 .season-card{
   border:1px solid rgba(255,255,255,.12);
@@ -164,14 +158,13 @@ tr.top1 td{
   cursor:pointer;
   background:linear-gradient(90deg, rgba(5,34,90,.60), rgba(0,0,0,0));
 }
-.season-title{
-  display:flex;flex-direction:column;gap:2px;min-width:0;
-}
+.season-title{display:flex;flex-direction:column;gap:2px;min-width:0}
 .season-name{font-weight:1000;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .season-sub{font-size:12px;color:var(--muted)}
 .chev{color:var(--accent);font-weight:1000}
 .season-body{display:none;padding:10px 12px}
 
+/* Podium */
 .podium{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -188,8 +181,14 @@ tr.top1 td{
   background:rgba(0,0,0,.14);
 }
 .podium-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.podium-name{font-weight:1000}
 .podium-sub{color:var(--muted);font-size:12px;margin-top:4px}
+
+/* Competition icon */
+.comp-wrap{display:flex;align-items:center;gap:10px}
+.comp-ico{
+  width:22px;height:22px;border-radius:6px;object-fit:contain;
+  filter:drop-shadow(0 0 6px rgba(0,0,0,.6));
+}
 
 /* Flyout */
 .flyout{
@@ -231,17 +230,36 @@ tr.top1 td{
         </div>
       </div>
       <div class="mh-right">
-        <span class="mh-pill" id="pill-updated">Loading…</span>
+        <span class="mh-pill" id="pill-updated">Updated…</span>
       </div>
     </header>
 
+    <!-- Swap order: Leaderboard first -->
     <nav class="tabs" aria-label="Hall of Fame sections">
-      <button class="tab active" data-tab="history" onclick="showTab('history')">Season History</button>
-      <button class="tab" data-tab="leaderboard" onclick="showTab('leaderboard')">Leaderboard</button>
+      <button class="tab active" data-tab="leaderboard" onclick="showTab('leaderboard')">Leaderboard</button>
+      <button class="tab" data-tab="history" onclick="showTab('history')">Season History</button>
     </nav>
 
+    <!-- LEADERBOARD (default open) -->
+    <section class="panel" id="leaderboard">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap">
+        <div>
+          <div style="font-weight:1000;font-size:16px">All-time Leaderboard</div>
+          <div class="note">Hover or click a player to see which trophies they’ve won.</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <span class="pill accent" id="lb-total">-</span>
+          <span class="pill" id="lb-unique">-</span>
+        </div>
+      </div>
+
+      <div class="sep"></div>
+
+      <table class="table" id="t-leader"></table>
+    </section>
+
     <!-- SEASON HISTORY -->
-    <section class="panel" id="history">
+    <section class="panel" id="history" hidden>
       <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap">
         <div>
           <div style="font-weight:1000;font-size:16px">Season History</div>
@@ -266,24 +284,6 @@ tr.top1 td{
       </div>
     </section>
 
-    <!-- LEADERBOARD -->
-    <section class="panel" id="leaderboard" hidden>
-      <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap">
-        <div>
-          <div style="font-weight:1000;font-size:16px">All-time Leaderboard</div>
-          <div class="note">Hover or click a player to see what trophies they’ve won.</div>
-        </div>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <span class="pill accent" id="lb-total">-</span>
-          <span class="pill" id="lb-unique">-</span>
-        </div>
-      </div>
-
-      <div class="sep"></div>
-
-      <table class="table" id="t-leader"></table>
-    </section>
-
   </div>
 </div>
 
@@ -293,11 +293,13 @@ tr.top1 td{
 /* ================= CONFIG ================= */
 const SHEET_ID="1DaYTkVVWiQVg7aianACoIfxXBZSKYqtycyuofX8WXj8";
 const HISTORY_GID="1032615815";
-const LEADER_GID="1964938799"; // optional, not required for this build
+
+/* Assets (safe + consistent) */
+const EFPL_LOGO = "https://efpl-assets.pages.dev/img/logo.png";
+const LEAGUE_ICON_BASE = "https://efpl-assets.pages.dev/img/leagues/";
 
 /* ================= STATE ================= */
 let historyGV = null;
-
 let HISTORY = { headers: [], rows: [] }; // rows: [{season, cells:[...]}]
 let COMPETITIONS = []; // [{label, index}]
 let COUNTS = null;     // overall player trophy counts
@@ -322,15 +324,29 @@ function seasonLabel(raw){
   if(/^season\b/i.test(s)) return s;
   return s;
 }
-
 function safeSeasonSortKey(seasonStr){
   const s = String(seasonStr ?? "");
   const m = s.match(/(\d+)/);
   if(m) return Number(m[1]);
   return -1;
 }
+
+/* Competition icon helper:
+   - If the competition header includes a league name, show that league icon
+   - Otherwise fall back to eFPL logo (you can extend this later with cup icons) */
+function compIconUrl(label){
+  const s = String(label || "").toLowerCase();
+  if(s.includes("diamond"))  return LEAGUE_ICON_BASE + "Diamond-League.png";
+  if(s.includes("ruby"))     return LEAGUE_ICON_BASE + "Ruby-League.png";
+  if(s.includes("sapphire")) return LEAGUE_ICON_BASE + "Sapphire-League.png";
+  if(s.includes("crystal"))  return LEAGUE_ICON_BASE + "Crystal-League.png";
+  if(s.includes("emerald"))  return LEAGUE_ICON_BASE + "Emerald-League.png";
+  if(s.includes("gold"))     return LEAGUE_ICON_BASE + "Gold-League.png";
+  return EFPL_LOGO; // safe fallback
+}
+
 function showTab(id){
-  ["history","leaderboard"].forEach(pid=> byId(pid).hidden = (pid !== id));
+  ["leaderboard","history"].forEach(pid=> byId(pid).hidden = (pid !== id));
   document.querySelectorAll(".tab").forEach(b=> b.classList.toggle("active", b.dataset.tab === id));
 }
 
@@ -410,7 +426,11 @@ function showFlyout(name, anchor){
     <div class="note" style="margin-top:10px">
       ${rows.length ? rows.slice(0,8).map(x=>`
         <div style="display:flex;justify-content:space-between;gap:10px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.06)">
-          <span>${esc(x.comp)}</span><strong>${x.count}</strong>
+          <span style="display:flex;align-items:center;gap:8px">
+            <img class="comp-ico" src="${esc(compIconUrl(x.comp))}" alt="">
+            ${esc(x.comp)}
+          </span>
+          <strong>${x.count}</strong>
         </div>
       `).join("") : "No trophies recorded yet."}
     </div>
@@ -479,7 +499,6 @@ function renderLeaderboard(){
   html += `</tbody>`;
   byId("t-leader").innerHTML = html;
 
-  // attach hover/click
   document.querySelectorAll(".player-link").forEach(el=>{
     const name = el.dataset.player;
     if(supportsHover){
@@ -518,6 +537,8 @@ function renderSeasonCards(){
   let rows = [...HISTORY.rows]
     .sort((a,b)=> safeSeasonSortKey(b.season) - safeSeasonSortKey(a.season)); // newest first
 
+  const newestSeasonKey = rows.length ? rows[0].season : "";
+
   if(ACTIVE_SEASON_FILTER !== "all"){
     rows = rows.filter(r => key(r.season) === key(ACTIVE_SEASON_FILTER));
   }
@@ -532,8 +553,10 @@ function renderSeasonCards(){
   host.innerHTML = rows.map((r,idx)=>{
     const winners = seasonWinnersList(r);
     const trophiesCount = winners.length;
+    const isOngoingSeason = key(r.season) === key(newestSeasonKey) && trophiesCount === 0;
 
     const top3 = top3ForSeason(r);
+
     const podiumHtml = top3.length ? `
       <div class="podium">
         ${top3.map((p,i)=>{
@@ -555,16 +578,33 @@ function renderSeasonCards(){
           `;
         }).join("")}
       </div>
-    ` : `<div class="note">No trophies recorded for this season yet.</div>`;
+    ` : `
+      <div class="note">
+        ${isOngoingSeason
+          ? "This season is currently ongoing. Winners will appear here once trophies are awarded."
+          : "No winners have been recorded for this season yet."}
+      </div>
+    `;
 
     const itemsHtml = winners.length ? winners.map(it=>`
       <tr>
-        <td class="left">${esc(it.comp)}</td>
+        <td class="left">
+          <span class="comp-wrap">
+            <img class="comp-ico" src="${esc(compIconUrl(it.comp))}" alt="">
+            <span>${esc(it.comp)}</span>
+          </span>
+        </td>
         <td class="left"><span class="player-link" data-player="${esc(it.winner)}">${esc(it.winner)}</span></td>
         <td class="center"><span class="pill">Winner</span></td>
       </tr>
     `).join("") : `
-      <tr><td colspan="3" class="note" style="text-align:center;padding:12px">No winners recorded.</td></tr>
+      <tr>
+        <td colspan="3" class="note" style="text-align:center;padding:12px">
+          ${isOngoingSeason
+            ? "This season is currently ongoing. Winners will appear here once trophies are awarded."
+            : "No winners have been recorded for this season yet."}
+        </td>
+      </tr>
     `;
 
     const bodyId = `season-body-${idx}`;
@@ -632,7 +672,7 @@ function applySeasonFilter(){
   try{
     historyGV = await gv(HISTORY_GID, "A1:L");
   }catch(e){
-    byId("pill-updated").textContent = "Sheet error";
+    byId("pill-updated").textContent = "Updated • error loading sheet";
     byId("seasonCards").innerHTML = `<div class="note">Could not load Hall of Fame sheet.</div>`;
     return;
   }
@@ -651,14 +691,14 @@ function applySeasonFilter(){
   });
 
   // Render
-  renderSeasonCards();
   renderLeaderboard();
+  renderSeasonCards();
 
-  // Updated pill
+  // Updated pill (no "Live")
   const now = new Date();
   const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   const stamp = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
-  byId("pill-updated").textContent = `Live • ${stamp}`;
+  byId("pill-updated").textContent = `Updated • ${stamp}`;
 
   // Hide flyout on scroll/tap away
   window.addEventListener("scroll", ()=>{ if(supportsHover) hideFlyout(); }, { passive:true });
@@ -667,6 +707,9 @@ function applySeasonFilter(){
     const isFly = e.target.closest && e.target.closest("#flyout");
     if(!isPlayer && !isFly) hideFlyout();
   });
+
+  // Ensure default tab is Leaderboard (already visible) but sync active state
+  showTab("leaderboard");
 })();
 </script>
 </body>
