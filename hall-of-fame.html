@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>eFPL Hall of Fame</title>
 
 <link rel="preconnect" href="https://docs.google.com" crossorigin>
@@ -10,292 +10,325 @@
 
 <style>
 :root{
+  --bg: transparent;
   --card:#00143b;
   --text:#ffffff;
   --muted:#cbd5e1;
+
   --header-bg:#f9d71c;
   --header-text:#00143b;
+
   --row1:#001a4d;
   --row2:#002060;
   --hover:#002b80;
+
   --accent:#f9d71c;
   --fx-border:rgba(249,215,28,.55);
+  --tab:#05225a;
 }
-html,body{background:transparent}
+
+html,body{background:var(--bg);}
 body{margin:0;font:15px/1.5 "Segoe UI",Arial,sans-serif;color:var(--text);}
+
 .wrap{max-width:1100px;margin:24px auto;padding:16px;}
-.card{background:var(--card);border-radius:12px;overflow:hidden}
+.card{background:var(--card);border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.25);}
 
-/* Title */
-.title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0;padding:12px;border-bottom:1px solid rgba(249,215,28,.22)}
-.title h1{font-size:20px;margin:0;color:var(--text);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.badge{background:var(--accent);color:#000;padding:4px 12px;border-radius:999px;font-weight:700;white-space:nowrap}
-.title-sponsor-logo{height:26px;vertical-align:middle;transition:transform .2s}
-.title-sponsor-logo:hover{transform:scale(1.08)}
+.title{
+  display:flex;justify-content:space-between;align-items:center;
+  margin:0;padding:12px 14px;border-bottom:1px solid rgba(249,215,28,.22);
+}
+.title h1{font-size:20px;margin:0;display:flex;align-items:center;gap:10px}
+.badge{background:var(--accent);color:#000;padding:4px 12px;border-radius:999px;font-weight:800;font-size:12px}
 
-/* Tabs */
-.tabs{display:flex;gap:8px;padding:12px;background:rgba(0,0,0,.06);border-bottom:1px solid rgba(255,255,255,.08)}
+.tabs{
+  display:flex;gap:10px;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.08);
+  background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0));
+}
 .tab{
   appearance:none;border:1px solid rgba(249,215,28,.25);
-  background:rgba(255,255,255,.06);color:var(--text);
-  padding:8px 12px;border-radius:999px;cursor:pointer;
-  font-weight:700;font-size:13px;letter-spacing:.02em;
+  background:rgba(5,34,90,.35);
+  color:var(--text);
+  padding:8px 12px;border-radius:999px;
+  font-weight:800;cursor:pointer;
+  transition:transform .15s ease, background .15s ease, border-color .15s ease;
 }
-.tab[aria-selected="true"]{background:var(--accent);color:#000;border-color:var(--accent)}
-.tab:focus{outline:2px solid rgba(249,215,28,.55);outline-offset:2px}
+.tab:hover{transform:translateY(-1px);border-color:rgba(249,215,28,.5)}
+.tab.active{
+  background:rgba(249,215,28,.16);
+  border-color:rgba(249,215,28,.75);
+}
 
-/* Table shells */
-.panel{padding:12px}
+.panel{padding:12px 14px 16px;}
+.panel[hidden]{display:none;}
+
 .skeleton{
   background:linear-gradient(90deg, rgba(255,255,255,.05), rgba(255,255,255,.12), rgba(255,255,255,.05));
-  background-size:200% 100%;animation:sk 1.1s infinite;
-  border-radius:12px;min-height:220px;margin:0;
+  background-size:200% 100%;
+  animation:sk 1.1s infinite;
+  border-radius:12px;min-height:220px;
 }
 @keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
-.fade-in{opacity:0;transition:opacity .18s ease}
-.fade-in.ready{opacity:1}
 
-/* Table styling (match standings look) */
-.table-wrap{overflow:auto;border-radius:12px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
-.table-wrap::-webkit-scrollbar{height:10px}
-.table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:999px}
-.table-wrap::-webkit-scrollbar-track{background:rgba(0,0,0,.12)}
+.table-wrap{
+  margin-top:12px;
+  border-radius:12px;
+  overflow:auto;
+  border:1px solid rgba(255,255,255,.08);
+}
 
+/* Tables */
 table{width:100%;border-collapse:collapse;min-width:720px}
 thead th{
+  position:sticky; top:0;
   background:var(--header-bg);color:var(--header-text);
-  font-size:13px;text-transform:uppercase;letter-spacing:.03em;
-  padding:10px;text-align:center;white-space:nowrap;
+  font-size:12px;text-transform:uppercase;letter-spacing:.03em;
+  padding:10px;text-align:center;
+  z-index:1;
 }
-tbody td{padding:12px;text-align:center;font-weight:500;white-space:nowrap}
+tbody td{padding:12px;text-align:center;font-weight:600;white-space:nowrap}
 tbody tr:nth-child(odd){background:var(--row1)}
 tbody tr:nth-child(even){background:var(--row2)}
 tbody tr:hover{background:var(--hover)}
+td.left{text-align:left}
+td.right{text-align:right}
+td:first-child{font-weight:900}
 
-/* Sticky first column for History */
-.sticky-first thead th:first-child,
-.sticky-first tbody td:first-child{
-  position:sticky;left:0;z-index:2
+/* Leaderboard top highlight */
+tbody tr.pos-1 td{
+  background:linear-gradient(90deg, rgba(249,215,28,.18), rgba(249,215,28,.08)) !important;
+  font-weight:900;
 }
-.sticky-first thead th:first-child{z-index:3}
-.sticky-first tbody td:first-child{background:inherit;font-weight:800;text-align:left;padding-left:14px}
+tbody tr.pos-1 td:first-child::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--accent);
+}
+tbody tr.pos-2 td{opacity:.98}
+tbody tr.pos-3 td{opacity:.96}
 
-/* Leaderboard polish */
-.leaderboard tbody td:nth-child(1){font-weight:900}
-.leaderboard tbody td:nth-child(2){text-align:left;font-weight:800}
-.leaderboard tbody td:nth-child(5){font-weight:900}
-.leaderboard tbody tr.top-1 td{background:linear-gradient(90deg, rgba(249,215,28,.22), rgba(249,215,28,.08)) !important;}
-.leaderboard tbody tr.top-2 td{background:linear-gradient(90deg, rgba(255,255,255,.10), rgba(255,255,255,.04)) !important;}
-.leaderboard tbody tr.top-3 td{background:linear-gradient(90deg, rgba(255,255,255,.08), rgba(255,255,255,.03)) !important;}
-.leaderboard tbody tr.top-1 td:nth-child(1)::after{content:" 🥇"}
-.leaderboard tbody tr.top-2 td:nth-child(1)::after{content:" 🥈"}
-.leaderboard tbody tr.top-3 td:nth-child(1)::after{content:" 🥉"}
-
-.note{color:var(--muted);font-size:12px;opacity:.9;margin:10px 2px 0}
+.note{margin:10px 0 0;color:var(--muted);font-size:13px;opacity:.9}
+.err{
+  margin-top:12px;
+  padding:10px 12px;
+  border-radius:10px;
+  background:rgba(220,38,38,.12);
+  border:1px solid rgba(220,38,38,.35);
+  color:#fecaca;
+  font-weight:700;
+}
 
 @media(max-width:680px){
   .wrap{padding:12px}
-  .title h1{font-size:18px;line-height:1.2}
-  .title-sponsor-logo{height:22px}
-  table{min-width:640px}
+  .title{flex-wrap:wrap;gap:8px}
+  .title h1{font-size:18px}
+  table{min-width:820px} /* history is wide – allow scroll */
 }
 </style>
 </head>
+
 <body>
 <div class="wrap">
   <div class="card">
     <div class="title">
-      <h1>
-        <a href="https://www.instant-gaming.com/?igr=eFPL"
-           target="_blank" rel="sponsored noopener noreferrer nofollow"
-           aria-label="Instant Gaming - save on games">
-          <img src="https://efpl-assets.pages.dev/img/instant-gaming.png"
-               alt="Instant Gaming" class="title-sponsor-logo">
-        </a>
-        Hall of Fame
-      </h1>
+      <h1>🏆 eFPL Hall of Fame</h1>
       <span class="badge" id="updated">Loading…</span>
     </div>
 
     <div class="tabs" role="tablist" aria-label="Hall of Fame tabs">
-      <button class="tab" id="tab-history" role="tab" aria-selected="true" aria-controls="panel-history">Season History</button>
+      <button class="tab active" id="tab-history" role="tab" aria-selected="true" aria-controls="panel-history">Season History</button>
       <button class="tab" id="tab-leaderboard" role="tab" aria-selected="false" aria-controls="panel-leaderboard">Leaderboard</button>
     </div>
 
     <div class="panel" id="panel-history" role="tabpanel" aria-labelledby="tab-history">
       <div id="sk-history" class="skeleton"></div>
-      <div class="table-wrap fade-in" id="wrap-history" style="display:none">
-        <table id="t-history" class="sticky-first"></table>
+      <div id="err-history" class="err" hidden></div>
+      <div class="table-wrap" id="wrap-history" hidden>
+        <table id="t-history"></table>
       </div>
-      <div class="note">Tip: scroll sideways to view all competitions.</div>
+      <div class="note">Tip: scroll sideways on mobile to view all competitions.</div>
     </div>
 
     <div class="panel" id="panel-leaderboard" role="tabpanel" aria-labelledby="tab-leaderboard" hidden>
-      <div id="sk-leaderboard" class="skeleton"></div>
-      <div class="table-wrap fade-in" id="wrap-leaderboard" style="display:none">
-        <table id="t-leaderboard" class="leaderboard"></table>
+      <div id="sk-leader" class="skeleton"></div>
+      <div id="err-leader" class="err" hidden></div>
+      <div class="table-wrap" id="wrap-leader" hidden>
+        <table id="t-leader"></table>
       </div>
-      <div class="note">Sorted by Total trophies (highest first). League and cup counts update automatically from your sheet.</div>
+      <div class="note">Ranked by total trophies won (highest first).</div>
     </div>
+
   </div>
 </div>
 
 <script>
 /* ===== CONFIG ===== */
-const SHEET_ID='1DaYTkVVWiQVg7aianACoIfxXBZSKYqtycyuofX8WXj8';
-const HISTORY_SHEET='History';
-const HISTORY_RANGE='A1:L';
-const LEADER_SHEET='Leaderboard';
-const LEADER_RANGE='A1:E';
+const SHEET_ID = "1DaYTkVVWiQVg7aianACoIfxXBZSKYqtycyuofX8WXj8";
 
-const BUCKET_MS=5*60*1000;
-const CB=Math.floor(Date.now()/BUCKET_MS);
+/* History: load by sheet name */
+const HISTORY_SHEET = "History";
+const HISTORY_RANGE = "A1:L";
 
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
-function parseGviz(t){
-  const a=t.indexOf('{'), b=t.lastIndexOf('}');
-  if(a===-1||b===-1) throw new Error('Invalid GViz response');
-  return JSON.parse(t.slice(a,b+1));
+/* Leaderboard: load by GID (per your message) */
+const LEADERBOARD_GID = "1964938799";
+const LEADERBOARD_RANGE = "A1:E"; // make this "A1:E" later if you want it unlimited
+
+/* cache bucket to reduce spam */
+const BUCKET_MS = 5 * 60 * 1000;
+const CB = Math.floor(Date.now() / BUCKET_MS);
+
+/* ===== Helpers ===== */
+function esc(s){
+  return String(s ?? "")
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
 }
-function saveHTML(k,h){try{localStorage.setItem(k,h);}catch(e){}}
-function paintInstant(tableId,key,wrapId,skId){
-  try{
-    const c=localStorage.getItem(key);
-    if(c){
-      document.getElementById(tableId).innerHTML=c;
-      document.getElementById(wrapId).style.display='block';
-      document.getElementById(skId).style.display='none';
-      document.getElementById(wrapId).classList.add('ready');
-    }
-  }catch(e){}
+function parseGviz(text){
+  const a = text.indexOf("{");
+  const b = text.lastIndexOf("}");
+  if(a === -1 || b === -1) throw new Error("Invalid GViz response");
+  return JSON.parse(text.slice(a, b+1));
+}
+function cellVal(c){
+  if(!c) return "";
+  return (c.f ?? c.v ?? "");
+}
+function isNumeric(v){
+  return /^-?\d+(\.\d+)?$/.test(String(v).trim());
 }
 
-function renderTable({tableEl, headers, rows, variant}){
-  let html='<thead><tr>' + headers.map(h=>`<th>${esc(h)}</th>`).join('') + '</tr></thead><tbody>';
+function renderTable(tableEl, cols, rows, opts={}){
+  const headers = cols.map(c => c.label || "");
+  let html = "<thead><tr>" + headers.map(h => `<th>${esc(h)}</th>`).join("") + "</tr></thead><tbody>";
 
-  let bodyRows=0;
-  for(let r=0;r<rows.length;r++){
-    const row=rows[r];
-    if(!row || row.every(x=>String(x).trim()==='')) continue;
-    bodyRows++;
+  for(let r=0; r<rows.length; r++){
+    const row = rows[r].c || [];
+    const vals = row.map(cellVal);
 
-    let cls='';
-    if(variant==='leaderboard'){
-      // Apply top-3 highlighting by rank number (first col)
-      const rankStr=String(row[0]??'').trim();
-      if(rankStr==='1') cls='top-1';
-      else if(rankStr==='2') cls='top-2';
-      else if(rankStr==='3') cls='top-3';
+    // skip fully blank rows
+    if(vals.every(v => String(v).trim()==="")) continue;
+
+    // optional row classes (leaderboard top 3)
+    let trClass = "";
+    if(opts.leaderboard){
+      const pos = parseInt(String(vals[0]).trim(), 10);
+      if(pos === 1) trClass = "pos-1";
+      else if(pos === 2) trClass = "pos-2";
+      else if(pos === 3) trClass = "pos-3";
     }
 
-    html+=`<tr class="${cls}">`;
-    for(let c=0;c<headers.length;c++){
-      const cell=row[c] ?? '';
-      html+=`<td>${esc(cell)}</td>`;
+    html += `<tr class="${trClass}">`;
+    for(let i=0; i<vals.length; i++){
+      const v = vals[i];
+      const cls =
+        (i === 1 ? "left " : "") +
+        (isNumeric(v) ? "right " : "");
+      html += `<td class="${cls.trim()}">${esc(v)}</td>`;
     }
-    html+='</tr>';
+    html += "</tr>";
   }
-  html += bodyRows ? '</tbody>' : '<tr><td colspan="'+headers.length+'" style="padding:14px;text-align:left;color:var(--muted)">No data yet.</td></tr></tbody>';
-  tableEl.innerHTML=html;
+
+  html += "</tbody>";
+  tableEl.innerHTML = html;
 }
 
-async function loadSheet({sheet, range, tableId, wrapId, skId, cacheKey, variant}){
-  const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheet)}&range=${encodeURIComponent(range)}&cachebust=${CB}`;
-  const res=await fetch(url);
-  const text=await res.text();
-  if(!res.ok) throw new Error('HTTP '+res.status);
-  const json=parseGviz(text);
-
-  const headers=json.table.cols.map(c=>c.label||'');
-  const rows=(json.table.rows||[]).map(r=>(r.c||[]).map(c=>c?(c.f ?? c.v ?? ''):''));
-
-  const tableEl=document.getElementById(tableId);
-  renderTable({tableEl, headers, rows, variant});
-
-  const html=tableEl.innerHTML;
-  saveHTML(cacheKey, html);
-
-  document.getElementById(wrapId).style.display='block';
-  document.getElementById(wrapId).classList.add('ready');
-  document.getElementById(skId).style.display='none';
+async function fetchGvizJSONBySheet(sheetName, range){
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?` +
+              `tqx=out:json&sheet=${encodeURIComponent(sheetName)}` +
+              `&range=${encodeURIComponent(range)}&cachebust=${CB}`;
+  const res = await fetch(url);
+  const text = await res.text();
+  if(!res.ok) throw new Error("HTTP " + res.status);
+  return parseGviz(text);
 }
 
-function setUpdated(){
-  const el=document.getElementById('updated');
-  const d=new Date();
-  const pad=n=>String(n).padStart(2,'0');
-  const yy=String(d.getFullYear()).slice(-2);
-  el.textContent=`Updated ${pad(d.getDate())}/${pad(d.getMonth()+1)}/${yy}`;
+async function fetchGvizJSONByGid(gid, range){
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?` +
+              `tqx=out:json&gid=${encodeURIComponent(gid)}` +
+              `&range=${encodeURIComponent(range)}&cachebust=${CB}`;
+  const res = await fetch(url);
+  const text = await res.text();
+  if(!res.ok) throw new Error("HTTP " + res.status);
+  return parseGviz(text);
 }
 
-// Tabs
-const tabHistory=document.getElementById('tab-history');
-const tabLeaderboard=document.getElementById('tab-leaderboard');
-const panelHistory=document.getElementById('panel-history');
-const panelLeaderboard=document.getElementById('panel-leaderboard');
-
-function selectTab(which){
-  const isHistory = which==='history';
-  tabHistory.setAttribute('aria-selected', isHistory?'true':'false');
-  tabLeaderboard.setAttribute('aria-selected', isHistory?'false':'true');
-  panelHistory.hidden = !isHistory;
-  panelLeaderboard.hidden = isHistory;
-
-  // Lazy-load leaderboard the first time it's opened
-  if(!isHistory && !panelLeaderboard.dataset.loaded){
-    panelLeaderboard.dataset.loaded='1';
-    loadLeaderboard();
-  }
+function setUpdatedBadge(ok=true){
+  const el = document.getElementById("updated");
+  if(!ok){ el.textContent = "Check sharing"; return; }
+  const d = new Date();
+  const pad = n => String(n).padStart(2,"0");
+  el.textContent = `Updated ${pad(d.getDate())}/${pad(d.getMonth()+1)}/${String(d.getFullYear()).slice(-2)}`;
 }
 
-tabHistory.addEventListener('click',()=>selectTab('history'));
-tabLeaderboard.addEventListener('click',()=>selectTab('leaderboard'));
-
-// Instant paint from cache (good for OBS + fast loads)
-paintInstant('t-history','efpl:hof:history','wrap-history','sk-history');
-paintInstant('t-leaderboard','efpl:hof:leaderboard','wrap-leaderboard','sk-leaderboard');
-
+/* ===== Loaders ===== */
 async function loadHistory(){
+  const sk = document.getElementById("sk-history");
+  const err = document.getElementById("err-history");
+  const wrap = document.getElementById("wrap-history");
+  const t = document.getElementById("t-history");
+
   try{
-    await loadSheet({
-      sheet:HISTORY_SHEET,
-      range:HISTORY_RANGE,
-      tableId:'t-history',
-      wrapId:'wrap-history',
-      skId:'sk-history',
-      cacheKey:'efpl:hof:history',
-      variant:'history'
-    });
-    setUpdated();
+    const json = await fetchGvizJSONBySheet(HISTORY_SHEET, HISTORY_RANGE);
+    renderTable(t, json.table.cols, json.table.rows || []);
+    sk.hidden = true;
+    wrap.hidden = false;
+    err.hidden = true;
+    setUpdatedBadge(true);
   }catch(e){
-    document.getElementById('sk-history').style.display='none';
-    document.getElementById('wrap-history').style.display='block';
-    document.getElementById('t-history').innerHTML=`<tbody><tr><td style="padding:14px;text-align:left;color:var(--muted)">Could not load History. Check sheet sharing/publish settings and that the tab is named "${esc(HISTORY_SHEET)}". (${esc(e.message)})</td></tr></tbody>`;
-    document.getElementById('updated').textContent='Error';
+    sk.hidden = true;
+    wrap.hidden = true;
+    err.hidden = false;
+    err.textContent = "History load error: " + e.message + " (Make sure the sheet is shared or published.)";
+    setUpdatedBadge(false);
   }
 }
 
 async function loadLeaderboard(){
+  const sk = document.getElementById("sk-leader");
+  const err = document.getElementById("err-leader");
+  const wrap = document.getElementById("wrap-leader");
+  const t = document.getElementById("t-leader");
+
   try{
-    await loadSheet({
-      sheet:LEADER_SHEET,
-      range:LEADER_RANGE,
-      tableId:'t-leaderboard',
-      wrapId:'wrap-leaderboard',
-      skId:'sk-leaderboard',
-      cacheKey:'efpl:hof:leaderboard',
-      variant:'leaderboard'
-    });
-    setUpdated();
+    const json = await fetchGvizJSONByGid(LEADERBOARD_GID, LEADERBOARD_RANGE);
+    renderTable(t, json.table.cols, json.table.rows || [], { leaderboard:true });
+    sk.hidden = true;
+    wrap.hidden = false;
+    err.hidden = true;
+    setUpdatedBadge(true);
   }catch(e){
-    document.getElementById('sk-leaderboard').style.display='none';
-    document.getElementById('wrap-leaderboard').style.display='block';
-    document.getElementById('t-leaderboard').innerHTML=`<tbody><tr><td style="padding:14px;text-align:left;color:var(--muted)">Could not load Leaderboard. Check sheet sharing/publish settings and that the tab is named "${esc(LEADER_SHEET)}". (${esc(e.message)})</td></tr></tbody>`;
-    document.getElementById('updated').textContent='Error';
+    sk.hidden = true;
+    wrap.hidden = true;
+    err.hidden = false;
+    err.textContent = "Leaderboard load error: " + e.message + " (Make sure the sheet is shared or published.)";
+    setUpdatedBadge(false);
   }
 }
 
-// Initial load
+/* ===== Tabs ===== */
+const tabHistory = document.getElementById("tab-history");
+const tabLeader  = document.getElementById("tab-leaderboard");
+const panelHistory = document.getElementById("panel-history");
+const panelLeader  = document.getElementById("panel-leaderboard");
+
+let leaderLoaded = false;
+
+function activate(which){
+  const isHistory = which === "history";
+  tabHistory.classList.toggle("active", isHistory);
+  tabLeader.classList.toggle("active", !isHistory);
+  tabHistory.setAttribute("aria-selected", isHistory ? "true":"false");
+  tabLeader.setAttribute("aria-selected", !isHistory ? "true":"false");
+  panelHistory.hidden = !isHistory;
+  panelLeader.hidden = isHistory;
+
+  if(!isHistory && !leaderLoaded){
+    leaderLoaded = true;
+    loadLeaderboard();
+  }
+}
+
+tabHistory.addEventListener("click", ()=>activate("history"));
+tabLeader.addEventListener("click", ()=>activate("leader"));
+
+/* initial */
 loadHistory();
 </script>
 </body>
