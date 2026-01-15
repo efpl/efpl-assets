@@ -315,6 +315,14 @@ function key(x){ return String(x ?? "").trim(); }
 function byId(id){ return document.getElementById(id); }
 function normName(s){ return String(s ?? "").trim().replace(/\s+/g," "); }
 
+/* Display "Season 1" if the sheet value is just "1" (or any plain number) */
+function seasonLabel(raw){
+  const s = String(raw ?? "").trim();
+  if(/^\d+$/.test(s)) return `Season ${s}`;
+  if(/^season\b/i.test(s)) return s;
+  return s;
+}
+
 function safeSeasonSortKey(seasonStr){
   const s = String(seasonStr ?? "");
   const m = s.match(/(\d+)/);
@@ -484,7 +492,6 @@ function renderLeaderboard(){
 
 /* ================= SEASON HISTORY (Collapsible) ================= */
 function seasonWinnersList(row){
-  // return list of {comp, winner}
   const out = [];
   COMPETITIONS.forEach(c=>{
     const w = normName(row.cells[c.index]);
@@ -495,7 +502,6 @@ function seasonWinnersList(row){
 }
 
 function top3ForSeason(row){
-  // based on who appears most in that season row (some seasons have multiple trophies)
   const m = new Map();
   seasonWinnersList(row).forEach(it=>{
     m.set(it.winner, (m.get(it.winner) || 0) + 1);
@@ -539,7 +545,7 @@ function renderSeasonCards(){
             <div class="podium-card">
               <div class="podium-top">
                 ${medal}
-                <span class="pill accent">${p.count} trophy${p.count===1?"":"ies"}</span>
+                <span class="pill accent">${p.count} ${p.count===1 ? "trophy" : "trophies"}</span>
               </div>
               <div style="margin-top:8px">
                 <span class="player-link" data-player="${esc(p.name)}">${esc(p.name)}</span>
@@ -562,12 +568,14 @@ function renderSeasonCards(){
     `;
 
     const bodyId = `season-body-${idx}`;
+    const title = seasonLabel(r.season);
+
     return `
       <div class="season-card">
         <div class="season-head" onclick="toggleSeason('${bodyId}', this)">
           <div class="season-title">
-            <div class="season-name">${esc(r.season)}</div>
-            <div class="season-sub">${trophiesCount} trophy${trophiesCount===1?"":"ies"} recorded</div>
+            <div class="season-name">${esc(title)}</div>
+            <div class="season-sub">${trophiesCount} ${trophiesCount===1 ? "trophy" : "trophies"} recorded</div>
           </div>
           <div class="chev">▼</div>
         </div>
@@ -639,7 +647,7 @@ function applySeasonFilter(){
 
   const sel = byId("seasonFilter");
   seasons.forEach(s=>{
-    sel.insertAdjacentHTML("beforeend", `<option value="${esc(s)}">${esc(s)}</option>`);
+    sel.insertAdjacentHTML("beforeend", `<option value="${esc(s)}">${esc(seasonLabel(s))}</option>`);
   });
 
   // Render
