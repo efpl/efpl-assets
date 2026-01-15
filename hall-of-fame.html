@@ -11,7 +11,9 @@
 
 <style>
 :root{
-  --bg: transparent;
+  /* ✅ Google Sites sometimes forces transparent iframes to render as black.
+     Set a real eFPL navy background instead. (Matches even rows / card2 vibe) */
+  --bg: #13265b;
 
   --card:#0f1e49;
   --card2:#13265b;
@@ -234,13 +236,11 @@ tr.top1 td{
       </div>
     </header>
 
-    <!-- Swap order: Leaderboard first -->
     <nav class="tabs" aria-label="Hall of Fame sections">
       <button class="tab active" data-tab="leaderboard" onclick="showTab('leaderboard')">Leaderboard</button>
       <button class="tab" data-tab="history" onclick="showTab('history')">Season History</button>
     </nav>
 
-    <!-- LEADERBOARD (default open) -->
     <section class="panel" id="leaderboard">
       <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap">
         <div>
@@ -258,7 +258,6 @@ tr.top1 td{
       <table class="table" id="t-leader"></table>
     </section>
 
-    <!-- SEASON HISTORY -->
     <section class="panel" id="history" hidden>
       <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap">
         <div>
@@ -290,22 +289,18 @@ tr.top1 td{
 <div class="flyout" id="flyout"></div>
 
 <script>
-/* ================= CONFIG ================= */
 const SHEET_ID="1DaYTkVVWiQVg7aianACoIfxXBZSKYqtycyuofX8WXj8";
 const HISTORY_GID="1032615815";
 
-/* Assets (safe + consistent) */
 const EFPL_LOGO = "https://efpl-assets.pages.dev/img/logo.png";
 const LEAGUE_ICON_BASE = "https://efpl-assets.pages.dev/img/leagues/";
 
-/* ================= STATE ================= */
 let historyGV = null;
-let HISTORY = { headers: [], rows: [] }; // rows: [{season, cells:[...]}]
-let COMPETITIONS = []; // [{label, index}]
-let COUNTS = null;     // overall player trophy counts
+let HISTORY = { headers: [], rows: [] };
+let COMPETITIONS = [];
+let COUNTS = null;
 let ACTIVE_SEASON_FILTER = "all";
 
-/* ================= UTILS ================= */
 function esc(s){return String(s ?? '').replace(/[&<>"]/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[m]));}
 function gv(gid,range){
   return fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${gid}&range=${range}`)
@@ -317,7 +312,6 @@ function key(x){ return String(x ?? "").trim(); }
 function byId(id){ return document.getElementById(id); }
 function normName(s){ return String(s ?? "").trim().replace(/\s+/g," "); }
 
-/* Display "Season 1" if the sheet value is just "1" (or any plain number) */
 function seasonLabel(raw){
   const s = String(raw ?? "").trim();
   if(/^\d+$/.test(s)) return `Season ${s}`;
@@ -331,9 +325,6 @@ function safeSeasonSortKey(seasonStr){
   return -1;
 }
 
-/* Competition icon helper:
-   - If the competition header includes a league name, show that league icon
-   - Otherwise fall back to eFPL logo (you can extend this later with cup icons) */
 function compIconUrl(label){
   const s = String(label || "").toLowerCase();
   if(s.includes("diamond"))  return LEAGUE_ICON_BASE + "Diamond-League.png";
@@ -342,7 +333,7 @@ function compIconUrl(label){
   if(s.includes("crystal"))  return LEAGUE_ICON_BASE + "Crystal-League.png";
   if(s.includes("emerald"))  return LEAGUE_ICON_BASE + "Emerald-League.png";
   if(s.includes("gold"))     return LEAGUE_ICON_BASE + "Gold-League.png";
-  return EFPL_LOGO; // safe fallback
+  return EFPL_LOGO;
 }
 
 function showTab(id){
@@ -350,7 +341,6 @@ function showTab(id){
   document.querySelectorAll(".tab").forEach(b=> b.classList.toggle("active", b.dataset.tab === id));
 }
 
-/* ================= PARSE ================= */
 function parseHistory(gvData){
   const headers = (gvData.table.cols || []).map(c => (c.label || "").trim());
   const rows = (gvData.table.rows || []).map(r => (r.c || []).map(val));
@@ -375,10 +365,9 @@ function buildCompetitions(headers){
   return comps;
 }
 
-/* ================= COUNTS (All-time trophies) ================= */
 function computeAllTimeCounts(){
   const countsByPlayer = new Map();
-  const breakdownByPlayer = new Map(); // player -> Map(compLabel -> count)
+  const breakdownByPlayer = new Map();
 
   HISTORY.rows.forEach(r=>{
     COMPETITIONS.forEach(c=>{
@@ -406,7 +395,6 @@ function topBreakdownText(name, limit=3){
   return rows.length ? rows.map(x=>`${x.comp}: ${x.count}`).join(" | ") : "-";
 }
 
-/* ================= FLYOUT ================= */
 const fly = byId("flyout");
 const supportsHover = window.matchMedia && window.matchMedia("(hover:hover)").matches;
 
@@ -453,7 +441,6 @@ function showFlyout(name, anchor){
 }
 function hideFlyout(){ fly.style.display = "none"; }
 
-/* ================= RENDER: LEADERBOARD ================= */
 function renderLeaderboard(){
   const entries = [...COUNTS.countsByPlayer.entries()]
     .map(([name,count])=>({name,count}))
@@ -487,9 +474,7 @@ function renderLeaderboard(){
     html += `
       <tr class="${cls}">
         <td class="right numeric">${medal}</td>
-        <td class="left">
-          <span class="player-link" data-player="${esc(r.name)}">${esc(r.name)}</span>
-        </td>
+        <td class="left"><span class="player-link" data-player="${esc(r.name)}">${esc(r.name)}</span></td>
         <td class="center"><span class="pill accent">${r.count}</span></td>
         <td class="left note">${esc(breakdown)}</td>
       </tr>
@@ -509,7 +494,6 @@ function renderLeaderboard(){
   });
 }
 
-/* ================= SEASON HISTORY (Collapsible) ================= */
 function seasonWinnersList(row){
   const out = [];
   COMPETITIONS.forEach(c=>{
@@ -525,18 +509,15 @@ function top3ForSeason(row){
   seasonWinnersList(row).forEach(it=>{
     m.set(it.winner, (m.get(it.winner) || 0) + 1);
   });
-  const arr = [...m.entries()].map(([name,count])=>({name,count}))
+  return [...m.entries()]
+    .map(([name,count])=>({name,count}))
     .sort((a,b)=> b.count - a.count || a.name.localeCompare(b.name))
     .slice(0,3);
-  return arr;
 }
 
 function renderSeasonCards(){
   const host = byId("seasonCards");
-
-  let rows = [...HISTORY.rows]
-    .sort((a,b)=> safeSeasonSortKey(b.season) - safeSeasonSortKey(a.season)); // newest first
-
+  let rows = [...HISTORY.rows].sort((a,b)=> safeSeasonSortKey(b.season) - safeSeasonSortKey(a.season));
   const newestSeasonKey = rows.length ? rows[0].season : "";
 
   if(ACTIVE_SEASON_FILTER !== "all"){
@@ -556,7 +537,6 @@ function renderSeasonCards(){
     const isOngoingSeason = key(r.season) === key(newestSeasonKey) && trophiesCount === 0;
 
     const top3 = top3ForSeason(r);
-
     const podiumHtml = top3.length ? `
       <div class="podium">
         ${top3.map((p,i)=>{
@@ -622,7 +602,6 @@ function renderSeasonCards(){
 
         <div class="season-body" id="${bodyId}">
           ${podiumHtml}
-
           <table class="table" style="margin-top:8px">
             <thead>
               <tr>
@@ -631,16 +610,13 @@ function renderSeasonCards(){
                 <th style="width:14ch">Status</th>
               </tr>
             </thead>
-            <tbody>
-              ${itemsHtml}
-            </tbody>
+            <tbody>${itemsHtml}</tbody>
           </table>
         </div>
       </div>
     `;
   }).join("");
 
-  // attach player hover/click inside season cards
   document.querySelectorAll("#seasonCards .player-link").forEach(el=>{
     const name = el.dataset.player;
     if(supportsHover){
@@ -654,10 +630,8 @@ function renderSeasonCards(){
 function toggleSeason(bodyId, headEl){
   const body = byId(bodyId);
   if(!body) return;
-
   const isOpen = body.style.display === "block";
   body.style.display = isOpen ? "" : "block";
-
   const chev = headEl.querySelector(".chev");
   if(chev) chev.textContent = isOpen ? "▼" : "▲";
 }
@@ -667,7 +641,6 @@ function applySeasonFilter(){
   renderSeasonCards();
 }
 
-/* ================= BOOT ================= */
 (async function boot(){
   try{
     historyGV = await gv(HISTORY_GID, "A1:L");
@@ -681,7 +654,6 @@ function applySeasonFilter(){
   COMPETITIONS = buildCompetitions(HISTORY.headers);
   COUNTS = computeAllTimeCounts();
 
-  // Season filter options
   const seasons = [...new Set(HISTORY.rows.map(r=>r.season))]
     .sort((a,b)=> safeSeasonSortKey(a) - safeSeasonSortKey(b));
 
@@ -690,17 +662,14 @@ function applySeasonFilter(){
     sel.insertAdjacentHTML("beforeend", `<option value="${esc(s)}">${esc(seasonLabel(s))}</option>`);
   });
 
-  // Render
   renderLeaderboard();
   renderSeasonCards();
 
-  // Updated pill (no "Live")
   const now = new Date();
   const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   const stamp = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
   byId("pill-updated").textContent = `Updated • ${stamp}`;
 
-  // Hide flyout on scroll/tap away
   window.addEventListener("scroll", ()=>{ if(supportsHover) hideFlyout(); }, { passive:true });
   document.addEventListener("click", (e)=>{
     const isPlayer = e.target.closest && e.target.closest(".player-link");
@@ -708,7 +677,6 @@ function applySeasonFilter(){
     if(!isPlayer && !isFly) hideFlyout();
   });
 
-  // Ensure default tab is Leaderboard (already visible) but sync active state
   showTab("leaderboard");
 })();
 </script>
