@@ -36,12 +36,12 @@ body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   color: var(--text-primary);
-  line-height: 1.6;
+  line-height: 1.4;
   -webkit-font-smoothing: antialiased;
 }
 
 .container {
-  max-width: 1400px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 20px;
 }
@@ -146,17 +146,32 @@ body {
 
 .panel[hidden] { display: none; }
 
-/* Table Container */
+/* Table Container - NO SCROLL */
 .table-container {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow-x: visible;
+  width: 100%;
 }
 
-/* Tables */
+/* Tables - Responsive, no scroll */
 table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
+  table-layout: fixed;
+}
+
+/* History table specific column widths */
+#t-history {
+  font-size: clamp(10px, 1.2vw, 14px);
+}
+
+#t-history thead th:nth-child(1) { width: 8%; min-width: 60px; } /* Season */
+#t-history thead th:nth-child(2) { width: 12%; min-width: 80px; } /* Manager */
+#t-history thead th:nth-child(n+3):nth-child(-n+11) { width: 7%; } /* Competition columns */
+#t-history thead th:nth-child(12) { width: 8%; min-width: 50px; } /* Total */
+
+/* Leaderboard table */
+#t-leader {
   font-size: 14px;
 }
 
@@ -169,24 +184,32 @@ thead {
 thead th {
   background: var(--yellow);
   color: var(--navy-dark);
-  font-size: 11px;
+  font-size: clamp(9px, 1vw, 11px);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.03em;
   font-weight: 800;
-  padding: 14px 12px;
-  text-align: left;
-  white-space: nowrap;
+  padding: 10px 4px;
+  text-align: center;
+  line-height: 1.2;
+  vertical-align: middle;
   border-bottom: 3px solid var(--navy-dark);
+  word-wrap: break-word;
+  hyphens: auto;
 }
 
-thead th:first-child {
-  padding-left: 24px;
+thead th:nth-child(1),
+thead th:nth-child(2) {
+  text-align: left;
+  padding-left: 12px;
+}
+
+thead th:nth-child(1) {
   border-radius: 16px 0 0 0;
 }
 
 thead th:last-child {
-  padding-right: 24px;
   border-radius: 0 16px 0 0;
+  padding-right: 12px;
 }
 
 tbody tr {
@@ -203,23 +226,30 @@ tbody tr:nth-child(even) {
 
 tbody tr:hover {
   background: var(--navy-lighter);
-  transform: scale(1.002);
+  transform: scale(1.001);
 }
 
 tbody td {
-  padding: 16px 12px;
+  padding: 10px 4px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   color: var(--text-primary);
   font-weight: 600;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-tbody td:first-child {
-  padding-left: 24px;
-  font-weight: 900;
+tbody td:nth-child(1),
+tbody td:nth-child(2) {
+  text-align: left;
+  padding-left: 12px;
+  font-weight: 700;
 }
 
 tbody td:last-child {
-  padding-right: 24px;
+  padding-right: 12px;
+  font-weight: 800;
 }
 
 tbody tr:last-child td {
@@ -233,11 +263,6 @@ tbody tr:last-child td:first-child {
 tbody tr:last-child td:last-child {
   border-radius: 0 0 16px 0;
 }
-
-/* Column alignment */
-.text-left { text-align: left; }
-.text-center { text-align: center; }
-.text-right { text-align: right; }
 
 /* Top 3 styling with yellow accents */
 .rank-1 {
@@ -319,7 +344,29 @@ tbody tr:last-child td:last-child {
   background: rgba(249, 215, 28, 0.03);
 }
 
-/* Responsive columns - hide on mobile */
+/* Abbreviation tooltip */
+.abbr-hint {
+  cursor: help;
+  text-decoration: none;
+  border-bottom: 1px dotted currentColor;
+}
+
+/* Mobile optimizations */
+@media (max-width: 1200px) {
+  #t-history {
+    font-size: clamp(9px, 1.1vw, 12px);
+  }
+  
+  thead th {
+    padding: 8px 3px;
+    font-size: clamp(8px, 0.9vw, 10px);
+  }
+  
+  tbody td {
+    padding: 8px 3px;
+  }
+}
+
 @media (max-width: 768px) {
   .container { padding: 12px; }
   
@@ -346,29 +393,27 @@ tbody tr:last-child td:last-child {
     font-size: 14px;
   }
   
-  thead th,
-  tbody td {
-    padding: 12px 8px;
-    font-size: 13px;
+  #t-history {
+    font-size: clamp(8px, 2vw, 11px);
   }
   
-  thead th:first-child,
-  tbody td:first-child {
-    padding-left: 16px;
+  thead th {
+    padding: 8px 2px;
+    font-size: clamp(7px, 1.8vw, 9px);
+  }
+  
+  tbody td {
+    padding: 8px 2px;
+  }
+  
+  thead th:nth-child(1),
+  tbody td:nth-child(1) {
+    padding-left: 8px;
   }
   
   thead th:last-child,
   tbody td:last-child {
-    padding-right: 16px;
-  }
-  
-  /* Hide less important columns on mobile */
-  .hide-mobile {
-    display: none;
-  }
-  
-  table {
-    font-size: 12px;
+    padding-right: 8px;
   }
 }
 
@@ -384,6 +429,20 @@ tbody tr:last-child td:last-child {
   .badge {
     font-size: 11px;
     padding: 6px 12px;
+  }
+  
+  #t-history {
+    font-size: clamp(7px, 2.2vw, 10px);
+  }
+  
+  thead th {
+    padding: 6px 1px;
+    font-size: clamp(6px, 2vw, 8px);
+    letter-spacing: 0;
+  }
+  
+  tbody td {
+    padding: 6px 1px;
   }
 }
 
@@ -421,7 +480,7 @@ tbody tr:last-child td:last-child {
         <table id="t-history"></table>
       </div>
       <div class="note">
-        💡 Scroll horizontally to view all competitions on smaller screens
+        💡 All 12 columns displayed with responsive sizing - no scrolling needed
       </div>
     </div>
   </div>
@@ -450,6 +509,22 @@ const LEADER_RANGE = "A1:E";
 const BUCKET_MS = 5 * 60 * 1000;
 const CB = Math.floor(Date.now() / BUCKET_MS);
 
+// Abbreviation mapping for long column names
+const COLUMN_ABBREV = {
+  'Season': 'Season',
+  'Manager': 'Manager',
+  'Premier League': 'PL',
+  'Champions League': 'CL',
+  'Europa League': 'EL',
+  'FA Cup': 'FA',
+  'League Cup': 'LC',
+  'Community Shield': 'CS',
+  'Club World Cup': 'CWC',
+  'Super Cup': 'SC',
+  'Championship': 'Champ',
+  'Total': 'Total'
+};
+
 /* ===== Helpers ===== */
 function esc(s) {
   return String(s ?? "")
@@ -473,22 +548,24 @@ function isNumeric(v) {
   return /^-?\d+(\.\d+)?$/.test(String(v).trim());
 }
 
+function abbreviateHeader(header) {
+  // Use abbreviation if available and on smaller screens
+  if (window.innerWidth < 1200) {
+    return COLUMN_ABBREV[header] || header;
+  }
+  return header;
+}
+
 function renderTable(tableEl, cols, rows, opts = {}) {
   const headers = cols.map(c => c.label || "");
-  const isMobile = window.innerWidth <= 768;
+  const originalHeaders = [...headers];
   
   let html = "<thead><tr>";
   
   headers.forEach((h, i) => {
-    // Mark columns that should hide on mobile (customize based on your needs)
-    let hideClass = "";
-    if (isMobile && opts.history && i > 2 && i < headers.length - 1) {
-      // On mobile history view, keep first 3 and last column visible
-      hideClass = "hide-mobile";
-    }
-    
-    const align = i === 0 ? "text-left" : (i === 1 ? "text-left" : "text-center");
-    html += `<th class="${align} ${hideClass}">${esc(h)}</th>`;
+    const displayHeader = opts.history ? abbreviateHeader(h) : h;
+    const title = opts.history && displayHeader !== h ? h : '';
+    html += `<th title="${esc(title)}">${esc(displayHeader)}</th>`;
   });
   
   html += "</tr></thead><tbody>";
@@ -511,13 +588,7 @@ function renderTable(tableEl, cols, rows, opts = {}) {
     
     for (let i = 0; i < vals.length; i++) {
       const v = vals[i];
-      let hideClass = "";
-      if (isMobile && opts.history && i > 2 && i < vals.length - 1) {
-        hideClass = "hide-mobile";
-      }
-      
-      const align = i === 0 ? "text-left" : (i === 1 ? "text-left" : (isNumeric(v) ? "text-right" : "text-center"));
-      html += `<td class="${align} ${hideClass}">${esc(v)}</td>`;
+      html += `<td>${esc(v)}</td>`;
     }
     
     html += "</tr>";
@@ -624,7 +695,7 @@ let resizeTimer;
 window.addEventListener("resize", () => {
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => {
-    // Re-render active table on resize
+    // Re-render active table on resize to update abbreviations
     const activePanel = document.querySelector(".panel:not(.hidden)");
     if (activePanel.id === "panel-history" && !document.getElementById("wrap-history").classList.contains("hidden")) {
       loadHistory();
