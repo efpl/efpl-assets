@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>eFPL Hall of Fame</title>
+
+<link rel="preconnect" href="https://docs.google.com" crossorigin>
+<link rel="preconnect" href="https://www.google.com" crossorigin>
+
+<style>
+:root{
+  --card:#00143b;
+  --text:#ffffff;
+  --muted:#cbd5e1;
+  --header-bg:#f9d71c;
+  --header-text:#00143b;
+  --row1:#001a4d;
+  --row2:#002060;
+  --hover:#002b80;
+  --accent:#f9d71c;
+  --fx-border:rgba(249,215,28,.55);
+}
+html,body{background:transparent}
+body{margin:0;font:15px/1.5 "Segoe UI",Arial,sans-serif;color:var(--text);}
+.wrap{max-width:1100px;margin:24px auto;padding:16px;}
+.card{background:var(--card);border-radius:12px;overflow:hidden}
+
+/* Title */
+.title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0;padding:12px;border-bottom:1px solid rgba(249,215,28,.22)}
+.title h1{font-size:20px;margin:0;color:var(--text);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.badge{background:var(--accent);color:#000;padding:4px 12px;border-radius:999px;font-weight:700;white-space:nowrap}
+.title-sponsor-logo{height:26px;vertical-align:middle;transition:transform .2s}
+.title-sponsor-logo:hover{transform:scale(1.08)}
+
+/* Tabs */
+.tabs{display:flex;gap:8px;padding:12px;background:rgba(0,0,0,.06);border-bottom:1px solid rgba(255,255,255,.08)}
+.tab{
+  appearance:none;border:1px solid rgba(249,215,28,.25);
+  background:rgba(255,255,255,.06);color:var(--text);
+  padding:8px 12px;border-radius:999px;cursor:pointer;
+  font-weight:700;font-size:13px;letter-spacing:.02em;
+}
+.tab[aria-selected="true"]{background:var(--accent);color:#000;border-color:var(--accent)}
+.tab:focus{outline:2px solid rgba(249,215,28,.55);outline-offset:2px}
+
+/* Table shells */
+.panel{padding:12px}
+.skeleton{
+  background:linear-gradient(90deg, rgba(255,255,255,.05), rgba(255,255,255,.12), rgba(255,255,255,.05));
+  background-size:200% 100%;animation:sk 1.1s infinite;
+  border-radius:12px;min-height:220px;margin:0;
+}
+@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.fade-in{opacity:0;transition:opacity .18s ease}
+.fade-in.ready{opacity:1}
+
+/* Table styling (match standings look) */
+.table-wrap{overflow:auto;border-radius:12px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.table-wrap::-webkit-scrollbar{height:10px}
+.table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:999px}
+.table-wrap::-webkit-scrollbar-track{background:rgba(0,0,0,.12)}
+
+table{width:100%;border-collapse:collapse;min-width:720px}
+thead th{
+  background:var(--header-bg);color:var(--header-text);
+  font-size:13px;text-transform:uppercase;letter-spacing:.03em;
+  padding:10px;text-align:center;white-space:nowrap;
+}
+tbody td{padding:12px;text-align:center;font-weight:500;white-space:nowrap}
+tbody tr:nth-child(odd){background:var(--row1)}
+tbody tr:nth-child(even){background:var(--row2)}
+tbody tr:hover{background:var(--hover)}
+
+/* Sticky first column for History */
+.sticky-first thead th:first-child,
+.sticky-first tbody td:first-child{
+  position:sticky;left:0;z-index:2
+}
+.sticky-first thead th:first-child{z-index:3}
+.sticky-first tbody td:first-child{background:inherit;font-weight:800;text-align:left;padding-left:14px}
+
+/* Leaderboard polish */
+.leaderboard tbody td:nth-child(1){font-weight:900}
+.leaderboard tbody td:nth-child(2){text-align:left;font-weight:800}
+.leaderboard tbody td:nth-child(5){font-weight:900}
+.leaderboard tbody tr.top-1 td{background:linear-gradient(90deg, rgba(249,215,28,.22), rgba(249,215,28,.08)) !important;}
+.leaderboard tbody tr.top-2 td{background:linear-gradient(90deg, rgba(255,255,255,.10), rgba(255,255,255,.04)) !important;}
+.leaderboard tbody tr.top-3 td{background:linear-gradient(90deg, rgba(255,255,255,.08), rgba(255,255,255,.03)) !important;}
+.leaderboard tbody tr.top-1 td:nth-child(1)::after{content:" 🥇"}
+.leaderboard tbody tr.top-2 td:nth-child(1)::after{content:" 🥈"}
+.leaderboard tbody tr.top-3 td:nth-child(1)::after{content:" 🥉"}
+
+.note{color:var(--muted);font-size:12px;opacity:.9;margin:10px 2px 0}
+
+@media(max-width:680px){
+  .wrap{padding:12px}
+  .title h1{font-size:18px;line-height:1.2}
+  .title-sponsor-logo{height:22px}
+  table{min-width:640px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="title">
+      <h1>
+        <a href="https://www.instant-gaming.com/?igr=eFPL"
+           target="_blank" rel="sponsored noopener noreferrer nofollow"
+           aria-label="Instant Gaming - save on games">
+          <img src="https://efpl-assets.pages.dev/img/instant-gaming.png"
+               alt="Instant Gaming" class="title-sponsor-logo">
+        </a>
+        Hall of Fame
+      </h1>
+      <span class="badge" id="updated">Loading…</span>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Hall of Fame tabs">
+      <button class="tab" id="tab-history" role="tab" aria-selected="true" aria-controls="panel-history">Season History</button>
+      <button class="tab" id="tab-leaderboard" role="tab" aria-selected="false" aria-controls="panel-leaderboard">Leaderboard</button>
+    </div>
+
+    <div class="panel" id="panel-history" role="tabpanel" aria-labelledby="tab-history">
+      <div id="sk-history" class="skeleton"></div>
+      <div class="table-wrap fade-in" id="wrap-history" style="display:none">
+        <table id="t-history" class="sticky-first"></table>
+      </div>
+      <div class="note">Tip: scroll sideways to view all competitions.</div>
+    </div>
+
+    <div class="panel" id="panel-leaderboard" role="tabpanel" aria-labelledby="tab-leaderboard" hidden>
+      <div id="sk-leaderboard" class="skeleton"></div>
+      <div class="table-wrap fade-in" id="wrap-leaderboard" style="display:none">
+        <table id="t-leaderboard" class="leaderboard"></table>
+      </div>
+      <div class="note">Sorted by Total trophies (highest first). League and cup counts update automatically from your sheet.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== CONFIG ===== */
+const SHEET_ID='1DaYTkVVWiQVg7aianACoIfxXBZSKYqtycyuofX8WXj8';
+const HISTORY_SHEET='History';
+const HISTORY_RANGE='A1:L';
+const LEADER_SHEET='Leaderboard';
+const LEADER_RANGE='A1:E';
+
+const BUCKET_MS=5*60*1000;
+const CB=Math.floor(Date.now()/BUCKET_MS);
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function parseGviz(t){
+  const a=t.indexOf('{'), b=t.lastIndexOf('}');
+  if(a===-1||b===-1) throw new Error('Invalid GViz response');
+  return JSON.parse(t.slice(a,b+1));
+}
+function saveHTML(k,h){try{localStorage.setItem(k,h);}catch(e){}}
+function paintInstant(tableId,key,wrapId,skId){
+  try{
+    const c=localStorage.getItem(key);
+    if(c){
+      document.getElementById(tableId).innerHTML=c;
+      document.getElementById(wrapId).style.display='block';
+      document.getElementById(skId).style.display='none';
+      document.getElementById(wrapId).classList.add('ready');
+    }
+  }catch(e){}
+}
+
+function renderTable({tableEl, headers, rows, variant}){
+  let html='<thead><tr>' + headers.map(h=>`<th>${esc(h)}</th>`).join('') + '</tr></thead><tbody>';
+
+  let bodyRows=0;
+  for(let r=0;r<rows.length;r++){
+    const row=rows[r];
+    if(!row || row.every(x=>String(x).trim()==='')) continue;
+    bodyRows++;
+
+    let cls='';
+    if(variant==='leaderboard'){
+      // Apply top-3 highlighting by rank number (first col)
+      const rankStr=String(row[0]??'').trim();
+      if(rankStr==='1') cls='top-1';
+      else if(rankStr==='2') cls='top-2';
+      else if(rankStr==='3') cls='top-3';
+    }
+
+    html+=`<tr class="${cls}">`;
+    for(let c=0;c<headers.length;c++){
+      const cell=row[c] ?? '';
+      html+=`<td>${esc(cell)}</td>`;
+    }
+    html+='</tr>';
+  }
+  html += bodyRows ? '</tbody>' : '<tr><td colspan="'+headers.length+'" style="padding:14px;text-align:left;color:var(--muted)">No data yet.</td></tr></tbody>';
+  tableEl.innerHTML=html;
+}
+
+async function loadSheet({sheet, range, tableId, wrapId, skId, cacheKey, variant}){
+  const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheet)}&range=${encodeURIComponent(range)}&cachebust=${CB}`;
+  const res=await fetch(url);
+  const text=await res.text();
+  if(!res.ok) throw new Error('HTTP '+res.status);
+  const json=parseGviz(text);
+
+  const headers=json.table.cols.map(c=>c.label||'');
+  const rows=(json.table.rows||[]).map(r=>(r.c||[]).map(c=>c?(c.f ?? c.v ?? ''):''));
+
+  const tableEl=document.getElementById(tableId);
+  renderTable({tableEl, headers, rows, variant});
+
+  const html=tableEl.innerHTML;
+  saveHTML(cacheKey, html);
+
+  document.getElementById(wrapId).style.display='block';
+  document.getElementById(wrapId).classList.add('ready');
+  document.getElementById(skId).style.display='none';
+}
+
+function setUpdated(){
+  const el=document.getElementById('updated');
+  const d=new Date();
+  const pad=n=>String(n).padStart(2,'0');
+  const yy=String(d.getFullYear()).slice(-2);
+  el.textContent=`Updated ${pad(d.getDate())}/${pad(d.getMonth()+1)}/${yy}`;
+}
+
+// Tabs
+const tabHistory=document.getElementById('tab-history');
+const tabLeaderboard=document.getElementById('tab-leaderboard');
+const panelHistory=document.getElementById('panel-history');
+const panelLeaderboard=document.getElementById('panel-leaderboard');
+
+function selectTab(which){
+  const isHistory = which==='history';
+  tabHistory.setAttribute('aria-selected', isHistory?'true':'false');
+  tabLeaderboard.setAttribute('aria-selected', isHistory?'false':'true');
+  panelHistory.hidden = !isHistory;
+  panelLeaderboard.hidden = isHistory;
+
+  // Lazy-load leaderboard the first time it's opened
+  if(!isHistory && !panelLeaderboard.dataset.loaded){
+    panelLeaderboard.dataset.loaded='1';
+    loadLeaderboard();
+  }
+}
+
+tabHistory.addEventListener('click',()=>selectTab('history'));
+tabLeaderboard.addEventListener('click',()=>selectTab('leaderboard'));
+
+// Instant paint from cache (good for OBS + fast loads)
+paintInstant('t-history','efpl:hof:history','wrap-history','sk-history');
+paintInstant('t-leaderboard','efpl:hof:leaderboard','wrap-leaderboard','sk-leaderboard');
+
+async function loadHistory(){
+  try{
+    await loadSheet({
+      sheet:HISTORY_SHEET,
+      range:HISTORY_RANGE,
+      tableId:'t-history',
+      wrapId:'wrap-history',
+      skId:'sk-history',
+      cacheKey:'efpl:hof:history',
+      variant:'history'
+    });
+    setUpdated();
+  }catch(e){
+    document.getElementById('sk-history').style.display='none';
+    document.getElementById('wrap-history').style.display='block';
+    document.getElementById('t-history').innerHTML=`<tbody><tr><td style="padding:14px;text-align:left;color:var(--muted)">Could not load History. Check sheet sharing/publish settings and that the tab is named "${esc(HISTORY_SHEET)}". (${esc(e.message)})</td></tr></tbody>`;
+    document.getElementById('updated').textContent='Error';
+  }
+}
+
+async function loadLeaderboard(){
+  try{
+    await loadSheet({
+      sheet:LEADER_SHEET,
+      range:LEADER_RANGE,
+      tableId:'t-leaderboard',
+      wrapId:'wrap-leaderboard',
+      skId:'sk-leaderboard',
+      cacheKey:'efpl:hof:leaderboard',
+      variant:'leaderboard'
+    });
+    setUpdated();
+  }catch(e){
+    document.getElementById('sk-leaderboard').style.display='none';
+    document.getElementById('wrap-leaderboard').style.display='block';
+    document.getElementById('t-leaderboard').innerHTML=`<tbody><tr><td style="padding:14px;text-align:left;color:var(--muted)">Could not load Leaderboard. Check sheet sharing/publish settings and that the tab is named "${esc(LEADER_SHEET)}". (${esc(e.message)})</td></tr></tbody>`;
+    document.getElementById('updated').textContent='Error';
+  }
+}
+
+// Initial load
+loadHistory();
+</script>
+</body>
+</html>
