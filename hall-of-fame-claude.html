@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>eFPL Hall of Fame</title>
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://docs.google.com" crossorigin>
+<link rel="preconnect" href="https://www.google.com" crossorigin>
+<style>
+:root{
+  --bg:#13265b;
+  --card:#0f1e49;
+  --card2:#13265b;
+  --ink:#fff;
+  --muted:#b8c6e3;
+  --accent:#f9d71c;
+  --line:rgba(249,215,28,.28);
+  --hover:rgba(255,255,255,.05);
+  --shadow:0 16px 32px rgba(0,0,0,.55);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+img{max-width:100%;height:auto;display:inline-block}
+.wrap{width:100%;max-width:1180px;margin:0 auto;padding:8px 8px 20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
+.note{color:var(--muted);font-size:12px}
+
+/* Mini hero */
+.mini-hero{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.08);background:linear-gradient(90deg,rgba(249,215,28,.10),transparent)}
+.mh-left{display:flex;align-items:center;gap:8px;min-width:0;flex:1}
+.mh-logo{height:30px;width:auto;border-radius:8px;object-fit:contain;box-shadow:0 0 8px rgba(0,0,0,.6);flex-shrink:0}
+.mh-eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);display:none}
+.mh-title{font-size:15px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mh-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.mh-pill{border-radius:999px;border:1px solid rgba(249,215,28,.65);padding:4px 8px;font-size:11px;font-weight:900;background:linear-gradient(90deg,rgba(249,215,28,.18),rgba(249,215,28,.06));white-space:nowrap}
+
+/* Tabs */
+.tabs{display:flex;gap:6px;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.08);overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{border:1px solid rgba(249,215,28,.25);background:rgba(5,34,90,.35);color:var(--ink);padding:6px 12px;border-radius:999px;font-weight:900;font-size:12px;cursor:pointer;white-space:nowrap;flex-shrink:0;border:0;outline:0}
+.tab.active{background:rgba(249,215,28,.18);border:1px solid rgba(249,215,28,.75)}
+
+.panel{padding:10px}
+.panel[hidden]{display:none}
+.sep{height:1px;background:rgba(255,255,255,.08);margin:8px 0}
+
+/* Tables */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -10px;padding:0 10px}
+.table{width:100%;border-collapse:collapse;min-width:100%}
+thead th{background:var(--accent);color:#0b1b3d;padding:8px 6px;font-size:10px;text-transform:uppercase;letter-spacing:.04em;text-align:center;white-space:nowrap}
+tbody td{padding:8px 6px;font-weight:650;text-align:center;vertical-align:middle;font-size:13px}
+tbody tr:nth-child(odd){background:var(--card)}
+tbody tr:nth-child(even){background:var(--card2)}
+tbody tr:hover{background:var(--hover)}
+.left{text-align:left}
+.right{text-align:right}
+.numeric{font-variant-numeric:tabular-nums}
+
+/* Rank medal */
+.rank-medal{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:999px;background:rgba(0,0,0,.20);border:1px solid rgba(255,255,255,.12);font-weight:900;font-size:12px}
+.rank-medal.r1{background:rgba(249,215,28,.20);border-color:rgba(249,215,28,.65)}
+.rank-medal.r2{background:rgba(192,192,192,.12)}
+.rank-medal.r3{background:rgba(205,127,50,.12)}
+
+/* Pill */
+.pill{display:inline-flex;align-items:center;justify-content:center;padding:3px 8px;border-radius:999px;font-weight:900;font-size:11px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.18);white-space:nowrap}
+.pill.accent{border-color:rgba(249,215,28,.7);background:linear-gradient(90deg,rgba(249,215,28,.18),rgba(249,215,28,.06))}
+
+/* Player link */
+.player-link{cursor:pointer;font-weight:900;text-decoration:none;color:var(--ink)}
+.player-link:hover{text-decoration:underline}
+
+/* Top row highlight */
+tr.top1 td{background:linear-gradient(90deg,rgba(249,215,28,.26),rgba(249,215,28,.06))!important;font-weight:900}
+
+/* Season cards */
+.season-list{display:grid;gap:8px}
+.season-card{border:1px solid rgba(255,255,255,.12);border-radius:12px;overflow:hidden;background:rgba(0,0,0,.10)}
+.season-head{padding:8px 10px;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;background:linear-gradient(90deg,rgba(5,34,90,.60),transparent)}
+.season-title{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.season-name{font-weight:900;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.season-sub{font-size:11px;color:var(--muted)}
+.chev{color:var(--accent);font-weight:900;flex-shrink:0}
+.season-body{display:none;padding:8px 10px}
+
+/* Podium */
+.podium{display:grid;grid-template-columns:1fr;gap:6px;margin-bottom:8px}
+.podium-card{border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:8px;background:rgba(0,0,0,.14)}
+.podium-top{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.podium-sub{color:var(--muted);font-size:11px;margin-top:3px}
+
+/* Competition icon */
+.comp-wrap{display:flex;align-items:center;gap:6px}
+.comp-ico{width:18px;height:18px;border-radius:4px;object-fit:contain;filter:drop-shadow(0 0 4px rgba(0,0,0,.6));flex-shrink:0}
+
+/* Flyout */
+.flyout{position:fixed;z-index:9999;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:10px;box-shadow:0 20px 38px rgba(0,0,0,.7);min-width:200px;max-width:90vw;display:none}
+.flyout .name{font-weight:900;font-size:14px}
+.flyout .sub{color:var(--muted);font-size:11px;margin-top:2px}
+.flyout .mini{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.flyout .stat{border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.14);border-radius:8px;padding:6px}
+.flyout .stat .t{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.06em}
+.flyout .stat .v{font-weight:900;font-size:15px;margin-top:2px}
+
+/* Mobile utilities */
+.mobile-stack{display:flex;flex-direction:column;gap:8px}
+.mobile-hide{display:none}
+
+/* Responsive breakpoints */
+@media(min-width:480px){
+  .wrap{padding:10px 10px 24px}
+  .card{border-radius:14px}
+  .mini-hero{padding:10px 12px}
+  .mh-logo{height:34px}
+  .mh-eyebrow{display:block}
+  .mh-title{font-size:16px}
+  .tabs{padding:10px 12px;gap:8px}
+  .panel{padding:12px}
+  thead th{padding:10px 8px;font-size:11px}
+  tbody td{padding:10px 8px;font-size:14px}
+  .rank-medal{width:28px;height:28px}
+  .season-name{font-size:15px}
+  .podium{grid-template-columns:repeat(3,1fr);gap:8px}
+}
+
+@media(min-width:768px){
+  .mobile-hide{display:table-cell}
+  .season-head{padding:10px 12px}
+  .season-body{padding:10px 12px}
+}
+
+/* Performance: reduce motion for users who prefer it */
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+  <div class="card">
+    <header class="mini-hero">
+      <div class="mh-left">
+        <img src="https://efpl-assets.pages.dev/img/logo.png" alt="eFPL" class="mh-logo">
+        <div style="min-width:0;flex:1">
+          <div class="mh-eyebrow">Hall of Fame</div>
+          <div class="mh-title">Season History</div>
+        </div>
+      </div>
+      <div class="mh-right">
+        <span class="mh-pill" id="pill-updated">…</span>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="Sections">
+      <button class="tab active" data-tab="leaderboard" onclick="showTab('leaderboard')">Leaderboard</button>
+      <button class="tab" data-tab="history" onclick="showTab('history')">History</button>
+    </nav>
+
+    <section class="panel" id="leaderboard">
+      <div class="mobile-stack">
+        <div>
+          <div style="font-weight:900;font-size:15px">All-time Leaderboard</div>
+          <div class="note">Tap a player for trophy details</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <span class="pill accent" id="lb-total">-</span>
+          <span class="pill" id="lb-unique">-</span>
+        </div>
+      </div>
+      <div class="sep"></div>
+      <div class="table-wrap"><table class="table" id="t-leader"></table></div>
+    </section>
+
+    <section class="panel" id="history" hidden>
+      <div class="mobile-stack">
+        <div>
+          <div style="font-weight:900;font-size:15px">Season History</div>
+          <div class="note">Tap to expand seasons</div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          <span class="note">Filter:</span>
+          <select id="seasonFilter" onchange="applySeasonFilter()" style="background:#05225a;color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:900">
+            <option value="all">All seasons</option>
+          </select>
+          <span class="pill accent" id="season-count-pill">-</span>
+        </div>
+      </div>
+      <div class="sep"></div>
+      <div id="seasonCards" class="season-list"><div class="note">Loading…</div></div>
+    </section>
+  </div>
+</div>
+
+<div class="flyout" id="flyout"></div>
+
+<script>
+const SHEET_ID="1DaYTkVVWiQVg7aianACoIfxXBZSKYqtycyuofX8WXj8";
+const HISTORY_GID="1032615815";
+const EFPL_LOGO="https://efpl-assets.pages.dev/img/logo.png";
+const LEAGUE_ICON_BASE="https://efpl-assets.pages.dev/img/leagues/";
+
+let HISTORY={headers:[],rows:[]};
+let COMPETITIONS=[];
+let COUNTS=null;
+let ACTIVE_SEASON_FILTER="all";
+
+const esc=s=>String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+const gv=(gid,range)=>fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${gid}&range=${range}`)
+  .then(r=>r.text())
+  .then(t=>JSON.parse(t.slice(t.indexOf('{'),t.lastIndexOf('}')+1)));
+const val=c=>(c&&(c.v??c.f))??"";
+const key=x=>String(x??"").trim();
+const byId=id=>document.getElementById(id);
+const normName=s=>String(s??"").trim().replace(/\s+/g," ");
+
+function seasonLabel(raw){
+  const s=String(raw??"").trim();
+  if(/^\d+$/.test(s))return`Season ${s}`;
+  if(/^season\b/i.test(s))return s;
+  return s;
+}
+
+function safeSeasonSortKey(seasonStr){
+  const m=String(seasonStr??"").match(/(\d+)/);
+  return m?Number(m[1]):-1;
+}
+
+function compIconUrl(label){
+  const s=String(label||"").toLowerCase();
+  if(s.includes("diamond"))return LEAGUE_ICON_BASE+"Diamond-League.png";
+  if(s.includes("ruby"))return LEAGUE_ICON_BASE+"Ruby-League.png";
+  if(s.includes("sapphire"))return LEAGUE_ICON_BASE+"Sapphire-League.png";
+  if(s.includes("crystal"))return LEAGUE_ICON_BASE+"Crystal-League.png";
+  if(s.includes("emerald"))return LEAGUE_ICON_BASE+"Emerald-League.png";
+  if(s.includes("gold"))return LEAGUE_ICON_BASE+"Gold-League.png";
+  return EFPL_LOGO;
+}
+
+function showTab(id){
+  ["leaderboard","history"].forEach(pid=>byId(pid).hidden=(pid!==id));
+  document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===id));
+}
+
+function parseHistory(gvData){
+  const headers=(gvData.table.cols||[]).map(c=>(c.label||"").trim());
+  const rows=(gvData.table.rows||[]).map(r=>(r.c||[]).map(val));
+  const cleanRows=rows
+    .filter(r=>r&&r.some(x=>String(x??"").trim()!==""))
+    .map(r=>({season:key(r[0]),cells:r.map(v=>normName(v))}))
+    .filter(r=>r.season);
+  return{headers,rows:cleanRows};
+}
+
+function buildCompetitions(headers){
+  const comps=[];
+  for(let i=1;i<headers.length;i++){
+    const label=headers[i]||`Col ${i+1}`;
+    comps.push({label,index:i});
+  }
+  return comps;
+}
+
+function computeAllTimeCounts(){
+  const countsByPlayer=new Map();
+  const breakdownByPlayer=new Map();
+  HISTORY.rows.forEach(r=>{
+    COMPETITIONS.forEach(c=>{
+      const winner=normName(r.cells[c.index]);
+      if(!winner)return;
+      countsByPlayer.set(winner,(countsByPlayer.get(winner)||0)+1);
+      if(!breakdownByPlayer.has(winner))breakdownByPlayer.set(winner,new Map());
+      const m=breakdownByPlayer.get(winner);
+      m.set(c.label,(m.get(c.label)||0)+1);
+    });
+  });
+  return{countsByPlayer,breakdownByPlayer};
+}
+
+function topBreakdownText(name,limit=3){
+  const m=COUNTS.breakdownByPlayer.get(name);
+  if(!m)return"-";
+  const rows=[...m.entries()]
+    .map(([comp,count])=>({comp,count}))
+    .sort((a,b)=>b.count-a.count||a.comp.localeCompare(b.comp))
+    .slice(0,limit);
+  return rows.length?rows.map(x=>`${x.comp}: ${x.count}`).join(" | "):"-";
+}
+
+const fly=byId("flyout");
+const isMobile='ontouchstart'in window;
+
+function showFlyout(name,anchor){
+  const total=COUNTS.countsByPlayer.get(name)||0;
+  const m=COUNTS.breakdownByPlayer.get(name);
+  const rows=m?[...m.entries()].map(([comp,count])=>({comp,count})):[];
+  rows.sort((a,b)=>b.count-a.count||a.comp.localeCompare(b.comp));
+
+  fly.innerHTML=`
+    <div class="name">${esc(name)}</div>
+    <div class="sub">Trophy breakdown</div>
+    <div class="mini">
+      <div class="stat"><div class="t">Trophies</div><div class="v">${total}</div></div>
+      <div class="stat"><div class="t">Types</div><div class="v">${rows.length}</div></div>
+    </div>
+    <div class="note" style="margin-top:8px">
+      ${rows.length?rows.slice(0,6).map(x=>`
+        <div style="display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+          <span style="display:flex;align-items:center;gap:6px;font-size:12px">
+            <img class="comp-ico" src="${esc(compIconUrl(x.comp))}" alt="">
+            ${esc(x.comp)}
+          </span>
+          <strong>${x.count}</strong>
+        </div>
+      `).join(""):"No trophies"}
+    </div>
+  `;
+
+  fly.style.display="block";
+  
+  if(isMobile){
+    fly.style.left="50%";
+    fly.style.top="50%";
+    fly.style.transform="translate(-50%,-50%)";
+  }else{
+    const rect=anchor.getBoundingClientRect();
+    const scrollY=window.scrollY||0;
+    const vw=document.documentElement.clientWidth;
+    const w=fly.offsetWidth||220;
+    let left=rect.right+10;
+    if(left+w>vw-10)left=Math.max(10,rect.left-w-10);
+    fly.style.left=left+"px";
+    fly.style.top=(rect.top+scrollY-8)+"px";
+    fly.style.transform="none";
+  }
+}
+
+function hideFlyout(){fly.style.display="none";}
+
+function renderLeaderboard(){
+  const entries=[...COUNTS.countsByPlayer.entries()]
+    .map(([name,count])=>({name,count}))
+    .sort((a,b)=>b.count-a.count||a.name.localeCompare(b.name));
+
+  byId("lb-total").textContent=`${entries.length} players`;
+  byId("lb-unique").textContent=`${entries.length} winners`;
+
+  let html=`
+    <thead>
+      <tr>
+        <th style="width:4ch">#</th>
+        <th class="left">Player</th>
+        <th style="width:10ch">Wins</th>
+        <th class="left mobile-hide">Top wins</th>
+      </tr>
+    </thead>
+    <tbody>
+  `;
+
+  entries.forEach((r,i)=>{
+    const medal=
+      i===0?`<span class="rank-medal r1">1</span>`:
+      i===1?`<span class="rank-medal r2">2</span>`:
+      i===2?`<span class="rank-medal r3">3</span>`:
+            `<span class="rank-medal">${i+1}</span>`;
+    const breakdown=topBreakdownText(r.name,2);
+    const cls=(i===0)?"top1":"";
+    html+=`
+      <tr class="${cls}">
+        <td class="right numeric">${medal}</td>
+        <td class="left"><span class="player-link" data-player="${esc(r.name)}">${esc(r.name)}</span></td>
+        <td class="center"><span class="pill accent">${r.count}</span></td>
+        <td class="left note mobile-hide">${esc(breakdown)}</td>
+      </tr>
+    `;
+  });
+
+  html+=`</tbody>`;
+  byId("t-leader").innerHTML=html;
+
+  document.querySelectorAll("#leaderboard .player-link").forEach(el=>{
+    const name=el.dataset.player;
+    el.addEventListener("click",()=>showFlyout(name,el));
+    if(!isMobile){
+      el.addEventListener("mouseenter",()=>showFlyout(name,el));
+      el.addEventListener("mouseleave",()=>setTimeout(hideFlyout,100));
+    }
+  });
+}
+
+function seasonWinnersList(row){
+  const out=[];
+  COMPETITIONS.forEach(c=>{
+    const w=normName(row.cells[c.index]);
+    if(w)out.push({comp:c.label,winner:w});
+  });
+  return out;
+}
+
+function top3ForSeason(row){
+  const m=new Map();
+  seasonWinnersList(row).forEach(it=>{
+    m.set(it.winner,(m.get(it.winner)||0)+1);
+  });
+  return[...m.entries()]
+    .map(([name,count])=>({name,count}))
+    .sort((a,b)=>b.count-a.count||a.name.localeCompare(b.name))
+    .slice(0,3);
+}
+
+function renderSeasonCards(){
+  const host=byId("seasonCards");
+  let rows=[...HISTORY.rows].sort((a,b)=>safeSeasonSortKey(b.season)-safeSeasonSortKey(a.season));
+  const newestSeasonKey=rows.length?rows[0].season:"";
+
+  if(ACTIVE_SEASON_FILTER!=="all"){
+    rows=rows.filter(r=>key(r.season)===key(ACTIVE_SEASON_FILTER));
+  }
+
+  byId("season-count-pill").textContent=`${rows.length} season${rows.length===1?"":"s"}`;
+
+  if(!rows.length){
+    host.innerHTML=`<div class="note">No seasons found</div>`;
+    return;
+  }
+
+  host.innerHTML=rows.map((r,idx)=>{
+    const winners=seasonWinnersList(r);
+    const trophiesCount=winners.length;
+    const isOngoing=key(r.season)===key(newestSeasonKey)&&trophiesCount===0;
+    const top3=top3ForSeason(r);
+    
+    const podiumHtml=top3.length?`
+      <div class="podium">
+        ${top3.map((p,i)=>{
+          const medal=
+            i===0?`<span class="rank-medal r1">1</span>`:
+            i===1?`<span class="rank-medal r2">2</span>`:
+                  `<span class="rank-medal r3">3</span>`;
+          return`
+            <div class="podium-card">
+              <div class="podium-top">
+                ${medal}
+                <span class="pill accent">${p.count} ${p.count===1?"trophy":"trophies"}</span>
+              </div>
+              <div style="margin-top:6px">
+                <span class="player-link" data-player="${esc(p.name)}">${esc(p.name)}</span>
+                <div class="podium-sub">Top winner</div>
+              </div>
+            </div>
+          `;
+        }).join("")}
+      </div>
+    `:`<div class="note">${isOngoing?"Season ongoing":"No winners yet"}</div>`;
+
+    const itemsHtml=winners.length?winners.map(it=>`
+      <tr>
+        <td class="left">
+          <span class="comp-wrap">
+            <img class="comp-ico" src="${esc(compIconUrl(it.comp))}" alt="">
+            <span>${esc(it.comp)}</span>
+          </span>
+        </td>
+        <td class="left"><span class="player-link" data-player="${esc(it.winner)}">${esc(it.winner)}</span></td>
+        <td class="center"><span class="pill">Winner</span></td>
+      </tr>
+    `).join(""):`
+      <tr>
+        <td colspan="3" class="note" style="text-align:center;padding:10px">
+          ${isOngoing?"Season ongoing":"No winners recorded"}
+        </td>
+      </tr>
+    `;
+
+    const bodyId=`sb-${idx}`;
+    const title=seasonLabel(r.season);
+
+    return`
+      <div class="season-card">
+        <div class="season-head" onclick="toggleSeason('${bodyId}',this)">
+          <div class="season-title">
+            <div class="season-name">${esc(title)}</div>
+            <div class="season-sub">${trophiesCount} ${trophiesCount===1?"trophy":"trophies"}</div>
+          </div>
+          <div class="chev">▼</div>
+        </div>
+        <div class="season-body" id="${bodyId}">
+          ${podiumHtml}
+          <div class="table-wrap">
+            <table class="table" style="margin-top:6px">
+              <thead>
+                <tr>
+                  <th class="left">Competition</th>
+                  <th class="left">Winner</th>
+                  <th style="width:10ch">Status</th>
+                </tr>
+              </thead>
+              <tbody>${itemsHtml}</tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  document.querySelectorAll("#seasonCards .player-link").forEach(el=>{
+    const name=el.dataset.player;
+    el.addEventListener("click",()=>showFlyout(name,el));
+    if(!isMobile){
+      el.addEventListener("mouseenter",()=>showFlyout(name,el));
+      el.addEventListener("mouseleave",()=>setTimeout(hideFlyout,100));
+    }
+  });
+}
+
+function toggleSeason(bodyId,headEl){
+  const body=byId(bodyId);
+  if(!body)return;
+  const isOpen=body.style.display==="block";
+  body.style.display=isOpen?"":"block";
+  const chev=headEl.querySelector(".chev");
+  if(chev)chev.textContent=isOpen?"▼":"▲";
+}
+
+function applySeasonFilter(){
+  ACTIVE_SEASON_FILTER=byId("seasonFilter").value;
+  renderSeasonCards();
+}
+
+(async function boot(){
+  try{
+    const historyGV=await gv(HISTORY_GID,"A1:L");
+    HISTORY=parseHistory(historyGV);
+    COMPETITIONS=buildCompetitions(HISTORY.headers);
+    COUNTS=computeAllTimeCounts();
+
+    const seasons=[...new Set(HISTORY.rows.map(r=>r.season))]
+      .sort((a,b)=>safeSeasonSortKey(a)-safeSeasonSortKey(b));
+
+    const sel=byId("seasonFilter");
+    seasons.forEach(s=>{
+      sel.insertAdjacentHTML("beforeend",`<option value="${esc(s)}">${esc(seasonLabel(s))}</option>`);
+    });
+
+    renderLeaderboard();
+    renderSeasonCards();
+
+    const now=new Date();
+    const months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    byId("pill-updated").textContent=`${now.getDate()} ${months[now.getMonth()]}`;
+
+    document.addEventListener("click",e=>{
+      const isPlayer=e.target.closest&&e.target.closest(".player-link");
+      const isFly=e.target.closest&&e.target.closest("#flyout");
+      if(!isPlayer&&!isFly)hideFlyout();
+    });
+
+    showTab("leaderboard");
+  }catch(e){
+    byId("pill-updated").textContent="Error";
+    byId("seasonCards").innerHTML=`<div class="note">Could not load data</div>`;
+  }
+})();
+</script>
+</body>
+</html>
