@@ -222,15 +222,15 @@ tr.top1 td{background:linear-gradient(90deg,rgba(249,215,28,.26),rgba(249,215,28
 
       <div class="sep"></div>
 
-      <div style="font-weight:900;font-size:14px;margin-bottom:8px">🏅 Competition Breakdown</div>
-      <div class="note" style="margin-bottom:8px">Total winners per competition type</div>
+      <div style="font-weight:900;font-size:14px;margin-bottom:8px">🎯 Competition Specialists</div>
+      <div class="note" style="margin-bottom:8px">Players who dominate specific competitions</div>
       <div class="table-wrap"><table class="table" id="t-competitions"></table></div>
 
       <div class="sep"></div>
 
-      <div style="font-weight:900;font-size:14px;margin-bottom:8px">📈 Recent Form</div>
-      <div class="note" style="margin-bottom:8px">Top performers in the last 3 seasons</div>
-      <div class="table-wrap"><table class="table" id="t-recent"></table></div>
+      <div style="font-weight:900;font-size:14px;margin-bottom:8px">🏆 Trophy Diversity</div>
+      <div class="note" style="margin-bottom:8px">Players who've won the most different competition types</div>
+      <div class="table-wrap"><table class="table" id="t-diversity"></table></div>
     </section>
   </div>
 </div>
@@ -394,7 +394,7 @@ function renderLeaderboard(){
         <th style="width:4ch">#</th>
         <th class="left">Player</th>
         <th style="width:10ch">Wins</th>
-        <th class="left mobile-hide">Top wins</th>
+        <th class="left mobile-hide">Top Titles</th>
       </tr>
     </thead>
     <tbody>
@@ -614,94 +614,110 @@ function renderStats(){
   domHtml+=`</tbody>`;
   byId("t-dominant").innerHTML=domHtml;
 
-  // Competition breakdown
-  const compCounts=new Map();
+  // Competition specialists (players who dominated specific competitions)
+  const compSpecialists=new Map();
   COMPETITIONS.forEach(c=>{
-    let count=0;
+    const winners=new Map();
     HISTORY.rows.forEach(r=>{
       const winner=normName(r.cells[c.index]);
-      if(winner)count++;
+      if(winner)winners.set(winner,(winners.get(winner)||0)+1);
     });
-    if(count>0)compCounts.set(c.label,count);
+    if(winners.size>0){
+      const topWinner=[...winners.entries()]
+        .sort((a,b)=>b[1]-a[1])[0];
+      if(topWinner[1]>=2){
+        compSpecialists.set(c.label,{player:topWinner[0],wins:topWinner[1],total:winners.size});
+      }
+    }
   });
 
-  const compRows=[...compCounts.entries()]
-    .map(([comp,count])=>({comp,count}))
-    .sort((a,b)=>b.count-a.count);
+  const specialistRows=[...compSpecialists.entries()]
+    .map(([comp,data])=>({comp,player:data.player,wins:data.wins,total:data.total}))
+    .sort((a,b)=>b.wins-a.wins);
 
   let compHtml=`
     <thead>
       <tr>
         <th class="left">Competition</th>
-        <th style="width:12ch">Total Winners</th>
-        <th style="width:12ch">Avg/Season</th>
+        <th class="left">Specialist</th>
+        <th style="width:10ch">Wins</th>
+        <th style="width:12ch mobile-hide">Win Rate</th>
       </tr>
     </thead>
     <tbody>
   `;
 
-  compRows.forEach(c=>{
-    const avg=(c.count/totalSeasons).toFixed(1);
+  if(specialistRows.length>0){
+    specialistRows.forEach(c=>{
+      const rate=((c.wins/totalSeasons)*100).toFixed(0);
+      compHtml+=`
+        <tr>
+          <td class="left">
+            <span class="comp-wrap">
+              <img class="comp-ico" src="${esc(compIconUrl(c.comp))}" alt="">
+              <span>${esc(c.comp)}</span>
+            </span>
+          </td>
+          <td class="left"><span class="player-link" data-player="${esc(c.player)}">${esc(c.player)}</span></td>
+          <td class="center"><span class="pill accent">${c.wins}</span></td>
+          <td class="center mobile-hide"><span class="pill">${rate}%</span></td>
+        </tr>
+      `;
+    });
+  }else{
     compHtml+=`
       <tr>
-        <td class="left">
-          <span class="comp-wrap">
-            <img class="comp-ico" src="${esc(compIconUrl(c.comp))}" alt="">
-            <span>${esc(c.comp)}</span>
-          </span>
+        <td colspan="4" class="note" style="text-align:center;padding:12px">
+          No specialists yet - competitions need multiple seasons
         </td>
-        <td class="center"><span class="pill accent">${c.count}</span></td>
-        <td class="center"><span class="pill">${avg}</span></td>
       </tr>
     `;
-  });
+  }
   compHtml+=`</tbody>`;
   byId("t-competitions").innerHTML=compHtml;
 
-  // Recent form (last 3 seasons)
-  const recentSeasons=HISTORY.rows
-    .sort((a,b)=>safeSeasonSortKey(b.season)-safeSeasonSortKey(a.season))
-    .slice(0,3);
-
-  const recentCounts=new Map();
-  recentSeasons.forEach(r=>{
-    COMPETITIONS.forEach(c=>{
-      const winner=normName(r.cells[c.index]);
-      if(winner)recentCounts.set(winner,(recentCounts.get(winner)||0)+1);
-    });
-  });
-
-  const recentTop=[...recentCounts.entries()]
-    .map(([name,count])=>({name,count}))
-    .sort((a,b)=>b.count-a.count)
+  // Trophy diversity (players who won different competition types)
+  const diversity=[...COUNTS.breakdownByPlayer.entries()]
+    .map(([name,comps])=>({
+      name,
+      types:comps.size,
+      total:COUNTS.countsByPlayer.get(name)||0
+    }))
+    .sort((a,b)=>b.types-a.types||b.total-a.total)
     .slice(0,10);
 
-  let recentHtml=`
+  let divHtml=`
     <thead>
       <tr>
         <th style="width:4ch">#</th>
         <th class="left">Player</th>
-        <th style="width:12ch">Recent Wins</th>
-        <th class="left mobile-hide">Trend</th>
+        <th style="width:10ch">Types</th>
+        <th style="width:12ch">Total Wins</th>
+        <th class="left mobile-hide">Achievement</th>
       </tr>
     </thead>
     <tbody>
   `;
 
-  recentTop.forEach((p,i)=>{
+  diversity.forEach((p,i)=>{
     const medal=i<3?`<span class="rank-medal r${i+1}">${i+1}</span>`:`<span class="rank-medal">${i+1}</span>`;
-    const trend=p.count>=3?"🔥 Hot streak":p.count>=2?"📈 Rising":"⭐ Contender";
-    recentHtml+=`
+    const achievement=
+      p.types===totalComps?"🌟 Complete set":
+      p.types>=totalComps*0.75?"💎 Diverse champion":
+      p.types>=totalComps*0.5?"🎯 Multi-league winner":
+      "⭐ Rising talent";
+    divHtml+=`
       <tr>
         <td class="right">${medal}</td>
         <td class="left"><span class="player-link" data-player="${esc(p.name)}">${esc(p.name)}</span></td>
-        <td class="center"><span class="pill accent">${p.count}</span></td>
-        <td class="left mobile-hide note">${trend}</td>
+        <td class="center"><span class="pill accent">${p.types}</span></td>
+        <td class="center"><span class="pill">${p.total}</span></td>
+        <td class="left mobile-hide note">${achievement}</td>
       </tr>
     `;
   });
-  recentHtml+=`</tbody>`;
-  byId("t-recent").innerHTML=recentHtml;
+  divHtml+=`</tbody>`;
+  byId("t-diversity").innerHTML=divHtml;
 
   // Add click handlers
   document.querySelectorAll("#stats .player-link").forEach(el=>{
