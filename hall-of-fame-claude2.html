@@ -94,6 +94,20 @@ tr.top1 td{background:linear-gradient(90deg,rgba(249,215,28,.26),rgba(249,215,28
 .comp-wrap{display:flex;align-items:center;gap:6px}
 .comp-ico{width:18px;height:18px;border-radius:4px;object-fit:contain;filter:drop-shadow(0 0 4px rgba(0,0,0,.6));flex-shrink:0}
 
+/* Region cards */
+.region-grid{display:grid;gap:8px}
+.region-card{border:1px solid rgba(255,255,255,.12);border-radius:12px;overflow:hidden;background:rgba(0,0,0,.10)}
+.region-head{padding:10px 12px;display:flex;justify-content:space-between;align-items:center;gap:10px;background:linear-gradient(90deg,rgba(5,34,90,.60),transparent)}
+.region-title{display:flex;align-items:center;gap:8px;min-width:0}
+.region-emoji{font-size:18px}
+.region-name{font-weight:900;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.region-sub{color:var(--muted);font-size:11px;margin-top:2px}
+.region-body{padding:10px 12px}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:10px}
+.kpi{border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:10px;background:rgba(0,0,0,.14)}
+.kpi .t{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+.kpi .v{font-weight:900;font-size:22px;margin-top:4px;color:var(--accent)}
+
 /* Flyout */
 .flyout{position:fixed;z-index:9999;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:10px;box-shadow:0 20px 38px rgba(0,0,0,.7);min-width:200px;max-width:90vw;display:none}
 .flyout .name{font-weight:900;font-size:14px}
@@ -128,9 +142,10 @@ tr.top1 td{background:linear-gradient(90deg,rgba(249,215,28,.26),rgba(249,215,28
   .mobile-hide{display:table-cell}
   .season-head{padding:10px 12px}
   .season-body{padding:10px 12px}
+  .region-grid{grid-template-columns:repeat(2,1fr)}
 }
 
-/* Performance: reduce motion for users who prefer it */
+/* Reduce motion */
 @media(prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
 }
@@ -156,7 +171,7 @@ tr.top1 td{background:linear-gradient(90deg,rgba(249,215,28,.26),rgba(249,215,28
     <nav class="tabs" aria-label="Sections">
       <button class="tab active" data-tab="leaderboard" onclick="showTab('leaderboard')">🏆 Leaderboard</button>
       <button class="tab" data-tab="history" onclick="showTab('history')">📚 History</button>
-      <button class="tab" data-tab="stats" onclick="showTab('stats')">📊 Stats</button>
+      <button class="tab" data-tab="regions" onclick="showTab('regions')">🌍 Regions</button>
     </nav>
 
     <section class="panel" id="leaderboard">
@@ -192,57 +207,120 @@ tr.top1 td{background:linear-gradient(90deg,rgba(249,215,28,.26),rgba(249,215,28
       <div id="seasonCards" class="season-list"><div class="note">Loading…</div></div>
     </section>
 
-    <section class="panel" id="stats" hidden>
-      <div style="font-weight:900;font-size:15px;margin-bottom:8px">League Statistics</div>
+    <section class="panel" id="regions" hidden>
+      <div class="mobile-stack">
+        <div>
+          <div style="font-weight:900;font-size:15px">Regions</div>
+          <div class="note">Hall of Fame, grouped by region and competition type</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <span class="pill accent" id="rg-total-seasons">-</span>
+          <span class="pill" id="rg-total-trophies">-</span>
+        </div>
+      </div>
+      <div class="sep"></div>
 
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:12px">
-        <div style="border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:10px;background:rgba(0,0,0,.14)">
-          <div style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">Total Seasons</div>
-          <div style="font-weight:900;font-size:24px;margin-top:4px;color:var(--accent)" id="stat-seasons">-</div>
+      <div class="region-grid">
+        <div class="region-card" id="card-europe">
+          <div class="region-head">
+            <div class="region-title">
+              <span class="region-emoji">🇪🇺</span>
+              <div style="min-width:0">
+                <div class="region-name">Europe</div>
+                <div class="region-sub">Diamond, Ruby, Sapphire, Crystal + European Cups</div>
+              </div>
+            </div>
+            <span class="pill accent" id="eu-trophies-pill">-</span>
+          </div>
+          <div class="region-body">
+            <div class="kpi-row">
+              <div class="kpi"><div class="t">Competitions</div><div class="v" id="eu-comps">-</div></div>
+              <div class="kpi"><div class="t">Unique Winners</div><div class="v" id="eu-winners">-</div></div>
+            </div>
+            <div style="font-weight:900;font-size:13px;margin:0 0 6px">Top European Winners</div>
+            <div class="table-wrap"><table class="table" id="t-eu-top"></table></div>
+            <div class="sep"></div>
+            <div style="font-weight:900;font-size:13px;margin:0 0 6px">European Cups</div>
+            <div class="note" style="margin:-2px 0 8px">Champions Cup, Continental Cup, Conference Cup</div>
+            <div class="table-wrap"><table class="table" id="t-eu-cups"></table></div>
+          </div>
         </div>
-        <div style="border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:10px;background:rgba(0,0,0,.14)">
-          <div style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">Total Trophies</div>
-          <div style="font-weight:900;font-size:24px;margin-top:4px;color:var(--accent)" id="stat-trophies">-</div>
+
+        <div class="region-card" id="card-americas">
+          <div class="region-head">
+            <div class="region-title">
+              <span class="region-emoji">🌎</span>
+              <div style="min-width:0">
+                <div class="region-name">Americas</div>
+                <div class="region-sub">Gold League</div>
+              </div>
+            </div>
+            <span class="pill accent" id="am-trophies-pill">-</span>
+          </div>
+          <div class="region-body">
+            <div class="kpi-row">
+              <div class="kpi"><div class="t">Competitions</div><div class="v" id="am-comps">-</div></div>
+              <div class="kpi"><div class="t">Unique Winners</div><div class="v" id="am-winners">-</div></div>
+            </div>
+            <div style="font-weight:900;font-size:13px;margin:0 0 6px">Gold Winners (All-time)</div>
+            <div class="table-wrap"><table class="table" id="t-am-top"></table></div>
+            <div class="sep"></div>
+            <div style="font-weight:900;font-size:13px;margin:0 0 6px">Gold History</div>
+            <div class="table-wrap"><table class="table" id="t-am-history"></table></div>
+          </div>
         </div>
-        <div style="border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:10px;background:rgba(0,0,0,.14)">
-          <div style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">Unique Winners</div>
-          <div style="font-weight:900;font-size:24px;margin-top:4px;color:var(--accent)" id="stat-players">-</div>
+
+        <div class="region-card" id="card-asia">
+          <div class="region-head">
+            <div class="region-title">
+              <span class="region-emoji">🌏</span>
+              <div style="min-width:0">
+                <div class="region-name">Asia</div>
+                <div class="region-sub">Emerald League</div>
+              </div>
+            </div>
+            <span class="pill accent" id="as-trophies-pill">-</span>
+          </div>
+          <div class="region-body">
+            <div class="kpi-row">
+              <div class="kpi"><div class="t">Competitions</div><div class="v" id="as-comps">-</div></div>
+              <div class="kpi"><div class="t">Unique Winners</div><div class="v" id="as-winners">-</div></div>
+            </div>
+            <div style="font-weight:900;font-size:13px;margin:0 0 6px">Emerald Winners (All-time)</div>
+            <div class="table-wrap"><table class="table" id="t-as-top"></table></div>
+            <div class="sep"></div>
+            <div style="font-weight:900;font-size:13px;margin:0 0 6px">Emerald History</div>
+            <div class="table-wrap"><table class="table" id="t-as-history"></table></div>
+          </div>
         </div>
-        <div style="border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:10px;background:rgba(0,0,0,.14)">
-          <div style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">Competitions</div>
-          <div style="font-weight:900;font-size:24px;margin-top:4px;color:var(--accent)" id="stat-comps">-</div>
+
+        <div class="region-card" id="card-horizon">
+          <div class="region-head">
+            <div class="region-title">
+              <span class="region-emoji">🌓</span>
+              <div style="min-width:0">
+                <div class="region-name">Horizon Cup</div>
+                <div class="region-sub">Asia vs Americas</div>
+              </div>
+            </div>
+            <span class="pill accent" id="hz-trophies-pill">-</span>
+          </div>
+          <div class="region-body">
+            <div class="kpi-row">
+              <div class="kpi"><div class="t">Seasons Recorded</div><div class="v" id="hz-seasons">-</div></div>
+              <div class="kpi"><div class="t">Unique Winners</div><div class="v" id="hz-winners">-</div></div>
+            </div>
+            <div style="font-weight:900;font-size:13px;margin:0 0 6px">Horizon Winners (All-time)</div>
+            <div class="table-wrap"><table class="table" id="t-hz-top"></table></div>
+            <div class="sep"></div>
+            <div style="font-weight:900;font-size:13px;margin:0 0 6px">Horizon History</div>
+            <div class="table-wrap"><table class="table" id="t-hz-history"></table></div>
+          </div>
         </div>
       </div>
 
       <div class="sep"></div>
-
-      <div style="font-weight:900;font-size:14px;margin-bottom:8px">🔥 Biggest Seasons</div>
-      <div class="note" style="margin-bottom:8px">Most trophies won by a single player in one season (reshuffle-proof)</div>
-      <div class="table-wrap"><table class="table" id="t-biggest"></table></div>
-
-      <div class="sep"></div>
-
-      <div style="font-weight:900;font-size:14px;margin-bottom:8px">🆕 New Champions</div>
-      <div class="note" style="margin-bottom:8px">First-time trophy winners per season</div>
-      <div class="table-wrap"><table class="table" id="t-newchamps"></table></div>
-
-      <div class="sep"></div>
-
-      <div style="font-weight:900;font-size:14px;margin-bottom:8px">🛡️ Title Defence</div>
-      <div class="note" style="margin-bottom:8px">How often each competition is defended from one season to the next</div>
-      <div class="table-wrap"><table class="table" id="t-defence"></table></div>
-
-      <div class="sep"></div>
-
-      <div style="font-weight:900;font-size:14px;margin-bottom:8px">👑 Repeat Winners</div>
-      <div class="note" style="margin-bottom:8px">Players who have won the same competition more than once</div>
-      <div class="table-wrap"><table class="table" id="t-repeat"></table></div>
-
-      <div class="sep"></div>
-
-      <div style="font-weight:900;font-size:14px;margin-bottom:8px">⚖️ Competitive Balance</div>
-      <div class="note" style="margin-bottom:8px">How concentrated trophies are among the top winners (all-time)</div>
-      <div class="table-wrap"><table class="table" id="t-balance"></table></div>
+      <div class="note">Tip: Tap any player name to see their full trophy breakdown.</div>
     </section>
   </div>
 </div>
@@ -292,7 +370,7 @@ function compIconUrl(label){
 }
 
 function showTab(id){
-  ["leaderboard","history","stats"].forEach(pid=>byId(pid).hidden=(pid!==id));
+  ["leaderboard","history","regions"].forEach(pid=>byId(pid).hidden=(pid!==id));
   document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===id));
 }
 
@@ -358,7 +436,7 @@ function showFlyout(name,anchor){
       <div class="stat"><div class="t">Types</div><div class="v">${rows.length}</div></div>
     </div>
     <div class="note" style="margin-top:8px">
-      ${rows.length?rows.slice(0,6).map(x=>`
+      ${rows.length?rows.slice(0,8).map(x=>`
         <div style="display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.06)">
           <span style="display:flex;align-items:center;gap:6px;font-size:12px">
             <img class="comp-ico" src="${esc(compIconUrl(x.comp))}" alt="">
@@ -580,304 +658,278 @@ function applySeasonFilter(){
   renderSeasonCards();
 }
 
-/* ---------- NEW STATS (reshuffle-proof) ---------- */
+/* ---------- Regions logic ---------- */
 
-function seasonTrophyCounts(){
-  // returns [{season, byPlayer:Map(name->count), totalTrophies}]
-  const rows=[...HISTORY.rows].sort((a,b)=>safeSeasonSortKey(a.season)-safeSeasonSortKey(b.season));
-  return rows.map(r=>{
-    const m=new Map();
-    let total=0;
-    COMPETITIONS.forEach(c=>{
-      const w=normName(r.cells[c.index]);
-      if(!w)return;
-      total++;
-      m.set(w,(m.get(w)||0)+1);
-    });
-    return{season:r.season, byPlayer:m, totalTrophies:total};
-  });
+function headerMatch(h,words){
+  const s=String(h||"").toLowerCase();
+  return words.some(w=>s.includes(w));
 }
 
-function renderStats(){
-  const totalSeasons=HISTORY.rows.length;
-  const totalTrophies=[...COUNTS.countsByPlayer.values()].reduce((a,b)=>a+b,0);
-  const totalPlayers=COUNTS.countsByPlayer.size;
-  const totalComps=COMPETITIONS.length;
+function compGroup(label){
+  const s=String(label||"").toLowerCase();
+  if(s.includes("horizon")) return "horizon";
+  if(s.includes("gold")) return "americas";
+  if(s.includes("emerald")) return "asia";
+  // Europe defaults
+  if(s.includes("champions") || s.includes("continental") || s.includes("conference")) return "europe_cups";
+  if(s.includes("diamond") || s.includes("ruby") || s.includes("sapphire") || s.includes("crystal")) return "europe_leagues";
+  return "europe_other";
+}
 
-  byId("stat-seasons").textContent=totalSeasons;
-  byId("stat-trophies").textContent=totalTrophies;
-  byId("stat-players").textContent=totalPlayers;
-  byId("stat-comps").textContent=totalComps;
+function countForCompetitions(compList){
+  const counts=new Map();
+  const uniqueWinners=new Set();
+  let trophies=0;
 
-  // 1) Biggest Seasons
-  const seasonStats=seasonTrophyCounts();
-  const biggest=[];
-  seasonStats.forEach(s=>{
-    [...s.byPlayer.entries()].forEach(([name,count])=>{
-      biggest.push({season:s.season,name,count,seasonTotal:s.totalTrophies});
+  HISTORY.rows.forEach(r=>{
+    compList.forEach(c=>{
+      const w=normName(r.cells[c.index]);
+      if(!w)return;
+      trophies++;
+      uniqueWinners.add(w);
+      counts.set(w,(counts.get(w)||0)+1);
     });
   });
-  biggest.sort((a,b)=>b.count-a.count || safeSeasonSortKey(b.season)-safeSeasonSortKey(a.season) || a.name.localeCompare(b.name));
-  const topBiggest=biggest.slice(0,10);
 
-  let bigHtml=`
+  const sorted=[...counts.entries()]
+    .map(([name,count])=>({name,count}))
+    .sort((a,b)=>b.count-a.count || a.name.localeCompare(b.name));
+
+  return {trophies, uniqueWinners:uniqueWinners.size, sorted};
+}
+
+function buildHistoryTableForComp(comp){
+  // rows: season, winner
+  const rows=[...HISTORY.rows]
+    .sort((a,b)=>safeSeasonSortKey(b.season)-safeSeasonSortKey(a.season))
+    .map(r=>{
+      const w=normName(r.cells[comp.index]);
+      return {season:r.season, winner:w};
+    });
+
+  return rows;
+}
+
+function renderTopTable(elId, list, max=10){
+  let html=`
     <thead>
       <tr>
         <th style="width:4ch">#</th>
         <th class="left">Player</th>
-        <th class="left">Season</th>
-        <th style="width:10ch">Trophies</th>
-        <th style="width:12ch mobile-hide">Share</th>
+        <th style="width:10ch">Titles</th>
       </tr>
     </thead>
     <tbody>
   `;
-  if(topBiggest.length){
-    topBiggest.forEach((r,i)=>{
-      const medal=i<3?`<span class="rank-medal r${i+1}">${i+1}</span>`:`<span class="rank-medal">${i+1}</span>`;
-      const share=r.seasonTotal?((r.count/r.seasonTotal)*100).toFixed(0):"0";
-      bigHtml+=`
+  const slice=list.slice(0,max);
+  if(slice.length){
+    slice.forEach((r,i)=>{
+      const medal=
+        i===0?`<span class="rank-medal r1">1</span>`:
+        i===1?`<span class="rank-medal r2">2</span>`:
+        i===2?`<span class="rank-medal r3">3</span>`:
+              `<span class="rank-medal">${i+1}</span>`;
+      html+=`
         <tr>
           <td class="right">${medal}</td>
           <td class="left"><span class="player-link" data-player="${esc(r.name)}">${esc(r.name)}</span></td>
-          <td class="left">${esc(seasonLabel(r.season))}</td>
           <td class="center"><span class="pill accent">${r.count}</span></td>
-          <td class="center mobile-hide"><span class="pill">${share}%</span></td>
         </tr>
       `;
     });
   }else{
-    bigHtml+=`
-      <tr><td colspan="5" class="note" style="text-align:center;padding:12px">No trophy data yet</td></tr>
-    `;
+    html+=`<tr><td colspan="3" class="note" style="text-align:center;padding:12px">No data yet</td></tr>`;
   }
-  bigHtml+=`</tbody>`;
-  byId("t-biggest").innerHTML=bigHtml;
+  html+=`</tbody>`;
+  byId(elId).innerHTML=html;
+}
 
-  // 2) New Champions per season (first-time winners)
-  const seen=new Set();
-  const newRows=[];
-  seasonStats.forEach(s=>{
-    const winners=[...s.byPlayer.keys()].filter(Boolean);
-    const firstTimers=winners.filter(w=>!seen.has(w));
-    // after counting, add all winners to seen
-    winners.forEach(w=>seen.add(w));
-    newRows.push({
-      season:s.season,
-      newCount:firstTimers.length,
-      winnersCount:winners.length,
-      list:firstTimers.slice(0,4) // display a short list
-    });
-  });
-  newRows.sort((a,b)=>safeSeasonSortKey(b.season)-safeSeasonSortKey(a.season));
+function renderSingleCompAllTime(elId, compLabel, comp){
+  const data=countForCompetitions([comp]);
+  let html=`
+    <thead>
+      <tr>
+        <th class="left">Competition</th>
+        <th class="left">Top winner</th>
+        <th style="width:10ch">Titles</th>
+      </tr>
+    </thead>
+    <tbody>
+  `;
+  if(data.sorted.length){
+    const top=data.sorted[0];
+    html+=`
+      <tr>
+        <td class="left">
+          <span class="comp-wrap">
+            <img class="comp-ico" src="${esc(compIconUrl(compLabel))}" alt="">
+            <span>${esc(compLabel)}</span>
+          </span>
+        </td>
+        <td class="left"><span class="player-link" data-player="${esc(top.name)}">${esc(top.name)}</span></td>
+        <td class="center"><span class="pill accent">${top.count}</span></td>
+      </tr>
+    `;
+  }else{
+    html+=`<tr><td colspan="3" class="note" style="text-align:center;padding:12px">No winners recorded</td></tr>`;
+  }
+  html+=`</tbody>`;
+  byId(elId).innerHTML=html;
+}
 
-  let newHtml=`
+function renderHistorySimple(elId, compLabel, comp){
+  const rows=buildHistoryTableForComp(comp);
+
+  let html=`
     <thead>
       <tr>
         <th class="left">Season</th>
-        <th style="width:12ch">New</th>
-        <th style="width:12ch">Winners</th>
-        <th class="left mobile-hide">New champions</th>
+        <th class="left">Winner</th>
+        <th style="width:10ch">Status</th>
       </tr>
     </thead>
     <tbody>
   `;
-  if(newRows.length){
-    newRows.forEach(r=>{
-      const list = r.newCount ? r.list.map(n=>`<span class="player-link" data-player="${esc(n)}">${esc(n)}</span>`).join(", ") : `<span class="note">-</span>`;
-      newHtml+=`
-        <tr>
-          <td class="left">${esc(seasonLabel(r.season))}</td>
-          <td class="center"><span class="pill accent">${r.newCount}</span></td>
-          <td class="center"><span class="pill">${r.winnersCount}</span></td>
-          <td class="left mobile-hide note">${list}</td>
-        </tr>
-      `;
-    });
-  }else{
-    newHtml+=`
-      <tr><td colspan="4" class="note" style="text-align:center;padding:12px">No seasons found</td></tr>
+
+  const newestSeason=rows.length ? rows[0].season : "";
+  rows.slice(0,12).forEach(r=>{
+    const winnerCell = r.winner
+      ? `<span class="player-link" data-player="${esc(r.winner)}">${esc(r.winner)}</span>`
+      : `<span class="note">${key(r.season)===key(newestSeason)?"Season ongoing":"-"}</span>`;
+    const status = r.winner ? `<span class="pill">Winner</span>` : `<span class="pill">Pending</span>`;
+    html+=`
+      <tr>
+        <td class="left">${esc(seasonLabel(r.season))}</td>
+        <td class="left">${winnerCell}</td>
+        <td class="center">${status}</td>
+      </tr>
     `;
-  }
-  newHtml+=`</tbody>`;
-  byId("t-newchamps").innerHTML=newHtml;
-
-  // 3) Title Defence rate per competition
-  // For each comp: compare winner in season i vs i-1, count defended / attempts
-  const chron=[...HISTORY.rows].sort((a,b)=>safeSeasonSortKey(a.season)-safeSeasonSortKey(b.season));
-  const defence=[];
-  COMPETITIONS.forEach(c=>{
-    let attempts=0, defended=0;
-    for(let i=1;i<chron.length;i++){
-      const prev=normName(chron[i-1].cells[c.index]);
-      const curr=normName(chron[i].cells[c.index]);
-      // only count an "attempt" when both seasons have a recorded winner
-      if(prev && curr){
-        attempts++;
-        if(prev===curr)defended++;
-      }
-    }
-    // also compute last winner
-    const last=chron.length?normName(chron[chron.length-1].cells[c.index]):"";
-    const rate=attempts?((defended/attempts)*100).toFixed(0):"0";
-    defence.push({comp:c.label,attempts,defended,rate,last});
   });
-  // sort by rate then attempts
-  defence.sort((a,b)=>Number(b.rate)-Number(a.rate) || b.attempts-a.attempts || a.comp.localeCompare(b.comp));
 
-  let defHtml=`
+  if(!rows.length){
+    html+=`<tr><td colspan="3" class="note" style="text-align:center;padding:12px">No seasons found</td></tr>`;
+  }
+
+  html+=`</tbody>`;
+  byId(elId).innerHTML=html;
+}
+
+function renderEuropeCupsTable(elId, cups){
+  // show each cup with all-time top winner + titles
+  let html=`
     <thead>
       <tr>
-        <th class="left">Competition</th>
-        <th style="width:12ch">Defences</th>
-        <th style="width:12ch">Attempts</th>
-        <th style="width:12ch">Rate</th>
-        <th class="left mobile-hide">Latest winner</th>
+        <th class="left">Cup</th>
+        <th class="left">Top winner</th>
+        <th style="width:10ch">Titles</th>
       </tr>
     </thead>
     <tbody>
   `;
-  if(defence.some(d=>d.attempts>0)){
-    defence.forEach(d=>{
-      const latest = d.last ? `<span class="player-link" data-player="${esc(d.last)}">${esc(d.last)}</span>` : `<span class="note">-</span>`;
-      defHtml+=`
+  let any=false;
+  cups.forEach(c=>{
+    const data=countForCompetitions([c]);
+    if(data.sorted.length){
+      any=true;
+      const top=data.sorted[0];
+      html+=`
         <tr>
           <td class="left">
             <span class="comp-wrap">
-              <img class="comp-ico" src="${esc(compIconUrl(d.comp))}" alt="">
-              <span>${esc(d.comp)}</span>
+              <img class="comp-ico" src="${esc(compIconUrl(c.label))}" alt="">
+              <span>${esc(c.label)}</span>
             </span>
           </td>
-          <td class="center"><span class="pill accent">${d.defended}</span></td>
-          <td class="center"><span class="pill">${d.attempts}</span></td>
-          <td class="center"><span class="pill">${d.rate}%</span></td>
-          <td class="left mobile-hide note">${latest}</td>
+          <td class="left"><span class="player-link" data-player="${esc(top.name)}">${esc(top.name)}</span></td>
+          <td class="center"><span class="pill accent">${top.count}</span></td>
         </tr>
       `;
-    });
-  }else{
-    defHtml+=`
-      <tr>
-        <td colspan="5" class="note" style="text-align:center;padding:12px">
-          Not enough data yet - needs at least 2 seasons with winners
-        </td>
-      </tr>
-    `;
-  }
-  defHtml+=`</tbody>`;
-  byId("t-defence").innerHTML=defHtml;
-
-  // 4) Repeat Winners (same competition 2+)
-  const repeat=[];
-  COMPETITIONS.forEach(c=>{
-    const winners=new Map();
-    HISTORY.rows.forEach(r=>{
-      const w=normName(r.cells[c.index]);
-      if(w)winners.set(w,(winners.get(w)||0)+1);
-    });
-    const tops=[...winners.entries()]
-      .map(([player,wins])=>({player,wins}))
-      .filter(x=>x.wins>=2)
-      .sort((a,b)=>b.wins-a.wins || a.player.localeCompare(b.player));
-    if(tops.length){
-      // show best repeat winner for that comp
-      const best=tops[0];
-      repeat.push({comp:c.label,player:best.player,wins:best.wins,unique:winners.size});
-    }
-  });
-  repeat.sort((a,b)=>b.wins-a.wins || a.comp.localeCompare(b.comp));
-
-  let repHtml=`
-    <thead>
-      <tr>
-        <th class="left">Competition</th>
-        <th class="left">Top repeat winner</th>
-        <th style="width:10ch">Wins</th>
-        <th style="width:12ch mobile-hide">Unique winners</th>
-      </tr>
-    </thead>
-    <tbody>
-  `;
-  if(repeat.length){
-    repeat.slice(0,12).forEach(r=>{
-      repHtml+=`
+    }else{
+      html+=`
         <tr>
           <td class="left">
             <span class="comp-wrap">
-              <img class="comp-ico" src="${esc(compIconUrl(r.comp))}" alt="">
-              <span>${esc(r.comp)}</span>
+              <img class="comp-ico" src="${esc(compIconUrl(c.label))}" alt="">
+              <span>${esc(c.label)}</span>
             </span>
           </td>
-          <td class="left"><span class="player-link" data-player="${esc(r.player)}">${esc(r.player)}</span></td>
-          <td class="center"><span class="pill accent">${r.wins}</span></td>
-          <td class="center mobile-hide"><span class="pill">${r.unique}</span></td>
+          <td colspan="2" class="note" style="text-align:left;padding:10px">No winners recorded</td>
         </tr>
       `;
-    });
-  }else{
-    repHtml+=`
-      <tr>
-        <td colspan="4" class="note" style="text-align:center;padding:12px">
-          No repeat winners yet - once players start defending titles, this will populate
-        </td>
-      </tr>
-    `;
-  }
-  repHtml+=`</tbody>`;
-  byId("t-repeat").innerHTML=repHtml;
-
-  // 5) Competitive Balance (Top N share)
-  const sorted=[...COUNTS.countsByPlayer.entries()]
-    .map(([name,count])=>({name,count}))
-    .sort((a,b)=>b.count-a.count || a.name.localeCompare(b.name));
-
-  const sumTop=n=>sorted.slice(0,n).reduce((a,x)=>a+x.count,0);
-  const pct=n=>totalTrophies?((sumTop(n)/totalTrophies)*100).toFixed(1):"0.0";
-
-  const buckets=[
-    {label:"Top 1 winner share", n:1, who:sorted[0]?.name||""},
-    {label:"Top 3 winners share", n:3, who:sorted.slice(0,3).map(x=>x.name).join(", ")},
-    {label:"Top 5 winners share", n:5, who:sorted.slice(0,5).map(x=>x.name).join(", ")},
-    {label:"Top 10 winners share", n:10, who:sorted.slice(0,10).map(x=>x.name).join(", ")}
-  ];
-
-  let balHtml=`
-    <thead>
-      <tr>
-        <th class="left">Metric</th>
-        <th style="width:12ch">Share</th>
-        <th style="width:12ch">Trophies</th>
-        <th class="left mobile-hide">Who</th>
-      </tr>
-    </thead>
-    <tbody>
-  `;
-  buckets.forEach(b=>{
-    const trophies=sumTop(b.n);
-    const who = b.who
-      ? b.who.split(", ").slice(0,4).map(n=>`<span class="player-link" data-player="${esc(n)}">${esc(n)}</span>`).join(", ")
-      : `<span class="note">-</span>`;
-    balHtml+=`
-      <tr>
-        <td class="left">${esc(b.label)}</td>
-        <td class="center"><span class="pill accent">${pct(b.n)}%</span></td>
-        <td class="center"><span class="pill">${trophies}</span></td>
-        <td class="left mobile-hide note">${who}</td>
-      </tr>
-    `;
+    }
   });
-  balHtml+=`</tbody>`;
-  byId("t-balance").innerHTML=balHtml;
+  if(!cups.length){
+    html+=`<tr><td colspan="3" class="note" style="text-align:center;padding:12px">No cups detected</td></tr>`;
+  }
+  html+=`</tbody>`;
+  byId(elId).innerHTML=html;
+}
 
-  // Add click handlers for stats tab
-  document.querySelectorAll("#stats .player-link").forEach(el=>{
+function wirePlayerLinks(scopeSelector){
+  document.querySelectorAll(scopeSelector+" .player-link").forEach(el=>{
     const name=el.dataset.player;
+    if(!name)return;
     el.addEventListener("click",()=>showFlyout(name,el));
     if(!isMobile){
       el.addEventListener("mouseenter",()=>showFlyout(name,el));
       el.addEventListener("mouseleave",()=>setTimeout(hideFlyout,100));
     }
   });
+}
+
+function renderRegions(){
+  const totalSeasons=HISTORY.rows.length;
+  const totalTrophies=[...COUNTS.countsByPlayer.values()].reduce((a,b)=>a+b,0);
+
+  byId("rg-total-seasons").textContent=`${totalSeasons} seasons`;
+  byId("rg-total-trophies").textContent=`${totalTrophies} trophies`;
+
+  const europeComps=COMPETITIONS.filter(c=>["europe_leagues","europe_cups","europe_other"].includes(compGroup(c.label)));
+  const europeCups=COMPETITIONS.filter(c=>compGroup(c.label)==="europe_cups");
+  const americasComps=COMPETITIONS.filter(c=>compGroup(c.label)==="americas");
+  const asiaComps=COMPETITIONS.filter(c=>compGroup(c.label)==="asia");
+  const horizonComps=COMPETITIONS.filter(c=>compGroup(c.label)==="horizon");
+
+  // Europe totals
+  const euData=countForCompetitions(europeComps);
+  byId("eu-trophies-pill").textContent=`${euData.trophies} trophies`;
+  byId("eu-comps").textContent=europeComps.length;
+  byId("eu-winners").textContent=euData.uniqueWinners;
+  renderTopTable("t-eu-top", euData.sorted, 10);
+  renderEuropeCupsTable("t-eu-cups", europeCups);
+
+  // Americas (Gold)
+  const amData=countForCompetitions(americasComps);
+  byId("am-trophies-pill").textContent=`${amData.trophies} trophies`;
+  byId("am-comps").textContent=americasComps.length;
+  byId("am-winners").textContent=amData.uniqueWinners;
+  renderTopTable("t-am-top", amData.sorted, 10);
+
+  // If multiple "americas" comps somehow exist, pick first for history
+  if(americasComps[0]) renderHistorySimple("t-am-history", americasComps[0].label, americasComps[0]);
+  else byId("t-am-history").innerHTML=`<tbody><tr><td class="note" style="padding:12px">Gold League column not found</td></tr></tbody>`;
+
+  // Asia (Emerald)
+  const asData=countForCompetitions(asiaComps);
+  byId("as-trophies-pill").textContent=`${asData.trophies} trophies`;
+  byId("as-comps").textContent=asiaComps.length;
+  byId("as-winners").textContent=asData.uniqueWinners;
+  renderTopTable("t-as-top", asData.sorted, 10);
+
+  if(asiaComps[0]) renderHistorySimple("t-as-history", asiaComps[0].label, asiaComps[0]);
+  else byId("t-as-history").innerHTML=`<tbody><tr><td class="note" style="padding:12px">Emerald League column not found</td></tr></tbody>`;
+
+  // Horizon
+  const hzData=countForCompetitions(horizonComps);
+  byId("hz-trophies-pill").textContent=`${hzData.trophies} trophies`;
+  byId("hz-seasons").textContent=totalSeasons;
+  byId("hz-winners").textContent=hzData.uniqueWinners;
+  renderTopTable("t-hz-top", hzData.sorted, 10);
+
+  if(horizonComps[0]) renderHistorySimple("t-hz-history", horizonComps[0].label, horizonComps[0]);
+  else byId("t-hz-history").innerHTML=`<tbody><tr><td class="note" style="padding:12px">Horizon Cup column not found</td></tr></tbody>`;
+
+  wirePlayerLinks("#regions");
 }
 
 (async function boot(){
@@ -897,7 +949,7 @@ function renderStats(){
 
     renderLeaderboard();
     renderSeasonCards();
-    renderStats();
+    renderRegions();
 
     const now=new Date();
     const months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -913,6 +965,7 @@ function renderStats(){
   }catch(e){
     byId("pill-updated").textContent="Error";
     byId("seasonCards").innerHTML=`<div class="note">Could not load data</div>`;
+    byId("regions").innerHTML=`<div class="note" style="padding:12px">Could not load region data</div>`;
   }
 })();
 </script>
