@@ -194,7 +194,7 @@ tr.top1 td{background:linear-gradient(90deg,rgba(249,215,28,.26),rgba(249,215,28
 
     <section class="panel" id="stats" hidden>
       <div style="font-weight:900;font-size:15px;margin-bottom:8px">League Statistics</div>
-      
+
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:12px">
         <div style="border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:10px;background:rgba(0,0,0,.14)">
           <div style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">Total Seasons</div>
@@ -205,7 +205,7 @@ tr.top1 td{background:linear-gradient(90deg,rgba(249,215,28,.26),rgba(249,215,28
           <div style="font-weight:900;font-size:24px;margin-top:4px;color:var(--accent)" id="stat-trophies">-</div>
         </div>
         <div style="border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:10px;background:rgba(0,0,0,.14)">
-          <div style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">Active Players</div>
+          <div style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">Unique Winners</div>
           <div style="font-weight:900;font-size:24px;margin-top:4px;color:var(--accent)" id="stat-players">-</div>
         </div>
         <div style="border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:10px;background:rgba(0,0,0,.14)">
@@ -216,21 +216,33 @@ tr.top1 td{background:linear-gradient(90deg,rgba(249,215,28,.26),rgba(249,215,28
 
       <div class="sep"></div>
 
-      <div style="font-weight:900;font-size:14px;margin-bottom:8px">🔥 Most Dominant Players</div>
-      <div class="note" style="margin-bottom:8px">Players with the highest win rates</div>
-      <div class="table-wrap"><table class="table" id="t-dominant"></table></div>
+      <div style="font-weight:900;font-size:14px;margin-bottom:8px">🔥 Biggest Seasons</div>
+      <div class="note" style="margin-bottom:8px">Most trophies won by a single player in one season (reshuffle-proof)</div>
+      <div class="table-wrap"><table class="table" id="t-biggest"></table></div>
 
       <div class="sep"></div>
 
-      <div style="font-weight:900;font-size:14px;margin-bottom:8px">🎯 Competition Specialists</div>
-      <div class="note" style="margin-bottom:8px">Players who dominate specific competitions</div>
-      <div class="table-wrap"><table class="table" id="t-competitions"></table></div>
+      <div style="font-weight:900;font-size:14px;margin-bottom:8px">🆕 New Champions</div>
+      <div class="note" style="margin-bottom:8px">First-time trophy winners per season</div>
+      <div class="table-wrap"><table class="table" id="t-newchamps"></table></div>
 
       <div class="sep"></div>
 
-      <div style="font-weight:900;font-size:14px;margin-bottom:8px">🏆 Trophy Diversity</div>
-      <div class="note" style="margin-bottom:8px">Players who've won the most different competition types</div>
-      <div class="table-wrap"><table class="table" id="t-diversity"></table></div>
+      <div style="font-weight:900;font-size:14px;margin-bottom:8px">🛡️ Title Defence</div>
+      <div class="note" style="margin-bottom:8px">How often each competition is defended from one season to the next</div>
+      <div class="table-wrap"><table class="table" id="t-defence"></table></div>
+
+      <div class="sep"></div>
+
+      <div style="font-weight:900;font-size:14px;margin-bottom:8px">👑 Repeat Winners</div>
+      <div class="note" style="margin-bottom:8px">Players who have won the same competition more than once</div>
+      <div class="table-wrap"><table class="table" id="t-repeat"></table></div>
+
+      <div class="sep"></div>
+
+      <div style="font-weight:900;font-size:14px;margin-bottom:8px">⚖️ Competitive Balance</div>
+      <div class="note" style="margin-bottom:8px">How concentrated trophies are among the top winners (all-time)</div>
+      <div class="table-wrap"><table class="table" id="t-balance"></table></div>
     </section>
   </div>
 </div>
@@ -263,7 +275,6 @@ function seasonLabel(raw){
   if(/^season\b/i.test(s))return s;
   return s;
 }
-
 function safeSeasonSortKey(seasonStr){
   const m=String(seasonStr??"").match(/(\d+)/);
   return m?Number(m[1]):-1;
@@ -360,7 +371,7 @@ function showFlyout(name,anchor){
   `;
 
   fly.style.display="block";
-  
+
   if(isMobile){
     fly.style.left="50%";
     fly.style.top="50%";
@@ -377,7 +388,6 @@ function showFlyout(name,anchor){
     fly.style.transform="none";
   }
 }
-
 function hideFlyout(){fly.style.display="none";}
 
 function renderLeaderboard(){
@@ -472,7 +482,7 @@ function renderSeasonCards(){
     const trophiesCount=winners.length;
     const isOngoing=key(r.season)===key(newestSeasonKey)&&trophiesCount===0;
     const top3=top3ForSeason(r);
-    
+
     const podiumHtml=top3.length?`
       <div class="podium">
         ${top3.map((p,i)=>{
@@ -570,6 +580,24 @@ function applySeasonFilter(){
   renderSeasonCards();
 }
 
+/* ---------- NEW STATS (reshuffle-proof) ---------- */
+
+function seasonTrophyCounts(){
+  // returns [{season, byPlayer:Map(name->count), totalTrophies}]
+  const rows=[...HISTORY.rows].sort((a,b)=>safeSeasonSortKey(a.season)-safeSeasonSortKey(b.season));
+  return rows.map(r=>{
+    const m=new Map();
+    let total=0;
+    COMPETITIONS.forEach(c=>{
+      const w=normName(r.cells[c.index]);
+      if(!w)return;
+      total++;
+      m.set(w,(m.get(w)||0)+1);
+    });
+    return{season:r.season, byPlayer:m, totalTrophies:total};
+  });
+}
+
 function renderStats(){
   const totalSeasons=HISTORY.rows.length;
   const totalTrophies=[...COUNTS.countsByPlayer.values()].reduce((a,b)=>a+b,0);
@@ -581,145 +609,267 @@ function renderStats(){
   byId("stat-players").textContent=totalPlayers;
   byId("stat-comps").textContent=totalComps;
 
-  // Most dominant players (highest trophy count)
-  const dominant=[...COUNTS.countsByPlayer.entries()]
-    .map(([name,count])=>({name,count}))
-    .sort((a,b)=>b.count-a.count)
-    .slice(0,10);
+  // 1) Biggest Seasons
+  const seasonStats=seasonTrophyCounts();
+  const biggest=[];
+  seasonStats.forEach(s=>{
+    [...s.byPlayer.entries()].forEach(([name,count])=>{
+      biggest.push({season:s.season,name,count,seasonTotal:s.totalTrophies});
+    });
+  });
+  biggest.sort((a,b)=>b.count-a.count || safeSeasonSortKey(b.season)-safeSeasonSortKey(a.season) || a.name.localeCompare(b.name));
+  const topBiggest=biggest.slice(0,10);
 
-  let domHtml=`
+  let bigHtml=`
     <thead>
       <tr>
         <th style="width:4ch">#</th>
         <th class="left">Player</th>
+        <th class="left">Season</th>
         <th style="width:10ch">Trophies</th>
-        <th style="width:14ch">Dominance</th>
+        <th style="width:12ch mobile-hide">Share</th>
       </tr>
     </thead>
     <tbody>
   `;
-
-  dominant.forEach((p,i)=>{
-    const pct=((p.count/totalTrophies)*100).toFixed(1);
-    const medal=i<3?`<span class="rank-medal r${i+1}">${i+1}</span>`:`<span class="rank-medal">${i+1}</span>`;
-    domHtml+=`
-      <tr>
-        <td class="right">${medal}</td>
-        <td class="left"><span class="player-link" data-player="${esc(p.name)}">${esc(p.name)}</span></td>
-        <td class="center"><span class="pill accent">${p.count}</span></td>
-        <td class="center"><span class="pill">${pct}%</span></td>
-      </tr>
-    `;
-  });
-  domHtml+=`</tbody>`;
-  byId("t-dominant").innerHTML=domHtml;
-
-  // Competition specialists (players who dominated specific competitions)
-  const compSpecialists=new Map();
-  COMPETITIONS.forEach(c=>{
-    const winners=new Map();
-    HISTORY.rows.forEach(r=>{
-      const winner=normName(r.cells[c.index]);
-      if(winner)winners.set(winner,(winners.get(winner)||0)+1);
-    });
-    if(winners.size>0){
-      const topWinner=[...winners.entries()]
-        .sort((a,b)=>b[1]-a[1])[0];
-      if(topWinner[1]>=2){
-        compSpecialists.set(c.label,{player:topWinner[0],wins:topWinner[1],total:winners.size});
-      }
-    }
-  });
-
-  const specialistRows=[...compSpecialists.entries()]
-    .map(([comp,data])=>({comp,player:data.player,wins:data.wins,total:data.total}))
-    .sort((a,b)=>b.wins-a.wins);
-
-  let compHtml=`
-    <thead>
-      <tr>
-        <th class="left">Competition</th>
-        <th class="left">Specialist</th>
-        <th style="width:10ch">Wins</th>
-        <th style="width:12ch mobile-hide">Win Rate</th>
-      </tr>
-    </thead>
-    <tbody>
-  `;
-
-  if(specialistRows.length>0){
-    specialistRows.forEach(c=>{
-      const rate=((c.wins/totalSeasons)*100).toFixed(0);
-      compHtml+=`
+  if(topBiggest.length){
+    topBiggest.forEach((r,i)=>{
+      const medal=i<3?`<span class="rank-medal r${i+1}">${i+1}</span>`:`<span class="rank-medal">${i+1}</span>`;
+      const share=r.seasonTotal?((r.count/r.seasonTotal)*100).toFixed(0):"0";
+      bigHtml+=`
         <tr>
-          <td class="left">
-            <span class="comp-wrap">
-              <img class="comp-ico" src="${esc(compIconUrl(c.comp))}" alt="">
-              <span>${esc(c.comp)}</span>
-            </span>
-          </td>
-          <td class="left"><span class="player-link" data-player="${esc(c.player)}">${esc(c.player)}</span></td>
-          <td class="center"><span class="pill accent">${c.wins}</span></td>
-          <td class="center mobile-hide"><span class="pill">${rate}%</span></td>
+          <td class="right">${medal}</td>
+          <td class="left"><span class="player-link" data-player="${esc(r.name)}">${esc(r.name)}</span></td>
+          <td class="left">${esc(seasonLabel(r.season))}</td>
+          <td class="center"><span class="pill accent">${r.count}</span></td>
+          <td class="center mobile-hide"><span class="pill">${share}%</span></td>
         </tr>
       `;
     });
   }else{
-    compHtml+=`
-      <tr>
-        <td colspan="4" class="note" style="text-align:center;padding:12px">
-          No specialists yet - competitions need multiple seasons
-        </td>
-      </tr>
+    bigHtml+=`
+      <tr><td colspan="5" class="note" style="text-align:center;padding:12px">No trophy data yet</td></tr>
     `;
   }
-  compHtml+=`</tbody>`;
-  byId("t-competitions").innerHTML=compHtml;
+  bigHtml+=`</tbody>`;
+  byId("t-biggest").innerHTML=bigHtml;
 
-  // Trophy diversity (players who won different competition types)
-  const diversity=[...COUNTS.breakdownByPlayer.entries()]
-    .map(([name,comps])=>({
-      name,
-      types:comps.size,
-      total:COUNTS.countsByPlayer.get(name)||0
-    }))
-    .sort((a,b)=>b.types-a.types||b.total-a.total)
-    .slice(0,10);
+  // 2) New Champions per season (first-time winners)
+  const seen=new Set();
+  const newRows=[];
+  seasonStats.forEach(s=>{
+    const winners=[...s.byPlayer.keys()].filter(Boolean);
+    const firstTimers=winners.filter(w=>!seen.has(w));
+    // after counting, add all winners to seen
+    winners.forEach(w=>seen.add(w));
+    newRows.push({
+      season:s.season,
+      newCount:firstTimers.length,
+      winnersCount:winners.length,
+      list:firstTimers.slice(0,4) // display a short list
+    });
+  });
+  newRows.sort((a,b)=>safeSeasonSortKey(b.season)-safeSeasonSortKey(a.season));
 
-  let divHtml=`
+  let newHtml=`
     <thead>
       <tr>
-        <th style="width:4ch">#</th>
-        <th class="left">Player</th>
-        <th style="width:10ch">Types</th>
-        <th style="width:12ch">Total Wins</th>
-        <th class="left mobile-hide">Achievement</th>
+        <th class="left">Season</th>
+        <th style="width:12ch">New</th>
+        <th style="width:12ch">Winners</th>
+        <th class="left mobile-hide">New champions</th>
       </tr>
     </thead>
     <tbody>
   `;
+  if(newRows.length){
+    newRows.forEach(r=>{
+      const list = r.newCount ? r.list.map(n=>`<span class="player-link" data-player="${esc(n)}">${esc(n)}</span>`).join(", ") : `<span class="note">-</span>`;
+      newHtml+=`
+        <tr>
+          <td class="left">${esc(seasonLabel(r.season))}</td>
+          <td class="center"><span class="pill accent">${r.newCount}</span></td>
+          <td class="center"><span class="pill">${r.winnersCount}</span></td>
+          <td class="left mobile-hide note">${list}</td>
+        </tr>
+      `;
+    });
+  }else{
+    newHtml+=`
+      <tr><td colspan="4" class="note" style="text-align:center;padding:12px">No seasons found</td></tr>
+    `;
+  }
+  newHtml+=`</tbody>`;
+  byId("t-newchamps").innerHTML=newHtml;
 
-  diversity.forEach((p,i)=>{
-    const medal=i<3?`<span class="rank-medal r${i+1}">${i+1}</span>`:`<span class="rank-medal">${i+1}</span>`;
-    const achievement=
-      p.types===totalComps?"🌟 Complete set":
-      p.types>=totalComps*0.75?"💎 Diverse champion":
-      p.types>=totalComps*0.5?"🎯 Multi-league winner":
-      "⭐ Rising talent";
-    divHtml+=`
+  // 3) Title Defence rate per competition
+  // For each comp: compare winner in season i vs i-1, count defended / attempts
+  const chron=[...HISTORY.rows].sort((a,b)=>safeSeasonSortKey(a.season)-safeSeasonSortKey(b.season));
+  const defence=[];
+  COMPETITIONS.forEach(c=>{
+    let attempts=0, defended=0;
+    for(let i=1;i<chron.length;i++){
+      const prev=normName(chron[i-1].cells[c.index]);
+      const curr=normName(chron[i].cells[c.index]);
+      // only count an "attempt" when both seasons have a recorded winner
+      if(prev && curr){
+        attempts++;
+        if(prev===curr)defended++;
+      }
+    }
+    // also compute last winner
+    const last=chron.length?normName(chron[chron.length-1].cells[c.index]):"";
+    const rate=attempts?((defended/attempts)*100).toFixed(0):"0";
+    defence.push({comp:c.label,attempts,defended,rate,last});
+  });
+  // sort by rate then attempts
+  defence.sort((a,b)=>Number(b.rate)-Number(a.rate) || b.attempts-a.attempts || a.comp.localeCompare(b.comp));
+
+  let defHtml=`
+    <thead>
       <tr>
-        <td class="right">${medal}</td>
-        <td class="left"><span class="player-link" data-player="${esc(p.name)}">${esc(p.name)}</span></td>
-        <td class="center"><span class="pill accent">${p.types}</span></td>
-        <td class="center"><span class="pill">${p.total}</span></td>
-        <td class="left mobile-hide note">${achievement}</td>
+        <th class="left">Competition</th>
+        <th style="width:12ch">Defences</th>
+        <th style="width:12ch">Attempts</th>
+        <th style="width:12ch">Rate</th>
+        <th class="left mobile-hide">Latest winner</th>
+      </tr>
+    </thead>
+    <tbody>
+  `;
+  if(defence.some(d=>d.attempts>0)){
+    defence.forEach(d=>{
+      const latest = d.last ? `<span class="player-link" data-player="${esc(d.last)}">${esc(d.last)}</span>` : `<span class="note">-</span>`;
+      defHtml+=`
+        <tr>
+          <td class="left">
+            <span class="comp-wrap">
+              <img class="comp-ico" src="${esc(compIconUrl(d.comp))}" alt="">
+              <span>${esc(d.comp)}</span>
+            </span>
+          </td>
+          <td class="center"><span class="pill accent">${d.defended}</span></td>
+          <td class="center"><span class="pill">${d.attempts}</span></td>
+          <td class="center"><span class="pill">${d.rate}%</span></td>
+          <td class="left mobile-hide note">${latest}</td>
+        </tr>
+      `;
+    });
+  }else{
+    defHtml+=`
+      <tr>
+        <td colspan="5" class="note" style="text-align:center;padding:12px">
+          Not enough data yet - needs at least 2 seasons with winners
+        </td>
+      </tr>
+    `;
+  }
+  defHtml+=`</tbody>`;
+  byId("t-defence").innerHTML=defHtml;
+
+  // 4) Repeat Winners (same competition 2+)
+  const repeat=[];
+  COMPETITIONS.forEach(c=>{
+    const winners=new Map();
+    HISTORY.rows.forEach(r=>{
+      const w=normName(r.cells[c.index]);
+      if(w)winners.set(w,(winners.get(w)||0)+1);
+    });
+    const tops=[...winners.entries()]
+      .map(([player,wins])=>({player,wins}))
+      .filter(x=>x.wins>=2)
+      .sort((a,b)=>b.wins-a.wins || a.player.localeCompare(b.player));
+    if(tops.length){
+      // show best repeat winner for that comp
+      const best=tops[0];
+      repeat.push({comp:c.label,player:best.player,wins:best.wins,unique:winners.size});
+    }
+  });
+  repeat.sort((a,b)=>b.wins-a.wins || a.comp.localeCompare(b.comp));
+
+  let repHtml=`
+    <thead>
+      <tr>
+        <th class="left">Competition</th>
+        <th class="left">Top repeat winner</th>
+        <th style="width:10ch">Wins</th>
+        <th style="width:12ch mobile-hide">Unique winners</th>
+      </tr>
+    </thead>
+    <tbody>
+  `;
+  if(repeat.length){
+    repeat.slice(0,12).forEach(r=>{
+      repHtml+=`
+        <tr>
+          <td class="left">
+            <span class="comp-wrap">
+              <img class="comp-ico" src="${esc(compIconUrl(r.comp))}" alt="">
+              <span>${esc(r.comp)}</span>
+            </span>
+          </td>
+          <td class="left"><span class="player-link" data-player="${esc(r.player)}">${esc(r.player)}</span></td>
+          <td class="center"><span class="pill accent">${r.wins}</span></td>
+          <td class="center mobile-hide"><span class="pill">${r.unique}</span></td>
+        </tr>
+      `;
+    });
+  }else{
+    repHtml+=`
+      <tr>
+        <td colspan="4" class="note" style="text-align:center;padding:12px">
+          No repeat winners yet - once players start defending titles, this will populate
+        </td>
+      </tr>
+    `;
+  }
+  repHtml+=`</tbody>`;
+  byId("t-repeat").innerHTML=repHtml;
+
+  // 5) Competitive Balance (Top N share)
+  const sorted=[...COUNTS.countsByPlayer.entries()]
+    .map(([name,count])=>({name,count}))
+    .sort((a,b)=>b.count-a.count || a.name.localeCompare(b.name));
+
+  const sumTop=n=>sorted.slice(0,n).reduce((a,x)=>a+x.count,0);
+  const pct=n=>totalTrophies?((sumTop(n)/totalTrophies)*100).toFixed(1):"0.0";
+
+  const buckets=[
+    {label:"Top 1 winner share", n:1, who:sorted[0]?.name||""},
+    {label:"Top 3 winners share", n:3, who:sorted.slice(0,3).map(x=>x.name).join(", ")},
+    {label:"Top 5 winners share", n:5, who:sorted.slice(0,5).map(x=>x.name).join(", ")},
+    {label:"Top 10 winners share", n:10, who:sorted.slice(0,10).map(x=>x.name).join(", ")}
+  ];
+
+  let balHtml=`
+    <thead>
+      <tr>
+        <th class="left">Metric</th>
+        <th style="width:12ch">Share</th>
+        <th style="width:12ch">Trophies</th>
+        <th class="left mobile-hide">Who</th>
+      </tr>
+    </thead>
+    <tbody>
+  `;
+  buckets.forEach(b=>{
+    const trophies=sumTop(b.n);
+    const who = b.who
+      ? b.who.split(", ").slice(0,4).map(n=>`<span class="player-link" data-player="${esc(n)}">${esc(n)}</span>`).join(", ")
+      : `<span class="note">-</span>`;
+    balHtml+=`
+      <tr>
+        <td class="left">${esc(b.label)}</td>
+        <td class="center"><span class="pill accent">${pct(b.n)}%</span></td>
+        <td class="center"><span class="pill">${trophies}</span></td>
+        <td class="left mobile-hide note">${who}</td>
       </tr>
     `;
   });
-  divHtml+=`</tbody>`;
-  byId("t-diversity").innerHTML=divHtml;
+  balHtml+=`</tbody>`;
+  byId("t-balance").innerHTML=balHtml;
 
-  // Add click handlers
+  // Add click handlers for stats tab
   document.querySelectorAll("#stats .player-link").forEach(el=>{
     const name=el.dataset.player;
     el.addEventListener("click",()=>showFlyout(name,el));
