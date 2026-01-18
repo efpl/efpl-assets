@@ -35,11 +35,17 @@ img{max-width:100%;height:auto;display:inline-block}
 .mh-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
 .mh-pill{border-radius:999px;border:1px solid rgba(249,215,28,.65);padding:4px 8px;font-size:11px;font-weight:900;background:linear-gradient(90deg,rgba(249,215,28,.18),rgba(249,215,28,.06));white-space:nowrap}
 
-/* Tabs */
+/* Main tabs */
 .tabs{display:flex;gap:6px;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.08);overflow-x:auto;-webkit-overflow-scrolling:touch}
 .tabs::-webkit-scrollbar{display:none}
-.tab{border:1px solid rgba(249,215,28,.25);background:rgba(5,34,90,.35);color:var(--ink);padding:6px 12px;border-radius:999px;font-weight:900;font-size:12px;cursor:pointer;white-space:nowrap;flex-shrink:0;border:0;outline:0}
+.tab{background:rgba(5,34,90,.35);color:var(--ink);padding:6px 12px;border-radius:999px;font-weight:900;font-size:12px;cursor:pointer;white-space:nowrap;flex-shrink:0;border:0;outline:0}
 .tab.active{background:rgba(249,215,28,.18);border:1px solid rgba(249,215,28,.75)}
+
+/* Region sub-tabs */
+.subtabs{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 10px}
+.subtab{border:1px solid rgba(249,215,28,.25);background:rgba(5,34,90,.30);color:var(--ink);padding:6px 10px;border-radius:999px;font-weight:900;font-size:12px;cursor:pointer;white-space:nowrap}
+.subtab.active{background:rgba(249,215,28,.18);border:1px solid rgba(249,215,28,.75)}
+.subpanel[hidden]{display:none}
 
 .panel{padding:10px}
 .panel[hidden]{display:none}
@@ -94,22 +100,32 @@ tr.top1 td{background:linear-gradient(90deg,rgba(249,215,28,.26),rgba(249,215,28
 .comp-wrap{display:flex;align-items:center;gap:6px}
 .comp-ico{width:18px;height:18px;border-radius:4px;object-fit:contain;filter:drop-shadow(0 0 4px rgba(0,0,0,.6));flex-shrink:0}
 
-/* Region cards */
-.region-grid{display:grid;gap:8px}
-.region-card{border:1px solid rgba(255,255,255,.12);border-radius:12px;overflow:hidden;background:rgba(0,0,0,.10)}
-.region-head{padding:10px 12px;display:flex;justify-content:space-between;align-items:center;gap:10px;background:linear-gradient(90deg,rgba(5,34,90,.60),transparent)}
-.region-title{display:flex;align-items:center;gap:8px;min-width:0}
+/* Region header block */
+.region-hero{border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(0,0,0,.10);overflow:hidden}
+.region-hero-head{padding:10px 12px;display:flex;justify-content:space-between;align-items:center;gap:10px;background:linear-gradient(90deg,rgba(5,34,90,.60),transparent)}
+.region-hero-title{display:flex;align-items:center;gap:8px;min-width:0}
 .region-emoji{font-size:18px}
 .region-name{font-weight:900;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .region-sub{color:var(--muted);font-size:11px;margin-top:2px}
-.region-body{padding:10px 12px}
+.region-hero-body{padding:10px 12px}
 .kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:10px}
 .kpi{border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:10px;background:rgba(0,0,0,.14)}
 .kpi .t{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
 .kpi .v{font-weight:900;font-size:22px;margin-top:4px;color:var(--accent)}
 
 /* Flyout */
-.flyout{position:fixed;z-index:9999;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:10px;box-shadow:0 20px 38px rgba(0,0,0,.7);min-width:200px;max-width:90vw;display:none}
+.flyout{
+  position:fixed;
+  z-index:9999;
+  background:var(--card2);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:10px;
+  box-shadow:0 20px 38px rgba(0,0,0,.7);
+  min-width:200px;
+  max-width:90vw;
+  display:none
+}
 .flyout .name{font-weight:900;font-size:14px}
 .flyout .sub{color:var(--muted);font-size:11px;margin-top:2px}
 .flyout .mini{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
@@ -142,7 +158,6 @@ tr.top1 td{background:linear-gradient(90deg,rgba(249,215,28,.26),rgba(249,215,28
   .mobile-hide{display:table-cell}
   .season-head{padding:10px 12px}
   .season-body{padding:10px 12px}
-  .region-grid{grid-template-columns:repeat(2,1fr)}
 }
 
 /* Reduce motion */
@@ -174,6 +189,7 @@ tr.top1 td{background:linear-gradient(90deg,rgba(249,215,28,.26),rgba(249,215,28
       <button class="tab" data-tab="regions" onclick="showTab('regions')">🌍 Regions</button>
     </nav>
 
+    <!-- Leaderboard -->
     <section class="panel" id="leaderboard">
       <div class="mobile-stack">
         <div>
@@ -189,6 +205,7 @@ tr.top1 td{background:linear-gradient(90deg,rgba(249,215,28,.26),rgba(249,215,28
       <div class="table-wrap"><table class="table" id="t-leader"></table></div>
     </section>
 
+    <!-- History -->
     <section class="panel" id="history" hidden>
       <div class="mobile-stack">
         <div>
@@ -207,48 +224,62 @@ tr.top1 td{background:linear-gradient(90deg,rgba(249,215,28,.26),rgba(249,215,28
       <div id="seasonCards" class="season-list"><div class="note">Loading…</div></div>
     </section>
 
+    <!-- Regions (new layout) -->
     <section class="panel" id="regions" hidden>
       <div class="mobile-stack">
         <div>
           <div style="font-weight:900;font-size:15px">Regions</div>
-          <div class="note">Hall of Fame, grouped by region and competition type</div>
+          <div class="note">Winners grouped by region and competition</div>
         </div>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
           <span class="pill accent" id="rg-total-seasons">-</span>
           <span class="pill" id="rg-total-trophies">-</span>
         </div>
       </div>
-      <div class="sep"></div>
 
-      <div class="region-grid">
-        <div class="region-card" id="card-europe">
-          <div class="region-head">
-            <div class="region-title">
+      <div class="subtabs" aria-label="Region filters">
+        <button class="subtab active" data-subtab="eu" onclick="showRegion('eu')">🇪🇺 Europe</button>
+        <button class="subtab" data-subtab="am" onclick="showRegion('am')">🌎 Americas</button>
+        <button class="subtab" data-subtab="as" onclick="showRegion('as')">🌏 Asia</button>
+        <button class="subtab" data-subtab="hz" onclick="showRegion('hz')">🌓 Horizon</button>
+      </div>
+
+      <!-- Europe -->
+      <div class="subpanel" id="sub-eu">
+        <div class="region-hero">
+          <div class="region-hero-head">
+            <div class="region-hero-title">
               <span class="region-emoji">🇪🇺</span>
               <div style="min-width:0">
                 <div class="region-name">Europe</div>
-                <div class="region-sub">Diamond, Ruby, Sapphire, Crystal + European Cups</div>
+                <div class="region-sub">Diamond, Ruby, Sapphire, Crystal and European Cups</div>
               </div>
             </div>
             <span class="pill accent" id="eu-trophies-pill">-</span>
           </div>
-          <div class="region-body">
+          <div class="region-hero-body">
             <div class="kpi-row">
               <div class="kpi"><div class="t">Competitions</div><div class="v" id="eu-comps">-</div></div>
               <div class="kpi"><div class="t">Unique Winners</div><div class="v" id="eu-winners">-</div></div>
             </div>
+
             <div style="font-weight:900;font-size:13px;margin:0 0 6px">Top European Winners</div>
             <div class="table-wrap"><table class="table" id="t-eu-top"></table></div>
+
             <div class="sep"></div>
+
             <div style="font-weight:900;font-size:13px;margin:0 0 6px">European Cups</div>
             <div class="note" style="margin:-2px 0 8px">Champions Cup, Continental Cup, Conference Cup</div>
             <div class="table-wrap"><table class="table" id="t-eu-cups"></table></div>
           </div>
         </div>
+      </div>
 
-        <div class="region-card" id="card-americas">
-          <div class="region-head">
-            <div class="region-title">
+      <!-- Americas -->
+      <div class="subpanel" id="sub-am" hidden>
+        <div class="region-hero">
+          <div class="region-hero-head">
+            <div class="region-hero-title">
               <span class="region-emoji">🌎</span>
               <div style="min-width:0">
                 <div class="region-name">Americas</div>
@@ -257,22 +288,28 @@ tr.top1 td{background:linear-gradient(90deg,rgba(249,215,28,.26),rgba(249,215,28
             </div>
             <span class="pill accent" id="am-trophies-pill">-</span>
           </div>
-          <div class="region-body">
+          <div class="region-hero-body">
             <div class="kpi-row">
               <div class="kpi"><div class="t">Competitions</div><div class="v" id="am-comps">-</div></div>
               <div class="kpi"><div class="t">Unique Winners</div><div class="v" id="am-winners">-</div></div>
             </div>
+
             <div style="font-weight:900;font-size:13px;margin:0 0 6px">Gold Winners (All-time)</div>
             <div class="table-wrap"><table class="table" id="t-am-top"></table></div>
+
             <div class="sep"></div>
+
             <div style="font-weight:900;font-size:13px;margin:0 0 6px">Gold History</div>
             <div class="table-wrap"><table class="table" id="t-am-history"></table></div>
           </div>
         </div>
+      </div>
 
-        <div class="region-card" id="card-asia">
-          <div class="region-head">
-            <div class="region-title">
+      <!-- Asia -->
+      <div class="subpanel" id="sub-as" hidden>
+        <div class="region-hero">
+          <div class="region-hero-head">
+            <div class="region-hero-title">
               <span class="region-emoji">🌏</span>
               <div style="min-width:0">
                 <div class="region-name">Asia</div>
@@ -281,22 +318,28 @@ tr.top1 td{background:linear-gradient(90deg,rgba(249,215,28,.26),rgba(249,215,28
             </div>
             <span class="pill accent" id="as-trophies-pill">-</span>
           </div>
-          <div class="region-body">
+          <div class="region-hero-body">
             <div class="kpi-row">
               <div class="kpi"><div class="t">Competitions</div><div class="v" id="as-comps">-</div></div>
               <div class="kpi"><div class="t">Unique Winners</div><div class="v" id="as-winners">-</div></div>
             </div>
+
             <div style="font-weight:900;font-size:13px;margin:0 0 6px">Emerald Winners (All-time)</div>
             <div class="table-wrap"><table class="table" id="t-as-top"></table></div>
+
             <div class="sep"></div>
+
             <div style="font-weight:900;font-size:13px;margin:0 0 6px">Emerald History</div>
             <div class="table-wrap"><table class="table" id="t-as-history"></table></div>
           </div>
         </div>
+      </div>
 
-        <div class="region-card" id="card-horizon">
-          <div class="region-head">
-            <div class="region-title">
+      <!-- Horizon -->
+      <div class="subpanel" id="sub-hz" hidden>
+        <div class="region-hero">
+          <div class="region-hero-head">
+            <div class="region-hero-title">
               <span class="region-emoji">🌓</span>
               <div style="min-width:0">
                 <div class="region-name">Horizon Cup</div>
@@ -305,14 +348,17 @@ tr.top1 td{background:linear-gradient(90deg,rgba(249,215,28,.26),rgba(249,215,28
             </div>
             <span class="pill accent" id="hz-trophies-pill">-</span>
           </div>
-          <div class="region-body">
+          <div class="region-hero-body">
             <div class="kpi-row">
-              <div class="kpi"><div class="t">Seasons Recorded</div><div class="v" id="hz-seasons">-</div></div>
+              <div class="kpi"><div class="t">Competitions</div><div class="v" id="hz-comps">-</div></div>
               <div class="kpi"><div class="t">Unique Winners</div><div class="v" id="hz-winners">-</div></div>
             </div>
+
             <div style="font-weight:900;font-size:13px;margin:0 0 6px">Horizon Winners (All-time)</div>
             <div class="table-wrap"><table class="table" id="t-hz-top"></table></div>
+
             <div class="sep"></div>
+
             <div style="font-weight:900;font-size:13px;margin:0 0 6px">Horizon History</div>
             <div class="table-wrap"><table class="table" id="t-hz-history"></table></div>
           </div>
@@ -374,6 +420,13 @@ function showTab(id){
   document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===id));
 }
 
+/* Region sub-tab switch */
+function showRegion(code){
+  const ids=["eu","am","as","hz"];
+  ids.forEach(x=>byId("sub-"+x).hidden=(x!==code));
+  document.querySelectorAll(".subtab").forEach(b=>b.classList.toggle("active",b.dataset.subtab===code));
+}
+
 function parseHistory(gvData){
   const headers=(gvData.table.cols||[]).map(c=>(c.label||"").trim());
   const rows=(gvData.table.rows||[]).map(r=>(r.c||[]).map(val));
@@ -419,6 +472,7 @@ function topBreakdownText(name,limit=3){
   return rows.length?rows.map(x=>`${x.comp}: ${x.count}`).join(" | "):"-";
 }
 
+/* Flyout */
 const fly=byId("flyout");
 const isMobile='ontouchstart'in window;
 
@@ -454,20 +508,32 @@ function showFlyout(name,anchor){
     fly.style.left="50%";
     fly.style.top="50%";
     fly.style.transform="translate(-50%,-50%)";
-  }else{
-    const rect=anchor.getBoundingClientRect();
-    const scrollY=window.scrollY||0;
-    const vw=document.documentElement.clientWidth;
-    const w=fly.offsetWidth||220;
-    let left=rect.right+10;
-    if(left+w>vw-10)left=Math.max(10,rect.left-w-10);
-    fly.style.left=left+"px";
-    fly.style.top=(rect.top+scrollY-8)+"px";
-    fly.style.transform="none";
+    return;
   }
+
+  /* FIX: correct positioning when scrolled (fixed + rect coords, no scrollY) */
+  const rect = anchor.getBoundingClientRect();
+  const vw = document.documentElement.clientWidth;
+  const vh = document.documentElement.clientHeight;
+
+  const w = fly.offsetWidth || 220;
+  const h = fly.offsetHeight || 180;
+
+  let left = rect.right + 10;
+  if (left + w > vw - 10) left = Math.max(10, rect.left - w - 10);
+
+  let top = rect.top - 8;
+  top = Math.min(top, vh - h - 10);
+  top = Math.max(10, top);
+
+  fly.style.left = left + "px";
+  fly.style.top = top + "px";
+  fly.style.transform = "none";
 }
+
 function hideFlyout(){fly.style.display="none";}
 
+/* Leaderboard */
 function renderLeaderboard(){
   const entries=[...COUNTS.countsByPlayer.entries()]
     .map(([name,count])=>({name,count}))
@@ -514,11 +580,12 @@ function renderLeaderboard(){
     el.addEventListener("click",()=>showFlyout(name,el));
     if(!isMobile){
       el.addEventListener("mouseenter",()=>showFlyout(name,el));
-      el.addEventListener("mouseleave",()=>setTimeout(hideFlyout,100));
+      el.addEventListener("mouseleave",()=>setTimeout(hideFlyout,80));
     }
   });
 }
 
+/* History tab */
 function seasonWinnersList(row){
   const out=[];
   COMPETITIONS.forEach(c=>{
@@ -639,7 +706,7 @@ function renderSeasonCards(){
     el.addEventListener("click",()=>showFlyout(name,el));
     if(!isMobile){
       el.addEventListener("mouseenter",()=>showFlyout(name,el));
-      el.addEventListener("mouseleave",()=>setTimeout(hideFlyout,100));
+      el.addEventListener("mouseleave",()=>setTimeout(hideFlyout,80));
     }
   });
 }
@@ -658,19 +725,12 @@ function applySeasonFilter(){
   renderSeasonCards();
 }
 
-/* ---------- Regions logic ---------- */
-
-function headerMatch(h,words){
-  const s=String(h||"").toLowerCase();
-  return words.some(w=>s.includes(w));
-}
-
+/* Regions logic */
 function compGroup(label){
   const s=String(label||"").toLowerCase();
   if(s.includes("horizon")) return "horizon";
   if(s.includes("gold")) return "americas";
   if(s.includes("emerald")) return "asia";
-  // Europe defaults
   if(s.includes("champions") || s.includes("continental") || s.includes("conference")) return "europe_cups";
   if(s.includes("diamond") || s.includes("ruby") || s.includes("sapphire") || s.includes("crystal")) return "europe_leagues";
   return "europe_other";
@@ -699,15 +759,9 @@ function countForCompetitions(compList){
 }
 
 function buildHistoryTableForComp(comp){
-  // rows: season, winner
-  const rows=[...HISTORY.rows]
+  return [...HISTORY.rows]
     .sort((a,b)=>safeSeasonSortKey(b.season)-safeSeasonSortKey(a.season))
-    .map(r=>{
-      const w=normName(r.cells[comp.index]);
-      return {season:r.season, winner:w};
-    });
-
-  return rows;
+    .map(r=>({season:r.season, winner:normName(r.cells[comp.index])}));
 }
 
 function renderTopTable(elId, list, max=10){
@@ -744,78 +798,7 @@ function renderTopTable(elId, list, max=10){
   byId(elId).innerHTML=html;
 }
 
-function renderSingleCompAllTime(elId, compLabel, comp){
-  const data=countForCompetitions([comp]);
-  let html=`
-    <thead>
-      <tr>
-        <th class="left">Competition</th>
-        <th class="left">Top winner</th>
-        <th style="width:10ch">Titles</th>
-      </tr>
-    </thead>
-    <tbody>
-  `;
-  if(data.sorted.length){
-    const top=data.sorted[0];
-    html+=`
-      <tr>
-        <td class="left">
-          <span class="comp-wrap">
-            <img class="comp-ico" src="${esc(compIconUrl(compLabel))}" alt="">
-            <span>${esc(compLabel)}</span>
-          </span>
-        </td>
-        <td class="left"><span class="player-link" data-player="${esc(top.name)}">${esc(top.name)}</span></td>
-        <td class="center"><span class="pill accent">${top.count}</span></td>
-      </tr>
-    `;
-  }else{
-    html+=`<tr><td colspan="3" class="note" style="text-align:center;padding:12px">No winners recorded</td></tr>`;
-  }
-  html+=`</tbody>`;
-  byId(elId).innerHTML=html;
-}
-
-function renderHistorySimple(elId, compLabel, comp){
-  const rows=buildHistoryTableForComp(comp);
-
-  let html=`
-    <thead>
-      <tr>
-        <th class="left">Season</th>
-        <th class="left">Winner</th>
-        <th style="width:10ch">Status</th>
-      </tr>
-    </thead>
-    <tbody>
-  `;
-
-  const newestSeason=rows.length ? rows[0].season : "";
-  rows.slice(0,12).forEach(r=>{
-    const winnerCell = r.winner
-      ? `<span class="player-link" data-player="${esc(r.winner)}">${esc(r.winner)}</span>`
-      : `<span class="note">${key(r.season)===key(newestSeason)?"Season ongoing":"-"}</span>`;
-    const status = r.winner ? `<span class="pill">Winner</span>` : `<span class="pill">Pending</span>`;
-    html+=`
-      <tr>
-        <td class="left">${esc(seasonLabel(r.season))}</td>
-        <td class="left">${winnerCell}</td>
-        <td class="center">${status}</td>
-      </tr>
-    `;
-  });
-
-  if(!rows.length){
-    html+=`<tr><td colspan="3" class="note" style="text-align:center;padding:12px">No seasons found</td></tr>`;
-  }
-
-  html+=`</tbody>`;
-  byId(elId).innerHTML=html;
-}
-
 function renderEuropeCupsTable(elId, cups){
-  // show each cup with all-time top winner + titles
   let html=`
     <thead>
       <tr>
@@ -826,11 +809,16 @@ function renderEuropeCupsTable(elId, cups){
     </thead>
     <tbody>
   `;
-  let any=false;
+  if(!cups.length){
+    html+=`<tr><td colspan="3" class="note" style="text-align:center;padding:12px">No cups detected</td></tr>`;
+    html+=`</tbody>`;
+    byId(elId).innerHTML=html;
+    return;
+  }
+
   cups.forEach(c=>{
     const data=countForCompetitions([c]);
     if(data.sorted.length){
-      any=true;
       const top=data.sorted[0];
       html+=`
         <tr>
@@ -858,9 +846,44 @@ function renderEuropeCupsTable(elId, cups){
       `;
     }
   });
-  if(!cups.length){
-    html+=`<tr><td colspan="3" class="note" style="text-align:center;padding:12px">No cups detected</td></tr>`;
+
+  html+=`</tbody>`;
+  byId(elId).innerHTML=html;
+}
+
+function renderHistorySimple(elId, comp){
+  const rows=buildHistoryTableForComp(comp);
+  const newestSeason=rows.length ? rows[0].season : "";
+
+  let html=`
+    <thead>
+      <tr>
+        <th class="left">Season</th>
+        <th class="left">Winner</th>
+        <th style="width:10ch">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+  `;
+
+  rows.slice(0,12).forEach(r=>{
+    const winnerCell = r.winner
+      ? `<span class="player-link" data-player="${esc(r.winner)}">${esc(r.winner)}</span>`
+      : `<span class="note">${key(r.season)===key(newestSeason)?"Season ongoing":"-"}</span>`;
+    const status = r.winner ? `<span class="pill">Winner</span>` : `<span class="pill">Pending</span>`;
+    html+=`
+      <tr>
+        <td class="left">${esc(seasonLabel(r.season))}</td>
+        <td class="left">${winnerCell}</td>
+        <td class="center">${status}</td>
+      </tr>
+    `;
+  });
+
+  if(!rows.length){
+    html+=`<tr><td colspan="3" class="note" style="text-align:center;padding:12px">No seasons found</td></tr>`;
   }
+
   html+=`</tbody>`;
   byId(elId).innerHTML=html;
 }
@@ -872,7 +895,7 @@ function wirePlayerLinks(scopeSelector){
     el.addEventListener("click",()=>showFlyout(name,el));
     if(!isMobile){
       el.addEventListener("mouseenter",()=>showFlyout(name,el));
-      el.addEventListener("mouseleave",()=>setTimeout(hideFlyout,100));
+      el.addEventListener("mouseleave",()=>setTimeout(hideFlyout,80));
     }
   });
 }
@@ -890,7 +913,7 @@ function renderRegions(){
   const asiaComps=COMPETITIONS.filter(c=>compGroup(c.label)==="asia");
   const horizonComps=COMPETITIONS.filter(c=>compGroup(c.label)==="horizon");
 
-  // Europe totals
+  // Europe
   const euData=countForCompetitions(europeComps);
   byId("eu-trophies-pill").textContent=`${euData.trophies} trophies`;
   byId("eu-comps").textContent=europeComps.length;
@@ -904,9 +927,7 @@ function renderRegions(){
   byId("am-comps").textContent=americasComps.length;
   byId("am-winners").textContent=amData.uniqueWinners;
   renderTopTable("t-am-top", amData.sorted, 10);
-
-  // If multiple "americas" comps somehow exist, pick first for history
-  if(americasComps[0]) renderHistorySimple("t-am-history", americasComps[0].label, americasComps[0]);
+  if(americasComps[0]) renderHistorySimple("t-am-history", americasComps[0]);
   else byId("t-am-history").innerHTML=`<tbody><tr><td class="note" style="padding:12px">Gold League column not found</td></tr></tbody>`;
 
   // Asia (Emerald)
@@ -915,23 +936,22 @@ function renderRegions(){
   byId("as-comps").textContent=asiaComps.length;
   byId("as-winners").textContent=asData.uniqueWinners;
   renderTopTable("t-as-top", asData.sorted, 10);
-
-  if(asiaComps[0]) renderHistorySimple("t-as-history", asiaComps[0].label, asiaComps[0]);
+  if(asiaComps[0]) renderHistorySimple("t-as-history", asiaComps[0]);
   else byId("t-as-history").innerHTML=`<tbody><tr><td class="note" style="padding:12px">Emerald League column not found</td></tr></tbody>`;
 
   // Horizon
   const hzData=countForCompetitions(horizonComps);
   byId("hz-trophies-pill").textContent=`${hzData.trophies} trophies`;
-  byId("hz-seasons").textContent=totalSeasons;
+  byId("hz-comps").textContent=horizonComps.length;
   byId("hz-winners").textContent=hzData.uniqueWinners;
   renderTopTable("t-hz-top", hzData.sorted, 10);
-
-  if(horizonComps[0]) renderHistorySimple("t-hz-history", horizonComps[0].label, horizonComps[0]);
+  if(horizonComps[0]) renderHistorySimple("t-hz-history", horizonComps[0]);
   else byId("t-hz-history").innerHTML=`<tbody><tr><td class="note" style="padding:12px">Horizon Cup column not found</td></tr></tbody>`;
 
   wirePlayerLinks("#regions");
 }
 
+/* Boot */
 (async function boot(){
   try{
     const historyGV=await gv(HISTORY_GID,"A1:L");
@@ -962,10 +982,10 @@ function renderRegions(){
     });
 
     showTab("leaderboard");
+    showRegion("eu"); // default region panel
   }catch(e){
     byId("pill-updated").textContent="Error";
     byId("seasonCards").innerHTML=`<div class="note">Could not load data</div>`;
-    byId("regions").innerHTML=`<div class="note" style="padding:12px">Could not load region data</div>`;
   }
 })();
 </script>
