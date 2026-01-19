@@ -4,7 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>eFPL Staff Dashboard</title>
-  <meta name="description" content="Internal staff dashboard for submitting official eFPL match results." />
+  <meta name="description" content="Internal eFPL staff dashboard for submitting official match results." />
+
   <style>
     :root{
       --bg:#00143b;
@@ -18,53 +19,160 @@
       --shadow:0 12px 30px rgba(0,0,0,.35);
       --max:1100px;
     }
+
     *{box-sizing:border-box}
+
     body{
       margin:0;
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background:radial-gradient(1200px 600px at 20% 0%, rgba(249,215,28,.10), transparent 60%),
-                 radial-gradient(900px 500px at 100% 20%, rgba(249,215,28,.08), transparent 55%),
-                 var(--bg);
+      background:
+        radial-gradient(1200px 600px at 20% 0%, rgba(249,215,28,.10), transparent 60%),
+        radial-gradient(900px 500px at 100% 20%, rgba(249,215,28,.08), transparent 55%),
+        var(--bg);
       color:var(--ink);
     }
-    .wrap{max-width:var(--max); margin:0 auto; padding:24px 16px 48px;}
-    .topbar{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:16px; padding:16px 18px; border:1px solid var(--line);
-      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      border-radius:var(--radius); box-shadow:var(--shadow);
+
+    /* ---------- PIN GATE ---------- */
+    #pinGate{
+      position:fixed;
+      inset:0;
+      display:grid;
+      place-items:center;
+      background:var(--bg);
+      z-index:9999;
     }
-    .brand{display:flex; align-items:center; gap:12px; min-width:0;}
+
+    .pinCard{
+      width:100%;
+      max-width:360px;
+      padding:28px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      box-shadow:0 20px 50px rgba(0,0,0,.45);
+      text-align:center;
+    }
+
+    .pinLogo{
+      width:56px;
+      height:56px;
+      margin:0 auto 14px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      font-weight:800;
+      font-size:22px;
+      color:var(--accent);
+      background:rgba(249,215,28,.18);
+      border:1px solid var(--line);
+    }
+
+    .pinCard h1{
+      margin:6px 0;
+      font-size:18px;
+    }
+
+    .pinCard p{
+      margin:0 0 14px;
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    .pinCard input{
+      width:100%;
+      padding:12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.25);
+      color:#fff;
+      font-size:14px;
+      outline:none;
+    }
+
+    .pinCard button{
+      width:100%;
+      margin-top:12px;
+      padding:12px;
+      border-radius:12px;
+      border:1px solid rgba(249,215,28,.35);
+      background:rgba(249,215,28,.18);
+      color:#fff;
+      font-size:14px;
+      cursor:pointer;
+    }
+
+    .pinCard button:hover{
+      background:rgba(249,215,28,.28);
+    }
+
+    #pinError{
+      display:none;
+      margin-top:10px;
+      font-size:12px;
+      color:#ff6b6b;
+    }
+
+    /* ---------- DASHBOARD ---------- */
+    #dashboard{display:none}
+
+    .wrap{
+      max-width:var(--max);
+      margin:0 auto;
+      padding:24px 16px 48px;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      padding:16px 18px;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
     .logo{
-      width:42px; height:42px; border-radius:12px;
+      width:42px;
+      height:42px;
+      border-radius:12px;
       background:linear-gradient(145deg, rgba(249,215,28,.25), rgba(255,255,255,.06));
       border:1px solid var(--line);
-      display:grid; place-items:center;
-      font-weight:800; color:var(--accent);
-      flex:0 0 auto;
+      display:grid;
+      place-items:center;
+      font-weight:800;
+      color:var(--accent);
     }
-    .brand h1{margin:0; font-size:18px; letter-spacing:.2px;}
-    .brand p{margin:3px 0 0; color:var(--muted); font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-    .actions{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;}
-    .btn{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:10px 12px; border-radius:12px;
-      border:1px solid var(--line);
-      color:var(--ink); text-decoration:none; font-size:13px;
-      background:rgba(255,255,255,.04);
+
+    .brand h1{
+      margin:0;
+      font-size:18px;
     }
-    .btn:hover{background:rgba(255,255,255,.07)}
-    .btn.primary{
-      border-color:rgba(249,215,28,.35);
-      background:rgba(249,215,28,.12);
+
+    .brand p{
+      margin:3px 0 0;
+      font-size:12px;
+      color:var(--muted);
     }
+
     .grid{
-      display:grid; grid-template-columns: 1fr;
-      gap:14px; margin-top:16px;
+      display:grid;
+      grid-template-columns:1fr;
+      gap:14px;
+      margin-top:16px;
     }
-    @media (min-width: 980px){
-      .grid{grid-template-columns: 360px 1fr;}
+
+    @media (min-width:980px){
+      .grid{grid-template-columns:360px 1fr;}
     }
+
     .card{
       border:1px solid var(--line);
       background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
@@ -72,40 +180,63 @@
       box-shadow:var(--shadow);
       padding:16px;
     }
-    .card h2{margin:0 0 8px; font-size:14px; color:var(--accent); letter-spacing:.3px; text-transform:uppercase;}
-    .card p, .card li{color:var(--muted); font-size:13px; line-height:1.45;}
-    ul{margin:10px 0 0; padding-left:18px;}
-    .pill{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:8px 10px; border-radius:999px;
-      border:1px solid var(--line);
-      background:rgba(0,0,0,.18);
-      font-size:12px; color:var(--muted);
-      margin-top:10px;
+
+    .card h2{
+      margin:0 0 8px;
+      font-size:14px;
+      color:var(--accent);
+      text-transform:uppercase;
+      letter-spacing:.3px;
     }
-    .dot{width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 4px rgba(249,215,28,.12);}
+
+    .card p, .card li{
+      font-size:13px;
+      color:var(--muted);
+      line-height:1.45;
+    }
+
+    ul{padding-left:18px}
+
     .embedWrap{
       border:1px solid var(--line);
       border-radius:var(--radius);
       overflow:hidden;
-      background:rgba(0,0,0,.20);
+      background:rgba(0,0,0,.25);
     }
+
     iframe{
       width:100%;
-      height: 980px;
+      height:980px;
       border:0;
-      background:transparent;
     }
+
     .foot{
       margin-top:16px;
-      color:rgba(255,255,255,.55);
-      font-size:12px;
       text-align:center;
+      font-size:12px;
+      color:rgba(255,255,255,.55);
     }
   </style>
 </head>
+
 <body>
+
+<!-- PIN GATE -->
+<div id="pinGate">
+  <div class="pinCard">
+    <div class="pinLogo">e</div>
+    <h1>eFPL Staff Access</h1>
+    <p>Enter staff PIN to continue</p>
+    <input id="pinInput" type="password" placeholder="Staff PIN" />
+    <button onclick="checkPin()">Access Dashboard</button>
+    <div id="pinError">Incorrect PIN</div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
   <div class="wrap">
+
     <div class="topbar">
       <div class="brand">
         <div class="logo">e</div>
@@ -114,43 +245,66 @@
           <p>Submit official results. Website updates automatically.</p>
         </div>
       </div>
-      <div class="actions">
-        <!-- Replace links if you want -->
-        <a class="btn" href="/" rel="noopener">Back to eFPL</a>
-        <a class="btn primary" href="#" onclick="location.reload();return false;">Refresh</a>
-      </div>
     </div>
 
     <div class="grid">
+
       <div class="card">
         <h2>How to use</h2>
         <ul>
-          <li>Use the <strong>Fixture</strong> dropdown and start typing a player name to search fast.</li>
-          <li>Enter goals, then tick <strong>Confirm result is correct</strong>.</li>
-          <li>Use <strong>Override</strong> only to correct an already-completed match.</li>
+          <li>Use the <strong>Fixture</strong> dropdown and type a player name to search.</li>
+          <li>Enter goals and tick <strong>Confirm result is correct</strong>.</li>
+          <li>Use <strong>Override</strong> only to correct a completed match.</li>
         </ul>
-        <div class="pill"><span class="dot"></span> Live system (staff only)</div>
 
         <h2 style="margin-top:14px;">Notes</h2>
         <p>
-          Completed fixtures will disappear from the dropdown after the next sync.
-          If you need to re-add a test fixture, an admin can untick <strong>Completed</strong>.
+          Completed fixtures will disappear automatically.
+          Contact an admin for corrections if unsure.
         </p>
       </div>
 
       <div class="embedWrap">
-        <!-- Paste your Google Forms EMBED URL here -->
         <iframe
-          src="PASTE_YOUR_EMBEDDED_FORM_URL_HERE"
+          src="https://docs.google.com/forms/d/e/1FAIpQLSdXsrla5BWVGa94VBqKnjj_ekBbTJgmurCf0-Q4aO38pn_2LQ/viewform?embedded=true"
           loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
           allow="clipboard-write"
-          title="eFPL Staff Result Submission Form"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="eFPL Staff Result Submission"
         ></iframe>
       </div>
+
     </div>
 
-    <div class="foot">Internal tool for eFPL staff. Do not share externally.</div>
+    <div class="foot">
+      Internal eFPL tool. Do not share externally.
+    </div>
+
   </div>
+</div>
+
+<script>
+  const STAFF_PIN = "2580"; // 🔒 CHANGE THIS
+
+  if (sessionStorage.getItem("efpl_staff_ok") === "1") {
+    unlock();
+  }
+
+  function checkPin(){
+    const pin = document.getElementById("pinInput").value.trim();
+    if(pin === STAFF_PIN){
+      sessionStorage.setItem("efpl_staff_ok","1");
+      unlock();
+    } else {
+      document.getElementById("pinError").style.display = "block";
+    }
+  }
+
+  function unlock(){
+    document.getElementById("pinGate").style.display = "none";
+    document.getElementById("dashboard").style.display = "block";
+  }
+</script>
+
 </body>
 </html>
