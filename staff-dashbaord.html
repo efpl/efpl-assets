@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>eFPL Staff Dashboard</title>
+  <meta name="description" content="eFPL staff dashboard access." />
+  <meta name="robots" content="noindex,nofollow" />
+
+  <style>
+    :root{
+      --bg:#071225;
+      --panel:#0b1b33;
+      --text:#eaf1ff;
+      --muted:rgba(234,241,255,.72);
+      --accent:#f6c64a;
+      --border:rgba(255,255,255,.12);
+      --shadow:0 18px 50px rgba(0,0,0,.45);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: radial-gradient(1200px 700px at 20% 0%, rgba(246,198,74,.18), transparent 55%),
+                  radial-gradient(900px 520px at 80% 20%, rgba(92,141,255,.16), transparent 60%),
+                  var(--bg);
+      color:var(--text);
+      overflow:hidden;
+    }
+
+    .topbar{
+      position:fixed; inset:0 0 auto 0;
+      height:56px;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 16px;
+      background:rgba(7,18,37,.72);
+      border-bottom:1px solid var(--border);
+      backdrop-filter: blur(10px);
+      z-index:50;
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      font-weight:800; letter-spacing:.2px;
+    }
+    .dot{
+      width:10px;height:10px;border-radius:50%;
+      background:var(--accent);
+      box-shadow:0 0 0 4px rgba(246,198,74,.18);
+    }
+    .pill{
+      font-size:12px;
+      padding:6px 10px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      color:var(--muted);
+    }
+
+    .frameWrap{
+      position:fixed; inset:56px 0 0 0;
+      background:transparent;
+    }
+    iframe{
+      width:100%;
+      height:100%;
+      border:0;
+      background:var(--bg);
+    }
+
+    /* Loading / fallback overlay */
+    .overlay{
+      position:fixed; inset:56px 0 0 0;
+      display:flex; align-items:center; justify-content:center;
+      padding:24px;
+      z-index:40;
+      pointer-events:none;
+    }
+    .card{
+      width:min(720px, 100%);
+      background:rgba(11,27,51,.84);
+      border:1px solid var(--border);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      padding:20px;
+      pointer-events:auto;
+    }
+    .row{display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;}
+    h1{margin:0; font-size:18px;}
+    p{margin:10px 0 0 0; color:var(--muted); line-height:1.4;}
+    .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;}
+    a.btn, button.btn{
+      appearance:none;
+      border:1px solid var(--border);
+      background:transparent;
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      text-decoration:none;
+      font-weight:700;
+      cursor:pointer;
+    }
+    a.btn.primary{
+      border-color:rgba(246,198,74,.45);
+      background:rgba(246,198,74,.12);
+    }
+    .small{font-size:12px;color:var(--muted); margin-top:10px}
+    .hidden{display:none!important;}
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">
+      <span class="dot"></span>
+      <span>eFPL Staff Dashboard</span>
+    </div>
+    <div class="pill">Private access</div>
+  </div>
+
+  <div class="frameWrap">
+    <iframe id="dash" title="eFPL Dashboard" referrerpolicy="no-referrer"></iframe>
+  </div>
+
+  <div class="overlay" id="overlay">
+    <div class="card">
+      <div class="row">
+        <h1>Loading dashboard…</h1>
+        <span class="pill" id="status">Connecting</span>
+      </div>
+      <p>
+        If this doesn’t load, it’s usually a browser sign-in / cookie restriction.
+        Use the button below to open the dashboard directly (staff only).
+      </p>
+      <div class="actions">
+        <a class="btn primary" id="openDirect" target="_blank" rel="noopener noreferrer">Open Dashboard</a>
+        <button class="btn" id="retry">Retry</button>
+      </div>
+      <div class="small">
+        Tip: If you’re on Brave/Safari, allow cross-site cookies for this page or use Chrome/Edge for staff tools.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 1) Replace this with your deployed Apps Script /exec URL
+    const APPS_SCRIPT_URL = "YOUR_APPS_SCRIPT_URL";
+
+    const iframe = document.getElementById("dash");
+    const overlay = document.getElementById("overlay");
+    const statusEl = document.getElementById("status");
+    const openDirect = document.getElementById("openDirect");
+    const retryBtn = document.getElementById("retry");
+
+    function setStatus(txt){ statusEl.textContent = txt; }
+
+    function load() {
+      setStatus("Connecting");
+      overlay.classList.remove("hidden");
+      openDirect.href = APPS_SCRIPT_URL;
+
+      // Load inside iframe
+      iframe.src = APPS_SCRIPT_URL;
+
+      // If iframe loads, hide overlay after a short delay
+      let loaded = false;
+      iframe.onload = () => {
+        loaded = true;
+        setStatus("Loaded");
+        setTimeout(() => overlay.classList.add("hidden"), 450);
+      };
+
+      // If not loaded within 6s, show fallback state
+      setTimeout(() => {
+        if (!loaded) setStatus("Needs sign-in");
+      }, 6000);
+    }
+
+    retryBtn.addEventListener("click", () => load());
+    load();
+  </script>
+</body>
+</html>
